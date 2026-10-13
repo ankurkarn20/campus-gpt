@@ -7,7 +7,7 @@
   \entity{documents}{4.4,0}{documents}{\PK id\\ \FK uploaded\_by\\ title, category, version\\ status, is\_synthetic\\ \FK superseded\_by}
   \entity{chunks}{9,0}{document\_chunks}{\PK id\\ \FK document\_id\\ section, page\\ content\\ embedding vector(384)\\ content\_tsv tsvector}
   % Row 2
-  \entity{sess}{-4.2,-4.4}{sessions}{\PK id (random token)\\ \FK user\_id\\ expires\_at}
+  \entity{sess}{-4.2,-4.4}{sessions}{\PK id (token hash)\\ \FK user\_id\\ expires\_at}
   \entity{conversations}{0,-4.4}{conversations}{\PK id\\ \FK user\_id\\ title, created\_at}
   \entity{jobs}{4.4,-4.4}{ingestion\_jobs}{\PK id\\ \FK document\_id\\ state, attempts, error\\ created\_at, updated\_at}
   \entity{notices}{9,-4.4}{notices}{\PK id\\ \FK published\_by\\ title, body\\ audience, published\_at}

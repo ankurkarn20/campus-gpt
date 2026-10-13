@@ -177,30 +177,35 @@ Figure~\ref{fig:er-platform} the tables supporting authentication, documents and
   \item Attendance is stored per class session, which allows the calculator to answer
         ``how many more classes'' exactly and lets the generator create realistic patterns.
   \item Integrity is enforced by the database: foreign keys, \texttt{UNIQUE} constraints
-        (one enrollment per student per offering), and \texttt{CHECK} constraints (amounts
-        $\ge 0$, marks $\le$ maximum).
+        (one enrollment per student per offering), \texttt{CHECK} constraints (amounts
+        $\ge 0$, valid roles and statuses), and a trigger that keeps marks $\le$ the
+        assignment maximum, a rule that spans two tables.
   \item Indexes: B-tree indexes on every foreign key and on \texttt{(student\_id)} filters;
         an HNSW index~\cite{malkov2020hnsw} on \texttt{embedding}; a GIN index on
         \texttt{content\_tsv} for full-text search.
-  \item Every generated row carries \texttt{is\_synthetic = true}, as required by FR-02.
+  \item Students, notices and documents carry \texttt{is\_synthetic = true}, as required by
+        FR-02; only the four demo accounts have passwords and can log in.
 \end{itemize}
 
-Table~\ref{tab:sizes} lists the planned dataset size for 5,000 students.
+Table~\ref{tab:sizes} lists the table sizes produced by the generator for 5,000 students.
+Class sessions, attendance and submissions grow as the term progresses; the figures are for
+13 October 2026. Generation and loading take about 20 seconds (target: under 5 minutes,
+NFR-P5).
 
 \begin{table}[H]
 \centering
-\caption{Planned table sizes for 5,000 synthetic students (approximate)}
+\caption{Table sizes for 5,000 synthetic students (seed 42, as of 13 October 2026)}
 \label{tab:sizes}
 \begin{tabular}{@{}lrlr@{}}
 \toprule
 \textbf{Table} & \textbf{Rows} & \textbf{Table} & \textbf{Rows}\\
 \midrule
-students        & 5,000     & class\_sessions & 18,000\\
-faculty         & 150       & attendance      & 1,350,000\\
-courses         & 180       & assignments     & 1,600\\
-course\_offerings & 400     & submissions     & 110,000\\
-enrollments     & 30,000    & exams           & 800\\
-invoices        & 10,000    & payments        & 9,000\\
+students        & 5,000     & class\_sessions & 15,338\\
+faculty         & 148       & attendance      & 824,636\\
+courses         & 190       & assignments     & 1,860\\
+course\_offerings & 465     & submissions     & 65,378\\
+enrollments     & 25,000    & exams           & 1,395\\
+invoices        & 10,000    & payments        & 6,277\\
 \bottomrule
 \end{tabular}
 \end{table}

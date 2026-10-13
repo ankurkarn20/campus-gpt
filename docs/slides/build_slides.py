@@ -356,10 +356,10 @@ def build(template: Path):
     # 5. Dataset Description -------------------------------------------------
     s = content_slide(prs, title("Dataset Description"))
     textbox(s, LEFT, 1.25, 6.2, 5.7, [
-        "**Synthetic by design**: no real university data; every row is labelled "
-        "is_synthetic.",
-        "**Scale**: 5,000 students, 150 faculty, 180 courses and about 1.35 million "
-        "attendance records.",
+        "**Synthetic by design**: no real university data; students, notices and "
+        "documents are labelled is_synthetic.",
+        "**Scale**: 5,000 students, 148 faculty, 190 courses and about 825,000 "
+        "attendance records, generated and loaded in about 20 seconds.",
         "**Realistic**: Indian names (Faker en_IN); program, semester and courses always "
         "consistent; deliberate edge cases such as attendance just below 75%.",
         "**Reproducible**: fixed random seed; one command rebuilds the database.",
@@ -367,14 +367,14 @@ def build(template: Path):
         "clearly marked fictional.",
     ], size=18, bullets=True, space_after=10)
     table(s, 6.85, 1.35, [1.75, 2.95, 1.4], [
-        ["Table", "Contents", "Planned rows"],
+        ["Table", "Contents", "Rows"],
         ["students", "Name, program, semester, section", "5,000"],
-        ["enrollments", "Student ↔ course offering", "30,000"],
-        ["class_sessions", "One row per class held", "18,000"],
-        ["attendance", "Present / absent per session", "1,350,000"],
-        ["assignments", "Title, due date, marks", "1,600"],
-        ["submissions", "Submitted at, marks", "110,000"],
-        ["exams", "Type, date, room", "800"],
+        ["enrollments", "Student ↔ course offering", "25,000"],
+        ["class_sessions", "One row per class held", "15,338"],
+        ["attendance", "Present / absent per session", "824,636"],
+        ["assignments", "Title, due date, marks", "1,860"],
+        ["submissions", "Submitted at, marks", "65,378"],
+        ["exams", "Type, date, room", "1,395"],
         ["invoices", "Term, amount, due date, status", "10,000"],
     ], size=12.5, row_h=0.5)
 
@@ -445,7 +445,7 @@ def build(template: Path):
     picture(s, "er-academic", LEFT, 1.15, 7.4, 5.95, align="left")
     picture(s, "er-platform", 7.95, 1.20, 5.0, 3.1, align="left")
     textbox(s, 7.95, 4.45, 5.0, 2.6, [
-        "**21 tables** in third normal form",
+        "**23 tables** in third normal form",
         "Derived values (attendance %) computed by a **view**, never stored",
         "Foreign keys, UNIQUE and CHECK constraints",
         "**HNSW** index for vectors, **GIN** for full-text",

@@ -35,9 +35,34 @@ Example questions:
 | Embeddings | Small local open-source embedding model (CPU) |
 | Local infra | PostgreSQL installed natively (saves memory on an 8 GB laptop) |
 
+## Getting started
+
+Requirements: Python 3.12, PostgreSQL 16 with the pgvector extension.
+
+```bash
+cp .env.example .env              # then set the database passwords
+python3 -m venv .venv && .venv/bin/pip install -e "backend[dev]"
+make db-start                     # if you use the local cluster in ~/.local/share/campus-gpt
+make seed                         # migrate + generate 5,000 synthetic students (about 20 s)
+make test                         # 20 tests against the separate test database
+```
+
+`make seed` prints the demo accounts. All share the password in `DEMO_PASSWORD`
+(default `campusgpt-demo`); no other synthetic user can log in.
+
+| Account | Profile |
+|---|---|
+| `admin@demo.campusgpt.example` | Academic office administrator |
+| `student.regular@demo.campusgpt.example` | Cyber Security, semester 5: good attendance, all fees paid |
+| `student.shortage@demo.campusgpt.example` | CSE, semester 3: below 75% in Database Management Systems |
+| `student.fees@demo.campusgpt.example` | ECE, semester 7: tuition fee overdue |
+
+The dataset is generated relative to `--as-of` (default: today), so there is always work due
+"this week". The same seed and date always produce the same data.
+
 ## Status
 
-Planning complete — starting Week 1.
+Week 1 in progress: database schema, migrations and synthetic data generator done.
 
 | Document | |
 |---|---|
