@@ -1,0 +1,45 @@
+% ER diagram: academic records
+\input{../diagrams/er-styles}
+\begin{tikzpicture}
+  % Row 1
+  \entity{users}{0,0}{users}{\PK id\\ email (unique)\\ password\_hash\\ role}
+  \entity{students}{4,0}{students}{\PK id\\ \FK user\_id (unique)\\ \FK program\_id\\ roll\_no, name\\ current\_semester, section\\ is\_synthetic}
+  \entity{programs}{8,0}{programs}{\PK id\\ \FK department\_id\\ name, duration\_semesters}
+  \entity{departments}{12,0}{departments}{\PK id\\ code (unique), name}
+  \entity{faculty}{16,0}{faculty}{\PK id\\ \FK department\_id\\ name, designation}
+  % Row 2
+  \entity{invoices}{0,-4.4}{invoices}{\PK id\\ \FK student\_id\\ term, amount\\ due\_date, status}
+  \entity{enrollments}{4,-4.4}{enrollments}{\PK id\\ \FK student\_id\\ \FK offering\_id\\ unique(student, offering)}
+  \entity{offerings}{8,-4.4}{course\_offerings}{\PK id\\ \FK course\_id\\ \FK faculty\_id\\ term, section}
+  \entity{courses}{12,-4.4}{courses}{\PK id\\ \FK department\_id\\ code (unique), title\\ credits, semester}
+  % Row 3
+  \entity{payments}{0,-8.8}{payments}{\PK id\\ \FK invoice\_id\\ amount, paid\_at}
+  \entity{attendance}{4,-8.8}{attendance}{\PK (session\_id,\\ \quad enrollment\_id)\\ present (boolean)}
+  \entity{sessions}{8,-8.8}{class\_sessions}{\PK id\\ \FK offering\_id\\ held\_on}
+  \entity{exams}{12,-8.8}{exams}{\PK id\\ \FK offering\_id\\ exam\_type, starts\_at\\ room}
+  % Row 4
+  \entity{submissions}{4,-13.0}{submissions}{\PK id\\ \FK assignment\_id\\ \FK enrollment\_id\\ submitted\_at, marks}
+  \entity{assignments}{8,-13.0}{assignments}{\PK id\\ \FK offering\_id\\ title, due\_at\\ max\_marks}
+
+  % Relationships (cardinality: 1 / N)
+  \relate{students.west}{users.east}{1}{1}
+  \relate{students.east}{programs.west}{N}{1}
+  \relate{programs.east}{departments.west}{N}{1}
+  \relate{faculty.west}{departments.east}{N}{1}
+  \relate{courses.north}{departments.south}{N}{1}
+  \relate{offerings.east}{courses.west}{N}{1}
+  \relate{offerings.north east}{faculty.south west}{N}{1}
+  \relate{enrollments.north}{students.south}{N}{1}
+  \relate{enrollments.east}{offerings.west}{N}{1}
+  \relate{invoices.north east}{students.south west}{N}{1}
+  \relate{payments.north}{invoices.south}{N}{1}
+  \relate{attendance.north}{enrollments.south}{N}{1}
+  \relate{attendance.east}{sessions.west}{N}{1}
+  \relate{sessions.north}{offerings.south}{N}{1}
+  \relate{exams.north west}{offerings.south east}{N}{1}
+  \relate{submissions.east}{assignments.west}{N}{1}
+  \draw[rel] (assignments.east) -- node[card, pos=0.3] {N} ++(0.55,0) |- node[card, pos=0.95] {1}
+    ([yshift=-6pt]offerings.east);
+  \draw[rel] (submissions.west) -- node[card, pos=0.5] {N} ++(-0.45,0) |- node[card, pos=0.95] {1}
+    ([yshift=-8pt]enrollments.west);
+\end{tikzpicture}

@@ -1,0 +1,19 @@
+% Shared styles and macro for ER diagrams.
+% \entity{node name}{x,y}{table name}{attribute rows separated by \\}
+\tikzset{
+  entity/.style={draw=black!70, fill=white, inner sep=0pt, font=\sffamily\tiny},
+  rel/.style={draw=black!70, thick},
+  card/.style={font=\sffamily\tiny\bfseries, fill=white, inner sep=0.8pt, text=algogreen}}
+\providecommand{\entity}[4]{%
+  \node[entity] (#1) at (#2) {%
+    \renewcommand{\arraystretch}{1.05}\setlength{\tabcolsep}{3pt}%
+    \begin{tabular}{l}
+      \rowcolor{tierblue}\rule{0pt}{8pt}\textbf{\small #3}\\ \hline
+      #4
+    \end{tabular}};
+  \draw[black!70] (#1.south west) rectangle (#1.north east);}
+% \relate{from}{to}{card near from}{card near to}[path options]
+\providecommand{\relate}[5][]{%
+  \draw[rel, #1] (#2) -- node[card, pos=0.12] {#4} node[card, pos=0.88] {#5} (#3);}
+\providecommand{\PK}{\textbf{PK}~}
+\providecommand{\FK}{\textit{FK}~}

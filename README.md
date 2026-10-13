@@ -37,4 +37,10 @@ Example questions:
 
 ## Status
 
-Planning complete — starting Week 1. See [docs/PLAN.md](docs/PLAN.md) for scope, timeline and decisions.
+Planning complete — starting Week 1.
+
+| Document | |
+|---|---|
+| [Project plan](docs/PLAN.md) | Scope, timeline, decisions |
+| [Software Requirements Specification](docs/srs/campus-gpt-srs.pdf) | Requirements (v1.1) |
+| [Technical Design Document](docs/design/campus-gpt-technical-design.pdf) | Diagrams, IPC, programming concepts, libraries |

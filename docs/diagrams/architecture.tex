@@ -1,0 +1,85 @@
+% System architecture diagram (shared by SRS and Technical Design)
+\begin{tikzpicture}[
+  font=\sffamily\scriptsize,
+  comp/.style={draw=black!60, fill=white, rounded corners=2pt, align=center,
+               text width=2.75cm, minimum height=0.95cm, inner sep=2pt},
+  tier/.style={draw=black!50, rounded corners=4pt, inner sep=6pt},
+  tierlabel/.style={font=\sffamily\scriptsize\bfseries, anchor=north west},
+  ext/.style={draw=black!70, fill=tiergray, rounded corners=2pt, align=center,
+              text width=2.75cm, minimum height=1cm, inner sep=2pt},
+  arr/.style={-{Latex[length=2mm]}, thick, draw=black!75},
+  biarr/.style={{Latex[length=2mm]}-{Latex[length=2mm]}, thick, draw=black!75},
+  lab/.style={font=\sffamily\tiny, fill=white, inner sep=1.5pt, align=center}]
+
+  % ---------------- Client tier ----------------
+  \node[comp] (stuui) at (-4.9,10.1) {\textbf{Student Portal}\\Dashboard, Chat};
+  \node[comp] (admui) at (-1.4,10.1) {\textbf{Admin Console}\\Uploads, Status};
+  \node[comp] (next)  at (2.1,10.1)  {\textbf{Next.js App}\\React + TypeScript};
+  \begin{scope}[on background layer]
+    \node[tier, fill=tierblue, fit=(stuui)(admui)(next), inner ysep=9pt,
+          yshift=3pt] (client) {};
+  \end{scope}
+  \node[tierlabel] at (client.north west) {Client Tier (Web Browser)};
+
+  % ---------------- External LLM ----------------
+  \node[ext] (llm) at (6.05,10.1) {\textbf{LLM Provider}\\Groq, Gemini\\or Ollama};
+
+  % ---------------- Application tier ----------------
+  \node[comp] (auth)  at (-4.9,7.6) {\textbf{Auth \& RBAC}\\Session check, roles};
+  \node[comp] (api)   at (-1.4,7.6) {\textbf{API Routers}\\REST + SSE};
+  \node[comp] (adapt) at (2.1,7.6)  {\textbf{LLM Adapter}\\Provider interface};
+  \node[comp] (orch)  at (-4.9,6.1) {\textbf{Chat Orchestrator}\\Tool loop, citations};
+  \node[comp] (tools) at (-1.4,6.1) {\textbf{Tool Registry}\\9 read-only tools};
+  \node[comp] (retr)  at (2.1,6.1)  {\textbf{Retrieval Service}\\Hybrid search (RRF)};
+  \node[comp] (week)  at (-4.9,4.6) {\textbf{Weekly Summary}\\Urgency rules};
+  \node[comp] (calc)  at (-1.4,4.6) {\textbf{Calculators}\\Attendance formula};
+  \node[comp] (emb)   at (2.1,4.6)  {\textbf{Query Embedder}\\BGE-small (CPU)};
+  \begin{scope}[on background layer]
+    \node[tier, fill=tiergreen, fit=(auth)(adapt)(week)(emb), inner ysep=9pt,
+          yshift=3pt] (app) {};
+  \end{scope}
+  \node[tierlabel] at (app.north west) {Application Tier (FastAPI process)};
+
+  % ---------------- Worker ----------------
+  \node[comp] (listen) at (6.05,7.6) {\textbf{Job Listener}\\LISTEN + claim job};
+  \node[comp] (extract) at (6.05,6.1) {\textbf{Extract \& Chunk}\\pypdf, cleaning};
+  \node[comp] (wemb) at (6.05,4.6) {\textbf{Chunk Embedder}\\BGE-small (CPU)};
+  \begin{scope}[on background layer]
+    \node[tier, fill=tieramber, fit=(listen)(wemb), inner ysep=9pt, yshift=3pt]
+      (worker) {};
+  \end{scope}
+  \node[tierlabel] at (worker.north west) {Ingestion Worker};
+
+  % ---------------- Data tier ----------------
+  \node[comp] (rec)  at (-4.9,1.7) {\textbf{Academic Records}\\students, courses, fees};
+  \node[comp] (vec)  at (-1.4,1.7) {\textbf{Document Chunks}\\pgvector + full-text};
+  \node[comp] (jobs) at (2.1,1.7)  {\textbf{Job Queue}\\ingestion\_jobs};
+  \node[comp] (logs) at (6.05,1.7) {\textbf{Chat \& Audit Logs}\\Conversations, events};
+  \begin{scope}[on background layer]
+    \node[tier, fill=tiergray, fit=(rec)(logs), inner ysep=9pt, yshift=3pt]
+      (data) {};
+  \end{scope}
+  \node[tierlabel] at (data.north west) {Data Tier (PostgreSQL 16 + pgvector)};
+
+  % ---------------- Inter-tier connections ----------------
+  \draw[biarr] (api.north) -- node[lab] {\circled{1}\,HTTPS: REST (JSON)\\+ SSE answer stream}
+    (api.north|-client.south);
+  \draw[biarr] (adapt.east) -- ++(0.35,0) |- node[lab, pos=0.25]
+    {\circled{4}\,HTTPS\\JSON} (llm.west);
+  \draw[biarr] (tools.south|-app.south) -- node[lab]
+    {\circled{2}\,SQL over TCP\\(psycopg pool)} (tools.south|-data.north);
+  \draw[biarr] (wemb.south|-worker.south) -- node[lab]
+    {\circled{3}\,LISTEN/NOTIFY\\+ SQL} (wemb.south|-data.north);
+
+  % ---------------- Intra-process flow ----------------
+  \draw[arr, draw=black!45] (api) -- (orch);
+  \draw[arr, draw=black!45] (orch) -- (tools);
+  \draw[arr, draw=black!45] (tools) -- (retr);
+  \draw[arr, draw=black!45] (orch.south) -- (week.north);
+  \draw[arr, draw=black!45] (tools) -- (calc);
+  \draw[arr, draw=black!45] (retr) -- (emb);
+  \draw[arr, draw=black!45] (orch.north east) -- (adapt.south west);
+  \draw[arr, draw=black!45] (auth) -- (api);
+  \draw[arr, draw=black!45] (listen) -- (extract);
+  \draw[arr, draw=black!45] (extract) -- (wemb);
+\end{tikzpicture}

@@ -94,3 +94,16 @@ Measure: answer correctness, citation correctness, tool-selection accuracy, late
 | 2026-10-13 | Student + admin roles only | One month deadline |
 | 2026-10-13 | Read-only tools in v1 | Avoid write-action security complexity |
 | 2026-10-13 | PostgreSQL + pgvector for both data and vectors | One database to run and back up |
+| 2026-10-13 | Document ingestion runs in a separate worker process, woken by PostgreSQL LISTEN/NOTIFY over a durable `ingestion_jobs` table (claimed with `FOR UPDATE SKIP LOCKED`); chat answers stream over SSE | Keeps chat responsive; gives real, demonstrable IPC (evaluated component); no extra broker process on an 8 GB laptop |
+
+## 8. Evaluation components (announced 2026-10-13)
+
+| Component | Marks | Covered in |
+|---|---|---|
+| Technical Diagram | 5 | `docs/design` ch. 2–3; SRS Appendix B |
+| Programming Concepts | 5 | `docs/design` ch. 4 |
+| Inter-Process Communication | 5 | `docs/design` ch. 3 |
+| Libraries | 5 | `docs/design` ch. 5 |
+| SRS Document | 10 | `docs/srs` |
+
+Documents are LaTeX; shared team details and styling live in `docs/common/preamble.tex`, diagrams in `docs/diagrams/`. Build with `tectonic -X compile <file>.tex` from the file's own directory.

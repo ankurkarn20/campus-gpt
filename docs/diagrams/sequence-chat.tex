@@ -1,0 +1,51 @@
+% Sequence diagram: "Can I sit for my DBMS exam?"
+\begin{tikzpicture}[
+  font=\sffamily\scriptsize,
+  head/.style={draw=black!70, fill=tierblue, align=center, text width=1.9cm,
+               minimum height=0.8cm, inner sep=2pt},
+  call/.style={-{Latex[length=2mm]}, draw=black!80},
+  ret/.style={-{Latex[length=2mm]}, dashed, draw=black!60},
+  self/.style={-{Latex[length=2mm]}, draw=black!80, rounded corners=2pt},
+  mlab/.style={font=\sffamily\tiny, fill=white, inner sep=1pt, align=center},
+  step/.style={font=\sffamily\tiny\bfseries, text=algogreen},
+  msglab/.style={font=\sffamily\tiny, inner sep=1pt, above=0.5pt}]
+
+  % Lifelines: x positions
+  \def\xB{0}\def\xA{3.1}\def\xO{6.2}\def\xL{9.3}\def\xT{12.4}\def\xD{15.5}
+  \def\ybot{-15.3}
+  \foreach \x/\name in {\xB/Browser\\(Next.js), \xA/FastAPI\\Routers + Auth,
+                        \xO/Chat\\Orchestrator, \xL/LLM Provider\\(via adapter),
+                        \xT/Tool Registry\\+ Retrieval, \xD/PostgreSQL\\+ pgvector} {
+    \node[head] at (\x,0) {\textbf{\name}};
+    \draw[black!40, dashed] (\x,-0.45) -- (\x,\ybot);
+  }
+
+  % Messages: \msg{style}{from x}{to x}{y}{label}
+  \newcommand{\msg}[5]{\draw[#1] (#2,#4) -- node[msglab] {#5} (#3,#4);}
+
+  \msg{call}{\xB}{\xA}{-1.0}{POST /chat (session cookie)}
+  \msg{call}{\xA}{\xD}{-1.6}{look up session}
+  \msg{ret}{\xD}{\xA}{-2.2}{user\_id, role = student}
+  \msg{call}{\xA}{\xO}{-2.8}{run(question, user)}
+  \msg{call}{\xO}{\xL}{-3.4}{question + allowed tools}
+  \msg{ret}{\xL}{\xO}{-4.0}{call get\_my\_attendance(course=``DBMS'')}
+  \draw[self] (\xO,-4.35) -- ++(0.55,0) -- ++(0,-0.45) node[mlab, right, pos=0.5]
+    {allow-list check,\\inject student\_id} -- ++(-0.55,0);
+  \msg{call}{\xO}{\xT}{-5.2}{get\_my\_attendance(student\_id, ``DBMS'')}
+  \msg{call}{\xT}{\xD}{-5.8}{SELECT \ldots{} WHERE student\_id = \$1}
+  \msg{ret}{\xD}{\xT}{-6.4}{41 of 60 classes}
+  \msg{ret}{\xT}{\xO}{-7.0}{68.3\%, needs 16 more classes}
+  \msg{call}{\xO}{\xL}{-7.6}{tool result}
+  \msg{ret}{\xL}{\xO}{-8.2}{call search\_documents(``exam attendance'')}
+  \msg{call}{\xO}{\xT}{-8.8}{search\_documents(query)}
+  \msg{call}{\xT}{\xD}{-9.4}{vector + full-text search}
+  \msg{ret}{\xD}{\xT}{-10.0}{chunks C12, C47}
+  \msg{ret}{\xT}{\xO}{-10.6}{ranked chunks (RRF)}
+  \msg{call}{\xO}{\xL}{-11.2}{chunks as untrusted context}
+  \msg{ret}{\xL}{\xO}{-11.8}{answer citing C12}
+  \draw[self] (\xO,-12.15) -- ++(0.55,0) -- ++(0,-0.45) node[mlab, right, pos=0.5]
+    {verify citations} -- ++(-0.55,0);
+  \msg{call}{\xO}{\xD}{-13.0}{store messages, audit events}
+  \msg{ret}{\xO}{\xA}{-13.6}{answer + sources}
+  \msg{ret}{\xA}{\xB}{-14.2}{SSE: streamed answer + sources}
+\end{tikzpicture}

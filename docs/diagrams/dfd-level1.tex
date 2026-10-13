@@ -1,0 +1,70 @@
+% Level-1 Data Flow Diagram (shared by SRS and Technical Design)
+\begin{tikzpicture}[
+  font=\sffamily\scriptsize,
+  proc/.style={circle, draw=algogreen, thick, fill=tiergreen, align=center,
+               text width=1.75cm, inner sep=1pt},
+  ent/.style={draw=black!70, fill=tierblue, align=center, text width=2.1cm,
+              minimum height=0.9cm},
+  store/.style={align=left, text width=2.9cm, minimum height=0.6cm, inner xsep=4pt},
+  arr/.style={-{Latex[length=2mm]}, draw=black!75},
+  lab/.style={font=\sffamily\tiny, fill=white, inner sep=1pt, align=center}]
+
+  % External entities
+  \node[ent] (stu) at (-7.2,3.6) {\textbf{Student}};
+  \node[ent] (adm) at (7.4,-3.6) {\textbf{Administrator}};
+  \node[ent] (llm) at (-2.6,-1.6) {\textbf{LLM Provider}};
+
+  % Processes
+  \node[proc] (p1) at (-2.6,6.4) {\textbf{1.0}\\Authenticate User};
+  \node[proc] (p2) at (-2.6,2.4) {\textbf{2.0}\\Orchestrate Answer};
+  \node[proc] (p3) at (2.4,4.4)  {\textbf{3.0}\\Execute Student Tools};
+  \node[proc] (p4) at (2.4,0.4)  {\textbf{4.0}\\Retrieve Policy Text};
+  \node[proc] (p5) at (7.4,0.4)  {\textbf{5.0}\\Ingest Documents};
+
+  % Data stores
+  \node[store] (d1) at (2.4,7.3)  {\textbf{D1}\enspace Users \& Sessions};
+  \node[store] (d2) at (7.4,4.4)  {\textbf{D2}\enspace Academic Records};
+  \node[store] (d3) at (2.4,-2.0) {\textbf{D3}\enspace Documents \& Chunks};
+  \node[store] (d4) at (-7.2,0.4) {\textbf{D4}\enspace Conversations \& Audit Log};
+  \node[store] (d5) at (7.4,2.7) {\textbf{D5}\enspace Ingestion Job Queue};
+
+  % Student <-> authentication
+  \draw[arr] (stu.north) |- node[lab, pos=0.75] {credentials} ([yshift=3pt]p1.west);
+  \draw[arr] ([yshift=-6pt]p1.west) -| node[lab, pos=0.3] {session} ([xshift=8pt]stu.north);
+  \draw[arr] (p1.east) -- node[lab] {lookup, create session} (d1.west);
+
+  % Student <-> orchestrator
+  \draw[arr] ([yshift=4pt]stu.south east) -- node[lab, sloped, above] {question} ([yshift=6pt]p2.west);
+  \draw[arr] ([yshift=-6pt]p2.west) -- node[lab, sloped, below] {answer + sources} ([yshift=-6pt]stu.south east);
+  \draw[arr] (p1.south) -- node[lab] {user id, role} (p2.north);
+
+  % Orchestrator <-> LLM
+  \draw[arr] ([xshift=-8pt]p2.south) -- node[lab, left] {prompt, tool list,\\context} ([xshift=-8pt]llm.north);
+  \draw[arr] ([xshift=8pt]llm.north) -- node[lab, right] {tool calls,\\answer} ([xshift=8pt]p2.south);
+
+  % Orchestrator <-> tools / retrieval
+  \draw[arr] (p2.40) -- node[lab, sloped, above] {tool + session id} (p3.200);
+  \draw[arr] (p3.235) -- node[lab, sloped, below] {records, results} (p2.12);
+  \draw[arr] (p2.-12) -- node[lab, sloped, above] {search query} (p4.145);
+  \draw[arr] (p4.200) -- node[lab, sloped, below] {ranked chunks} (p2.-40);
+
+  % Tools <-> records
+  \draw[arr] (d2.west) -- node[lab] {student's rows only} (p3.east);
+
+  % Orchestrator -> log
+  \draw[arr] (p2.230) -- node[lab, sloped, below] {messages, tool events} (d4.east);
+
+  % Retrieval <- documents
+  \draw[arr] (d3.north) -- node[lab] {chunks, vectors} (p4.south);
+
+  % Administrator -> ingestion
+  \draw[arr] ([xshift=-6pt]adm.north) -- node[lab, left, pos=0.3] {document} ([xshift=-6pt]p5.south);
+  \draw[arr] ([xshift=6pt]p5.south) -- node[lab, right, pos=0.7] {status} ([xshift=6pt]adm.north);
+  \draw[arr] (p5.south west) |- node[lab, pos=0.75] {chunks + vectors} (d3.east);
+  \draw[arr] ([xshift=-10pt]p5.north) -- node[lab, left] {enqueue} ([xshift=-10pt]d5.south);
+  \draw[arr] ([xshift=10pt]d5.south) -- node[lab, right] {claim} ([xshift=10pt]p5.north);
+  % Data-store outlines (open on the right, as in Gane-Sarson notation)
+  \foreach \s in {d1,d2,d3,d4,d5}
+    \draw[black!70, thick] (\s.north east) -- (\s.north west) -- (\s.south west)
+                           -- (\s.south east);
+\end{tikzpicture}

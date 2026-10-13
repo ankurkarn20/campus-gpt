@@ -1,0 +1,19 @@
+% State machine for an ingestion job
+\begin{tikzpicture}[
+  font=\sffamily\scriptsize,
+  st/.style={draw=black!70, thick, rounded corners=8pt, fill=tierblue, minimum width=2.2cm,
+             minimum height=0.85cm, align=center},
+  fin/.style={st, fill=tiergreen},
+  bad/.style={st, fill=red!8},
+  arr/.style={-{Latex[length=2mm]}, thick, draw=black!75},
+  lab/.style={font=\sffamily\tiny, fill=white, inner sep=1pt, align=center}]
+  \node[st]  (q) at (0,0)    {\textbf{queued}};
+  \node[st]  (p) at (4.2,0)  {\textbf{processing}};
+  \node[fin] (d) at (8.4,0.9) {\textbf{done}};
+  \node[bad] (f) at (8.4,-0.9) {\textbf{failed}};
+  \draw[arr] (-1.9,0) -- node[lab, above] {upload} (q.west);
+  \draw[arr] (q) -- node[lab, above] {worker claims\\(SKIP LOCKED)} (p);
+  \draw[arr] (p.east) -- node[lab, sloped, above, pos=0.4] {chunks stored} (d.west);
+  \draw[arr] (p.east) -- node[lab, sloped, below, pos=0.4] {error, attempts = 3} (f.west);
+  \draw[arr] (p.south) to[out=-120, in=-60] node[lab, below] {error, attempts $<$ 3: retry} (q.south);
+\end{tikzpicture}

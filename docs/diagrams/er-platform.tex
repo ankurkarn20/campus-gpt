@@ -1,0 +1,25 @@
+% ER diagram: documents, AI and platform tables
+\input{../diagrams/er-styles}
+\begin{tikzpicture}
+  % Row 1
+  \entity{audit}{-4.2,0}{audit\_logs}{\PK id\\ \FK user\_id\\ action, tool\_name\\ outcome, created\_at}
+  \entity{users}{0,0}{users}{\PK id\\ email (unique)\\ password\_hash\\ role}
+  \entity{documents}{4.4,0}{documents}{\PK id\\ \FK uploaded\_by\\ title, category, version\\ status, is\_synthetic\\ \FK superseded\_by}
+  \entity{chunks}{9,0}{document\_chunks}{\PK id\\ \FK document\_id\\ section, page\\ content\\ embedding vector(384)\\ content\_tsv tsvector}
+  % Row 2
+  \entity{sess}{-4.2,-4.4}{sessions}{\PK id (random token)\\ \FK user\_id\\ expires\_at}
+  \entity{conversations}{0,-4.4}{conversations}{\PK id\\ \FK user\_id\\ title, created\_at}
+  \entity{jobs}{4.4,-4.4}{ingestion\_jobs}{\PK id\\ \FK document\_id\\ state, attempts, error\\ created\_at, updated\_at}
+  \entity{notices}{9,-4.4}{notices}{\PK id\\ \FK published\_by\\ title, body\\ audience, published\_at}
+  % Row 3
+  \entity{messages}{0,-8.4}{messages}{\PK id\\ \FK conversation\_id\\ role, content\\ sources (jsonb)}
+
+  \relate{audit.east}{users.west}{N}{1}
+  \relate{documents.west}{users.east}{N}{1}
+  \relate{chunks.west}{documents.east}{N}{1}
+  \relate{sess.north east}{users.south west}{N}{1}
+  \relate{conversations.north}{users.south}{N}{1}
+  \relate{jobs.north}{documents.south}{N}{1}
+  \relate{notices.north west}{users.south east}{N}{1}
+  \relate{messages.north}{conversations.south}{N}{1}
+\end{tikzpicture}

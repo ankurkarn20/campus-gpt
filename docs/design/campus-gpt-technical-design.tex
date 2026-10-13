@@ -1,0 +1,706 @@
+% Technical Design Document -- CampusGPT
+% Build (from this directory):  tectonic -X compile campus-gpt-technical-design.tex
+\documentclass[11pt,a4paper,oneside]{report}
+\newcommand{\DocShort}{Technical Design}
+\input{../common/preamble}
+
+\begin{document}
+
+\MakeTitlePage{Technical Design}{Document}{1.0}
+
+\pagenumbering{roman}
+\setcounter{page}{1}
+\tableofcontents
+\listoffigures
+\listoftables
+\lstlistoflistings
+
+\chapter*{Revision History}
+\addcontentsline{toc}{chapter}{Revision History}
+\begin{tabularx}{\textwidth}{|c|Y|Y|}
+\hline
+\textbf{Date} & \textbf{Change} & \textbf{Reason for Changes}\\
+\hline
+Tue, 13 Oct 2026 & Version 1.0. Technical diagrams, inter-process communication design,
+programming concepts and library selection. & First submission for evaluation, alongside
+SRS version 1.1.\\
+\hline
+\end{tabularx}
+
+\chapter*{Document Conventions}
+\addcontentsline{toc}{chapter}{Document Conventions}
+\begin{itemize}
+  \item This document describes \emph{how} CampusGPT is built. \emph{What} it must do is
+        specified in the Software Requirements Specification (SRS); requirement IDs such
+        as \textbf{FR-08} refer to that document.
+  \item Code listings are design sketches in Python and SQL. They show the intended
+        structure; identifiers may change during implementation.
+  \item Numbered channel markers such as \circled{3} identify the same inter-process
+        communication channel in every diagram and table.
+  \item All student records and policy documents are synthetic (fictional).
+\end{itemize}
+
+% ===========================================================================
+\clearpage
+\pagenumbering{arabic}
+\setcounter{page}{1}
+\chapter{Introduction}
+
+\section{Purpose}
+CampusGPT is an AI-powered helpdesk that answers university students' questions from two
+sources: their own records, read through permission-checked backend tools, and policy
+documents, searched with Retrieval-Augmented Generation (RAG)~\cite{lewis2020rag}. This
+document presents the technical design: the system's structure and data, the processes
+that make up the running system and how they communicate, the programming concepts used to
+build it, and the libraries chosen.
+
+\section{Evaluation Components}
+Table~\ref{tab:mapping} shows where each evaluated component is addressed.
+
+\begin{table}[H]
+\centering
+\caption{Evaluation components and where they are addressed}
+\label{tab:mapping}
+\begin{tabularx}{\textwidth}{@{}lYc@{}}
+\toprule
+\textbf{Component} & \textbf{Content} & \textbf{Chapter}\\
+\midrule
+Technical Diagram & System architecture, Level-1 DFD, sequence diagram, ER diagrams,
+process view, job state machine & 2, 3\\
+Programming Concepts & Object-oriented design, design patterns, asynchronous programming,
+generators, validation, transactions, data structures, testing & 4\\
+Inter-Process Communication & Seven IPC mechanisms across five processes, with the
+document-ingestion pipeline as the worked example & 3\\
+Libraries & Each library's purpose, the alternative considered, and the reason for the
+choice & 5\\
+SRS Document & Submitted separately (version 1.1) & --\\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\section{Design Principles}
+\begin{enumerate}[itemsep=1pt]
+  \item \textbf{The language model never touches the database.} It can only request one of
+        a fixed set of read-only tools; the backend checks permission and supplies the
+        student's identity from the login session.
+  \item \textbf{Facts and calculations come from code.} Numbers are read from PostgreSQL and
+        computed deterministically; the model selects tools and words the answer.
+  \item \textbf{Slow work runs in a separate process.} Document ingestion is handed to a
+        worker process so that chat requests are never blocked.
+  \item \textbf{One database for everything.} PostgreSQL stores records, vectors, full-text
+        indexes and the job queue, and also carries notifications between processes.
+  \item \textbf{Replaceable external parts.} The LLM provider and the university data
+        source sit behind interfaces and can be swapped by configuration.
+\end{enumerate}
+
+% ===========================================================================
+\chapter{Technical Diagrams}
+
+\section{System Architecture}
+Figure~\ref{fig:arch} shows CampusGPT as four tiers. Grey arrows are function calls inside
+one process; black arrows, numbered \circled{1}--\circled{4}, cross a process boundary and
+are detailed in Chapter~\ref{ch:ipc}.
+
+\begin{figure}[H]
+\centering
+\resizebox{\textwidth}{!}{\input{../diagrams/architecture}}
+\caption{System architecture of CampusGPT.}
+\label{fig:arch}
+\end{figure}
+
+\begin{itemize}[itemsep=1pt]
+  \item \textbf{Client tier.} A Next.js application with a student portal (dashboard and
+        chat) and an admin console (document upload and status).
+  \item \textbf{Application tier.} One FastAPI process. Every request passes the
+        authentication and role check first. The chat orchestrator runs the tool loop with
+        the LLM, the tool registry executes permitted tools, and the retrieval service
+        performs hybrid search using a locally loaded embedding model.
+  \item \textbf{Ingestion worker.} A separate Python process that converts uploaded
+        documents into searchable chunks, so CPU-heavy embedding never slows down chat.
+  \item \textbf{Data tier.} PostgreSQL~16 with the pgvector extension~\cite{pgvector} holds
+        academic records, document chunks with vectors, the job queue and logs.
+\end{itemize}
+
+\section{Data Flow Diagram (Level 1)}
+The Level-0 context diagram appears in the SRS. Figure~\ref{fig:dfd} decomposes the system
+into five processes and five data stores, following DeMarco's structured-analysis
+notation~\cite{demarco1978}. Every data flow passes through a process; no external entity
+reads or writes a data store directly.
+
+\begin{figure}[H]
+\centering
+\resizebox{\textwidth}{!}{\input{../diagrams/dfd-level1}}
+\caption{Level-1 Data Flow Diagram of CampusGPT.}
+\label{fig:dfd}
+\end{figure}
+
+\section{Sequence Diagram: Answering a Question}
+Figure~\ref{fig:seq} traces the question ``Can I sit for my DBMS exam?'' from a student
+with 41 of 60 classes attended. The orchestrator first obtains the student's attendance,
+then the relevant policy text, and only then asks the model for an answer. The student
+identifier is added by the orchestrator, never by the model, and every citation is checked
+against the chunks that were actually retrieved.
+
+\begin{figure}[H]
+\centering
+\resizebox{\textwidth}{!}{\input{../diagrams/sequence-chat}}
+\caption{Sequence diagram for a question that needs both records and policy.}
+\label{fig:seq}
+\end{figure}
+
+\clearpage
+\section{Database Design (ER Diagrams)}
+The schema follows the relational model~\cite{codd1970} and is drawn in entity--relationship
+form~\cite{chen1976}. Figure~\ref{fig:er-academic} shows the academic records and
+Figure~\ref{fig:er-platform} the tables supporting authentication, documents and chat. The
+\texttt{users} table appears in both figures.
+
+\begin{figure}[H]
+\centering
+\resizebox{\textwidth}{!}{\input{../diagrams/er-academic}}
+\caption{ER diagram: academic records.}
+\label{fig:er-academic}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\resizebox{0.92\textwidth}{!}{\input{../diagrams/er-platform}}
+\caption{ER diagram: authentication, documents and chat.}
+\label{fig:er-platform}
+\end{figure}
+
+\paragraph{Design decisions.}
+\begin{itemize}[itemsep=1pt]
+  \item The schema is in third normal form. Derived values such as attendance percentage
+        are computed by a view (\texttt{attendance\_summary}) instead of being stored, so
+        they can never disagree with the underlying records.
+  \item Attendance is stored per class session, which allows the calculator to answer
+        ``how many more classes'' exactly and lets the generator create realistic patterns.
+  \item Integrity is enforced by the database: foreign keys, \texttt{UNIQUE} constraints
+        (one enrollment per student per offering), and \texttt{CHECK} constraints (amounts
+        $\ge 0$, marks $\le$ maximum).
+  \item Indexes: B-tree indexes on every foreign key and on \texttt{(student\_id)} filters;
+        an HNSW index~\cite{malkov2020hnsw} on \texttt{embedding}; a GIN index on
+        \texttt{content\_tsv} for full-text search.
+  \item Every generated row carries \texttt{is\_synthetic = true}, as required by FR-02.
+\end{itemize}
+
+Table~\ref{tab:sizes} lists the planned dataset size for 5,000 students.
+
+\begin{table}[H]
+\centering
+\caption{Planned table sizes for 5,000 synthetic students (approximate)}
+\label{tab:sizes}
+\begin{tabular}{@{}lrlr@{}}
+\toprule
+\textbf{Table} & \textbf{Rows} & \textbf{Table} & \textbf{Rows}\\
+\midrule
+students        & 5,000     & class\_sessions & 18,000\\
+faculty         & 150       & attendance      & 1,350,000\\
+courses         & 180       & assignments     & 1,600\\
+course\_offerings & 400     & submissions     & 110,000\\
+enrollments     & 30,000    & exams           & 800\\
+invoices        & 10,000    & payments        & 9,000\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+% ===========================================================================
+\chapter{Inter-Process Communication}
+\label{ch:ipc}
+
+\section{Processes in the System}
+At run time CampusGPT consists of five cooperating operating-system processes on the
+server side of the browser (Figure~\ref{fig:proc}): the Next.js server, the FastAPI server,
+the ingestion worker, the PostgreSQL server (which itself forks one backend process per
+connection), and the remote LLM service. They share no memory; all cooperation happens
+through the channels numbered \circled{1}--\circled{7}.
+
+\begin{figure}[H]
+\centering
+\resizebox{\textwidth}{!}{\input{../diagrams/ipc-processes}}
+\caption{Process view with inter-process communication channels.}
+\label{fig:proc}
+\end{figure}
+
+\section{IPC Mechanisms}
+Table~\ref{tab:ipc} lists every mechanism, the processes it connects, its communication
+pattern, and the reason for choosing it~\cite{stevens1999ipc}.
+
+\begin{longtable}{@{}>{\raggedright\arraybackslash}p{0.6cm}>{\raggedright\arraybackslash}p{3.1cm}>{\raggedright\arraybackslash}p{2.6cm}>{\raggedright\arraybackslash}p{2.6cm}>{\raggedright\arraybackslash}p{5.3cm}@{}}
+\caption{IPC mechanisms used in CampusGPT}\label{tab:ipc}\\
+\toprule
+\textbf{\#} & \textbf{Mechanism} & \textbf{Between} & \textbf{Pattern} & \textbf{Why}\\
+\midrule
+\endfirsthead
+\toprule
+\textbf{\#} & \textbf{Mechanism} & \textbf{Between} & \textbf{Pattern} & \textbf{Why}\\
+\midrule
+\endhead
+\bottomrule
+\endfoot
+\circled{1} & HTTP REST with JSON~\cite{fielding2000rest}, plus Server-Sent
+Events~\cite{whatwg-sse} & Browser $\leftrightarrow$ FastAPI & Request--response; server
+push stream & Stateless and universal. SSE streams the answer as it is generated, which
+lowers perceived latency without the complexity of WebSockets.\\
+\circled{2} & PostgreSQL wire protocol over TCP or a Unix domain socket & FastAPI, worker
+$\leftrightarrow$ PostgreSQL & Request--response through a connection pool & Reusing
+connections avoids a new server process per query; parameterised queries prevent SQL
+injection.\\
+\circled{3} & \texttt{LISTEN}/\allowbreak\texttt{NOTIFY} \cite{pg-notify} on channel
+\texttt{ingest\_jobs} & FastAPI $\rightarrow$ PostgreSQL $\rightarrow$ worker & Asynchronous
+publish--subscribe & Wakes the worker instantly without busy polling. A notification sent
+inside a transaction is delivered only if the transaction commits.\\
+\circled{4} & HTTPS with JSON & FastAPI $\rightarrow$ LLM provider & Remote request--response
+with timeout and retry & The only channel that leaves the machine; carries the question,
+tool definitions and retrieved text, never raw database access.\\
+\circled{5} & Shared \texttt{ingestion\_jobs} table with row locks
+(\texttt{FOR UPDATE SKIP LOCKED})~\cite{pg-select} & FastAPI, worker & Shared state with
+mutual exclusion & A durable queue: jobs survive crashes, and each job is claimed by exactly
+one worker even if several run.\\
+\circled{6} & HTTP & Browser $\leftrightarrow$ Next.js server & Request--response & Delivers
+pages and JavaScript bundles.\\
+\circled{7} & POSIX signals (\texttt{SIGTERM}, \texttt{SIGINT}) & Operating system / process
+manager $\rightarrow$ FastAPI, worker & Asynchronous notification & Graceful shutdown: the
+worker finishes the current job and the server drains open requests before exiting.\\
+\end{longtable}
+
+\paragraph{Why NOTIFY together with a table.} PostgreSQL does not store notifications for
+processes that are not listening, so \texttt{NOTIFY} alone would lose jobs uploaded while
+the worker is stopped. The table is therefore the durable source of truth, and the
+notification is only a wake-up signal. As a safety net, the worker also checks the table
+every 30 seconds.
+
+\paragraph{Why not a separate message broker.} Redis, RabbitMQ or Celery would add another
+server process and its memory to an 8\,GB development laptop, while PostgreSQL already
+provides durable storage, row locking and publish--subscribe.
+
+\section{Worked Example: Document Ingestion}
+Figure~\ref{fig:jobs} shows the life cycle of an ingestion job, and the steps below follow
+one upload across process boundaries.
+
+\begin{figure}[H]
+\centering
+\resizebox{0.85\textwidth}{!}{\input{../diagrams/job-states}}
+\caption{State machine of an ingestion job.}
+\label{fig:jobs}
+\end{figure}
+
+\begin{algobox}{Ingestion across processes}
+\begin{enumerate}[leftmargin=*,itemsep=1pt]
+  \item \textbf{Browser $\rightarrow$ FastAPI \circled{1}:} the administrator uploads a PDF
+        with \texttt{POST /admin/documents}.
+  \item \textbf{FastAPI $\rightarrow$ PostgreSQL \circled{2}:} in one transaction, insert the
+        \texttt{documents} row and a \texttt{queued} job, then execute
+        \texttt{NOTIFY ingest\_jobs} \circled{3}. The API replies \texttt{202 Accepted}
+        immediately.
+  \item \textbf{PostgreSQL $\rightarrow$ worker \circled{3}:} on commit, the listening worker
+        wakes up.
+  \item \textbf{Worker $\rightarrow$ PostgreSQL \circled{5}:} claim the oldest queued job with
+        \texttt{FOR UPDATE SKIP LOCKED} and set it to \texttt{processing}.
+  \item \textbf{Worker (local):} extract text, clean it, split it into chunks and embed them.
+  \item \textbf{Worker $\rightarrow$ PostgreSQL \circled{2}:} in one transaction, insert all
+        chunks, mark the previous document version as superseded, and set the job to
+        \texttt{done}.
+  \item \textbf{Browser $\rightarrow$ FastAPI \circled{1}:} the admin console polls
+        \texttt{GET /admin/documents/\{id\}} every two seconds and shows the new status.
+\end{enumerate}
+\end{algobox}
+
+\noindent\begin{minipage}{\linewidth}
+\begin{lstlisting}[language=SQL, caption={Enqueueing and claiming a job (shared table and NOTIFY)}, label=lst:queue]
+-- FastAPI, inside the upload transaction
+INSERT INTO ingestion_jobs (document_id, state) VALUES (:doc_id, 'queued');
+SELECT pg_notify('ingest_jobs', :doc_id::text);   -- delivered on COMMIT
+
+-- Worker: claim one job; rows locked by another worker are skipped
+UPDATE ingestion_jobs
+   SET state = 'processing', attempts = attempts + 1, updated_at = now()
+ WHERE id = (SELECT id FROM ingestion_jobs
+              WHERE state = 'queued'
+              ORDER BY created_at
+              LIMIT 1
+              FOR UPDATE SKIP LOCKED)
+RETURNING id, document_id;
+\end{lstlisting}
+\end{minipage}
+
+
+\noindent\begin{minipage}{\linewidth}
+\begin{lstlisting}[language=Python, caption={Worker loop: LISTEN with a polling safety net}, label=lst:worker]
+async def run_worker(dsn: str) -> None:
+    conn = await psycopg.AsyncConnection.connect(dsn, autocommit=True)
+    await conn.execute("LISTEN ingest_jobs")
+    while not shutdown.is_set():                  # set by the SIGTERM handler
+        while (job := await claim_job(conn)) is not None:
+            await process(job)                    # extract, chunk, embed, store
+        # Sleep until a notification arrives, or 30 s at most
+        async for _ in conn.notifies(timeout=30, stop_after=1):
+            pass
+\end{lstlisting}
+\end{minipage}
+
+
+\section{Streaming Answers to the Browser}
+For each question, FastAPI returns a \texttt{text/event-stream} response. The
+orchestrator emits typed events: \texttt{status} (for example ``Checking your
+attendance\ldots''), \texttt{token} (a piece of the answer), \texttt{sources} (database and
+document citations), \texttt{done} and \texttt{error}. Because the browser's
+\texttt{EventSource} API supports only \texttt{GET}, the frontend sends a \texttt{POST}
+with \texttt{fetch} and reads the event stream from the response body.
+
+\section{Synchronisation and Failure Handling}
+\begin{itemize}[itemsep=1pt]
+  \item \textbf{Timeouts and retries.} LLM calls time out after 30 seconds and are retried
+        at most twice with exponential back-off; afterwards the chat shows a clear error
+        while all other pages keep working (FR-16).
+  \item \textbf{Worker crash.} A job left in \texttt{processing} for more than ten minutes
+        is returned to \texttt{queued} on the next claim, up to three attempts.
+  \item \textbf{Atomicity.} Chunks and the job status are written in one transaction, so a
+        failure never leaves a half-indexed document visible to search.
+  \item \textbf{Back-pressure.} Connection pools cap the number of PostgreSQL backend
+        processes; rate limits cap chat requests per user (NFR-S5).
+\end{itemize}
+
+% ===========================================================================
+\chapter{Programming Concepts}
+
+Table~\ref{tab:concepts} lists the programming concepts used in CampusGPT and where each
+appears; selected concepts are illustrated by the listings that follow.
+
+\begin{longtable}{@{}>{\raggedright\arraybackslash}p{3.6cm}>{\raggedright\arraybackslash}p{5.9cm}>{\raggedright\arraybackslash}p{4.9cm}@{}}
+\caption{Programming concepts and where they are applied}\label{tab:concepts}\\
+\toprule
+\textbf{Concept} & \textbf{Where it is used} & \textbf{Purpose}\\
+\midrule
+\endfirsthead
+\toprule
+\textbf{Concept} & \textbf{Where it is used} & \textbf{Purpose}\\
+\midrule
+\endhead
+\bottomrule
+\endfoot
+Abstraction, inheritance, polymorphism & \texttt{LLMProvider} abstract class with Groq,
+Gemini and Ollama subclasses (Listing~\ref{lst:provider}) & Orchestrator code is identical
+for every provider.\\
+Design patterns~\cite{gamma1994} & Adapter (LLM provider, university data source),
+Strategy (provider chosen by configuration), Registry (tools), Repository (data access),
+Publish--subscribe (\texttt{LISTEN}/\texttt{NOTIFY}) & Known solutions with clear
+responsibilities.\\
+Decorators and higher-order functions~\cite{pep318} & \texttt{@tool} registration
+(Listing~\ref{lst:tools}); FastAPI route decorators & Declarative registration without
+boilerplate.\\
+Dependency injection & FastAPI \texttt{Depends} for the current user and database session &
+Testable handlers; authentication cannot be forgotten.\\
+Asynchronous programming~\cite{pep492} & \texttt{async}/\texttt{await} handlers, database
+driver and HTTP client & Many concurrent requests on one process while waiting on I/O.\\
+Generators and streaming~\cite{pep525} & Async generator producing SSE events
+(Listing~\ref{lst:sse}); batch generators in the data generator & Constant memory, output
+sent as soon as it exists.\\
+Type hints and validation & Pydantic models for requests, responses and tool arguments;
+TypeScript on the frontend & Invalid input rejected at the boundary; JSON Schema for tool
+definitions generated automatically.\\
+Exception handling & Custom hierarchy (\texttt{ToolNotPermitted},
+\texttt{ToolValidationError}, \texttt{ProviderUnavailable}) mapped to HTTP status codes &
+Consistent, safe error messages.\\
+Transactions and ACID & Upload, ingestion and chat logging run as single transactions &
+No partial writes.\\
+Concurrency control & Row locks with \texttt{SKIP LOCKED}; \texttt{UNIQUE} constraints for
+idempotent inserts & Correct behaviour with several workers.\\
+Data structures and algorithms & Hash map (tool registry), binary heap (weekly-summary
+priority queue), Reciprocal Rank Fusion~\cite{cormack2009rrf}, cosine similarity, sliding-window
+chunking & Efficient lookup, ranking and retrieval.\\
+Exact arithmetic & \texttt{fractions.Fraction} in the attendance calculator
+(Listing~\ref{lst:calc}) & No floating-point rounding errors in eligibility decisions.\\
+Secure programming & Argon2id hashing~\cite{biryukov2016argon2}, CSPRNG session tokens
+(\texttt{secrets}), parameterised SQL, role checks~\cite{sandhu1996rbac} & Defence against
+credential theft, injection and privilege escalation.\\
+Text processing & Regular expressions for cleaning extracted PDF text & Removes headers,
+footers and broken hyphenation before chunking.\\
+Reproducible randomness & Seeded Faker and NumPy generators & Identical synthetic dataset on
+every machine.\\
+Automated testing & pytest fixtures, parametrised tests, a rolled-back transaction per test
+& Fast, isolated, repeatable tests.\\
+Frontend components and hooks & React components, \texttt{useState}/\texttt{useEffect},
+stream reading with \texttt{ReadableStream} & Responsive UI that renders answers while they
+stream.\\
+\end{longtable}
+
+\noindent\begin{minipage}{\linewidth}
+\begin{lstlisting}[language=Python, caption={Abstraction and polymorphism: the LLM provider adapter}, label=lst:provider]
+class LLMProvider(ABC):
+    """Interface every model provider implements."""
+
+    @abstractmethod
+    async def complete(self, messages: list[Message],
+                       tools: list[ToolSpec]) -> LLMReply: ...
+
+class GroqProvider(LLMProvider):
+    async def complete(self, messages, tools):
+        resp = await self.http.post("/chat/completions",
+                                    json=to_openai_format(messages, tools))
+        resp.raise_for_status()
+        return LLMReply.from_openai_format(resp.json())
+
+def get_provider(settings: Settings) -> LLMProvider:      # Strategy by configuration
+    providers = {"groq": GroqProvider, "gemini": GeminiProvider,
+                 "ollama": OllamaProvider}
+    return providers[settings.llm_provider](settings)
+\end{lstlisting}
+\end{minipage}
+
+
+\noindent\begin{minipage}{\linewidth}
+\begin{lstlisting}[language=Python, caption={Decorator-based tool registry with server-side permission checks}, label=lst:tools]
+TOOLS: dict[str, Tool] = {}
+
+def tool(name: str, roles: set[str], args: type[BaseModel]):
+    def register(fn):
+        TOOLS[name] = Tool(name=name, roles=roles, args=args, fn=fn)
+        return fn
+    return register
+
+class AttendanceArgs(BaseModel):
+    course: str | None = None
+
+@tool("get_my_attendance", roles={"student"}, args=AttendanceArgs)
+async def get_my_attendance(db: AsyncSession, student_id: int, a: AttendanceArgs):
+    return await attendance_repo.summary(db, student_id, course=a.course)
+
+async def execute(call: ToolCall, user: User, db: AsyncSession):
+    spec = TOOLS.get(call.name)
+    if spec is None or user.role not in spec.roles:
+        raise ToolNotPermitted(call.name)            # the model cannot bypass this
+    args = spec.args.model_validate(call.arguments)  # schema validation
+    return await spec.fn(db, user.student_id, args)  # identity from the session
+\end{lstlisting}
+\end{minipage}
+
+
+\noindent\begin{minipage}{\linewidth}
+\begin{lstlisting}[language=Python, caption={Dependency injection and an async generator streaming SSE events}, label=lst:sse]
+@router.post("/chat")
+async def chat(req: ChatRequest,
+               user: User = Depends(current_user),     # 401 if not logged in
+               db: AsyncSession = Depends(get_db)):
+    async def events():
+        async for event in orchestrator.run(req.question, user, db):
+            yield {"event": event.kind, "data": event.model_dump_json()}
+    return EventSourceResponse(events())
+\end{lstlisting}
+\end{minipage}
+
+
+\noindent\begin{minipage}{\linewidth}
+\begin{lstlisting}[language=Python, caption={Deterministic attendance calculation with exact arithmetic}, label=lst:calc]
+def classes_needed(attended: int, held: int,
+                   target: Fraction = Fraction(3, 4)) -> int:
+    """Smallest x such that (attended + x) / (held + x) >= target."""
+    if held == 0 or Fraction(attended, held) >= target:
+        return 0
+    return math.ceil((target * held - attended) / (1 - target))
+
+assert classes_needed(41, 60) == 16      # 57 / 76 = 75%
+\end{lstlisting}
+\end{minipage}
+
+
+% ===========================================================================
+\chapter{Libraries and Frameworks}
+
+Table~\ref{tab:libs} lists every library CampusGPT depends on. All are free and open source;
+exact versions are pinned in \texttt{requirements.txt} and \texttt{package-lock.json}.
+
+\begin{longtable}{@{}>{\raggedright\arraybackslash}p{2.9cm}>{\raggedright\arraybackslash}p{4.4cm}>{\raggedright\arraybackslash}p{2.6cm}>{\raggedright\arraybackslash}p{4.5cm}@{}}
+\caption{Libraries, their purpose, and the reason for each choice}\label{tab:libs}\\
+\toprule
+\textbf{Library} & \textbf{Purpose in CampusGPT} & \textbf{Alternative} & \textbf{Reason for
+choice}\\
+\midrule
+\endfirsthead
+\toprule
+\textbf{Library} & \textbf{Purpose in CampusGPT} & \textbf{Alternative} & \textbf{Reason for
+choice}\\
+\midrule
+\endhead
+\bottomrule
+\endfoot
+\multicolumn{4}{@{}l}{\textit{Backend}}\\
+FastAPI~\cite{fastapi} & HTTP API, routing, dependency injection, OpenAPI documentation &
+Flask, Django & Asynchronous by design; validation and API docs built in.\\
+Uvicorn & ASGI server that runs the FastAPI process & Gunicorn (WSGI) & Standard
+asynchronous server for FastAPI.\\
+Pydantic~\cite{pydantic} & Schemas for requests, responses and tool arguments &
+marshmallow & Integrated with FastAPI; exports JSON Schema used as LLM tool definitions.\\
+SQLAlchemy~2 \cite{sqlalchemy} & ORM and query builder & Raw SQL strings & Typed, composable
+queries with bound parameters.\\
+psycopg~3~\cite{psycopg} & PostgreSQL driver: async queries, \texttt{LISTEN}/\texttt{NOTIFY},
+\texttt{COPY} & asyncpg & Supports all three IPC features we need and is SQLAlchemy's
+standard dialect.\\
+Alembic & Versioned database migrations & Hand-written SQL scripts & Repeatable,
+reversible schema changes.\\
+argon2-cffi & Password hashing with Argon2id & bcrypt & Memory-hard algorithm recommended
+by OWASP~\cite{owasp-passwords}.\\
+httpx & Async HTTP client for LLM providers & requests, vendor SDKs & Non-blocking; one
+client for all providers avoids vendor lock-in.\\
+sse-starlette & Server-Sent Events responses & WebSockets & One-way streaming is enough and
+simpler to secure.\\
+slowapi & Rate limiting per user and IP & Custom middleware & Decorator-based limits per
+route.\\
+\multicolumn{4}{@{}l}{\textit{AI and document processing}}\\
+sentence-\allowbreak transformers \cite{reimers2019sbert} & Runs the BGE-small embedding
+model~\cite{xiao2024cpack} on the CPU & Paid embedding APIs & Free, offline, and no document
+text leaves the machine.\\
+pypdf & PDF text extraction & PyMuPDF, pdfplumber & Pure Python with a permissive licence
+(PyMuPDF is AGPL).\\
+\multicolumn{4}{@{}l}{\textit{Synthetic data generation}}\\
+Faker (\texttt{en\_IN}) & Indian names, phone numbers and addresses & Hand-written name
+lists & Locale-aware, seedable, large variety.\\
+NumPy & Statistical distributions for attendance, marks and fee payments & Python
+\texttt{random} & Fast vectorised sampling with a seeded generator.\\
+\multicolumn{4}{@{}l}{\textit{Testing and quality}}\\
+pytest & Unit, integration and security tests & unittest & Fixtures and parametrisation.\\
+Ruff & Linting and formatting & flake8 + black & One fast tool for both.\\
+\multicolumn{4}{@{}l}{\textit{Frontend}}\\
+Next.js~\cite{nextjs} & React framework: routing and production builds & Vite + React &
+File-based routing and built-in optimisation.\\
+React~\cite{react} & Component-based user interface & Vue & Largest ecosystem; required by
+Next.js.\\
+TypeScript & Static typing for frontend code & JavaScript & Catches type errors at build
+time.\\
+Tailwind CSS & Styling with a consistent design scale & Bootstrap & Small output, consistent
+spacing and colour tokens.\\
+react-markdown & Renders formatted chat answers & Raw HTML insertion & Does not render raw
+HTML, preventing cross-site scripting.\\
+Recharts & Attendance and fee charts on the dashboard & Chart.js & Native React
+components.\\
+\multicolumn{4}{@{}l}{\textit{Infrastructure}}\\
+PostgreSQL~16 \cite{postgresql} & Relational database, full-text search, job queue,
+notifications & MySQL, MongoDB & One system provides integrity, search and IPC.\\
+pgvector~\cite{pgvector} & Vector column type and HNSW index & Pinecone, ChromaDB, FAISS &
+No separate vector database; vectors share transactions with their metadata.\\
+\end{longtable}
+
+% ===========================================================================
+\renewcommand{\bibname}{References}
+\begin{thebibliography}{99}
+\addcontentsline{toc}{chapter}{References}
+
+\bibitem{lewis2020rag}
+P.~Lewis \emph{et al.}, ``Retrieval-augmented generation for knowledge-intensive NLP
+tasks,'' in \emph{Advances in Neural Information Processing Systems (NeurIPS 33)}, 2020,
+pp.~9459--9474.
+
+\bibitem{pgvector}
+A.~Kane, ``pgvector: Open-source vector similarity search for Postgres,'' 2024. [Online].
+Available: \url{https://github.com/pgvector/pgvector}
+
+\bibitem{demarco1978}
+T.~DeMarco, \emph{Structured Analysis and System Specification}. New York, NY, USA: Yourdon
+Press, 1978.
+
+\bibitem{codd1970}
+E.~F. Codd, ``A relational model of data for large shared data banks,''
+\emph{Communications of the ACM}, vol.~13, no.~6, pp.~377--387, 1970.
+
+\bibitem{chen1976}
+P.~P.-S. Chen, ``The entity-relationship model---toward a unified view of data,''
+\emph{ACM Transactions on Database Systems}, vol.~1, no.~1, pp.~9--36, 1976.
+
+\bibitem{malkov2020hnsw}
+Y.~A. Malkov and D.~A. Yashunin, ``Efficient and robust approximate nearest neighbor search
+using hierarchical navigable small world graphs,'' \emph{IEEE Trans. Pattern Analysis and
+Machine Intelligence}, vol.~42, no.~4, pp.~824--836, 2020.
+
+\bibitem{stevens1999ipc}
+W.~R. Stevens, \emph{UNIX Network Programming, Volume 2: Interprocess Communications},
+2nd~ed. Upper Saddle River, NJ, USA: Prentice Hall, 1999.
+
+\bibitem{fielding2000rest}
+R.~T. Fielding, ``Architectural styles and the design of network-based software
+architectures,'' Ph.D. dissertation, University of California, Irvine, 2000.
+
+\bibitem{whatwg-sse}
+WHATWG, ``HTML Living Standard: Server-sent events.'' [Online]. Available:
+\url{https://html.spec.whatwg.org/multipage/server-sent-events.html}
+
+\bibitem{pg-notify}
+The PostgreSQL Global Development Group, ``NOTIFY,'' \emph{PostgreSQL 16 Documentation}.
+[Online]. Available: \url{https://www.postgresql.org/docs/16/sql-notify.html}
+
+\bibitem{pg-select}
+The PostgreSQL Global Development Group, ``SELECT: The locking clause,'' \emph{PostgreSQL 16
+Documentation}. [Online]. Available:
+\url{https://www.postgresql.org/docs/16/sql-select.html}
+
+\bibitem{gamma1994}
+E.~Gamma, R.~Helm, R.~Johnson, and J.~Vlissides, \emph{Design Patterns: Elements of Reusable
+Object-Oriented Software}. Reading, MA, USA: Addison-Wesley, 1994.
+
+\bibitem{pep318}
+K.~D. Smith \emph{et al.}, ``PEP 318 -- Decorators for functions and methods,'' 2003.
+[Online]. Available: \url{https://peps.python.org/pep-0318/}
+
+\bibitem{pep492}
+Y.~Selivanov, ``PEP 492 -- Coroutines with async and await syntax,'' 2015. [Online].
+Available: \url{https://peps.python.org/pep-0492/}
+
+\bibitem{pep525}
+Y.~Selivanov, ``PEP 525 -- Asynchronous generators,'' 2016. [Online]. Available:
+\url{https://peps.python.org/pep-0525/}
+
+\bibitem{cormack2009rrf}
+G.~V. Cormack, C.~L.~A. Clarke, and S.~Buettcher, ``Reciprocal rank fusion outperforms
+Condorcet and individual rank learning methods,'' in \emph{Proc. 32nd ACM SIGIR}, 2009,
+pp.~758--759.
+
+\bibitem{biryukov2016argon2}
+A.~Biryukov, D.~Dinu, and D.~Khovratovich, ``Argon2: New generation of memory-hard functions
+for password hashing and other applications,'' in \emph{Proc. IEEE European Symposium on
+Security and Privacy (EuroS\&P)}, 2016, pp.~292--302.
+
+\bibitem{sandhu1996rbac}
+R.~S. Sandhu, E.~J. Coyne, H.~L. Feinstein, and C.~E. Youman, ``Role-based access control
+models,'' \emph{Computer}, vol.~29, no.~2, pp.~38--47, 1996.
+
+\bibitem{fastapi}
+S.~Ram\'irez, ``FastAPI documentation.'' [Online]. Available:
+\url{https://fastapi.tiangolo.com/}
+
+\bibitem{pydantic}
+Pydantic, ``Pydantic documentation.'' [Online]. Available:
+\url{https://docs.pydantic.dev/}
+
+\bibitem{sqlalchemy}
+SQLAlchemy, ``SQLAlchemy 2.0 documentation.'' [Online]. Available:
+\url{https://docs.sqlalchemy.org/en/20/}
+
+\bibitem{psycopg}
+D.~Varrazzo, ``Psycopg 3 documentation.'' [Online]. Available:
+\url{https://www.psycopg.org/psycopg3/docs/}
+
+\bibitem{owasp-passwords}
+OWASP Foundation, ``Password Storage Cheat Sheet.'' [Online]. Available:
+\url{https://cheatsheetseries.owasp.org/cheatsheets/Password_Storage_Cheat_Sheet.html}
+
+\bibitem{reimers2019sbert}
+N.~Reimers and I.~Gurevych, ``Sentence-BERT: Sentence embeddings using Siamese
+BERT-networks,'' in \emph{Proc. EMNLP-IJCNLP}, 2019, pp.~3982--3992.
+
+\bibitem{xiao2024cpack}
+S.~Xiao \emph{et al.}, ``C-Pack: Packed resources for general Chinese embeddings,'' in
+\emph{Proc. 47th ACM SIGIR}, 2024, pp.~641--649.
+
+\bibitem{nextjs}
+Vercel, ``Next.js documentation.'' [Online]. Available: \url{https://nextjs.org/docs}
+
+\bibitem{react}
+Meta Open Source, ``React documentation.'' [Online]. Available: \url{https://react.dev/}
+
+\bibitem{postgresql}
+The PostgreSQL Global Development Group, ``PostgreSQL 16 documentation.'' [Online].
+Available: \url{https://www.postgresql.org/docs/16/}
+
+\end{thebibliography}
+
+\end{document}

@@ -1,0 +1,43 @@
+% Process view: OS processes and the IPC channels between them
+\begin{tikzpicture}[
+  font=\sffamily\scriptsize,
+  proc/.style={draw=black!70, thick, rounded corners=3pt, align=center,
+               text width=3.5cm, minimum height=1.35cm, inner sep=3pt},
+  arr/.style={-{Latex[length=2mm]}, thick, draw=black!75},
+  biarr/.style={{Latex[length=2mm]}-{Latex[length=2mm]}, thick, draw=black!75},
+  lab/.style={font=\sffamily\tiny, fill=white, inner sep=1.5pt, align=center}]
+
+  \node[proc, fill=tierblue] (browser) at (0,3.6)
+    {\textbf{Web Browser}\\student / admin UI\\(JavaScript runtime)};
+  \node[proc, fill=tierblue] (next) at (0,7.2)
+    {\textbf{Next.js Server}\\Node.js process\\serves pages \& bundles};
+  \node[proc, fill=tiergreen] (api) at (6.4,3.6)
+    {\textbf{FastAPI Server}\\Uvicorn, Python process\\async event loop};
+  \node[proc, fill=tieramber] (worker) at (12.8,3.6)
+    {\textbf{Ingestion Worker}\\separate Python process\\one job at a time};
+  \node[proc, fill=tiergray] (pg) at (9.6,-0.6)
+    {\textbf{PostgreSQL Server}\\postmaster + one backend\\process per connection};
+  \node[proc, fill=tiergray, dashed] (llm) at (9.6,7.2)
+    {\textbf{LLM Provider}\\remote HTTPS service};
+
+  % (6) pages
+  \draw[biarr] (browser.north) -- node[lab] {\circled{6} HTTP\\pages, JS} (next.south);
+  % (1) REST + SSE
+  \draw[arr] ([yshift=5pt]browser.east) -- node[lab, above] {\circled{1} REST request (JSON)}
+    ([yshift=5pt]api.west);
+  \draw[arr] ([yshift=-8pt]api.west) -- node[lab, below] {\circled{1} response / SSE stream}
+    ([yshift=-8pt]browser.east);
+  % (4) LLM
+  \draw[biarr] (api.north east) -- node[lab, sloped, above] {\circled{4} HTTPS JSON} (llm.south west);
+  % (2) SQL connections
+  \draw[biarr] (api.south) |- node[lab, pos=0.3] {\circled{2} SQL\\connection pool} ([yshift=6pt]pg.west);
+  \draw[biarr] (worker.south) |- node[lab, pos=0.3] {\circled{2} SQL\\connection} ([yshift=6pt]pg.east);
+  % (3) NOTIFY / LISTEN
+  \draw[arr, dashed, draw=algogreen] ([xshift=-12pt]api.south east) to[out=-50, in=165]
+    node[lab, pos=0.45, text=algogreen] {\circled{3} NOTIFY\\ingest\_jobs} ([yshift=-8pt]pg.north west);
+  \draw[arr, dashed, draw=algogreen] ([yshift=-8pt]pg.north east) to[out=15, in=-130]
+    node[lab, pos=0.55, text=algogreen] {\circled{3} LISTEN\\wake-up} ([xshift=12pt]worker.south west);
+  % (5) shared job table
+  \node[lab, draw=black!40, rounded corners=2pt, text width=3.4cm, below=0.25cm of pg]
+    {\circled{5} shared \texttt{ingestion\_jobs} table:\\claimed with \texttt{FOR UPDATE SKIP LOCKED}};
+\end{tikzpicture}

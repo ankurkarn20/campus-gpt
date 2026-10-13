@@ -1,0 +1,137 @@
+% Shared preamble for CampusGPT documents (SRS, Technical Design).
+% Usage, after \documentclass:
+%   \newcommand{\DocShort}{SRS}        % left header text
+%   \input{../common/preamble}
+
+% ---------------------------------------------------------------------------
+% Team details
+% ---------------------------------------------------------------------------
+\newcommand{\Fill}[1]{\textcolor{red}{[#1]}}
+\newcommand{\MemberOne}{Ankur Karn & 500118986 & 11}
+\newcommand{\MemberTwo}{Ashmita Sharma & 500122422 & 11}
+\newcommand{\MemberThree}{Ananya Singh & 500123837 & 11}
+\newcommand{\MemberFour}{Ayushi Mishra & 500121986 & 11}
+\newcommand{\Specialization}{Cyber Security}
+\newcommand{\Mentor}{Mr.~Yogesh Rathia}
+\newcommand{\School}{School of Computer Science}
+\newcommand{\University}{UNIVERSITY OF PETROLEUM \& ENERGY STUDIES}
+\newcommand{\UniversityAddress}{Dehradun -- 248007, Uttarakhand}
+
+% ---------------------------------------------------------------------------
+% Packages
+% ---------------------------------------------------------------------------
+\usepackage[margin=2.5cm,headheight=14pt]{geometry}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage{microtype}
+\usepackage[table]{xcolor}
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage{array}
+\usepackage{longtable}
+\usepackage{enumitem}
+\usepackage{amsmath}
+\usepackage{fancyhdr}
+\usepackage{titlesec}
+\usepackage{tikz}
+\usetikzlibrary{positioning,arrows.meta,shapes.geometric,fit,calc,backgrounds}
+\usepackage{pgfgantt}
+\usepackage[most]{tcolorbox}
+\usepackage{caption}
+\usepackage{float}
+\usepackage{listings}
+\usepackage[hidelinks]{hyperref}
+\usepackage{xurl}
+
+\definecolor{algogreen}{HTML}{1F4D3A}
+\definecolor{tierblue}{HTML}{EEF3FA}
+\definecolor{tiergreen}{HTML}{EEF6F1}
+\definecolor{tieramber}{HTML}{FBF4E6}
+\definecolor{tiergray}{HTML}{F2F2F2}
+\captionsetup[table]{position=above,skip=4pt}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{6pt}
+\renewcommand{\arraystretch}{1.15}
+\newcolumntype{Y}{>{\raggedright\arraybackslash}X}
+
+% Chapter headings: "CHAPTER 1" / "APPENDIX A" above the title
+\titleformat{\chapter}[display]
+  {\normalfont\bfseries}{\large\MakeUppercase{\chaptertitlename}~\thechapter}{4pt}{\Huge}
+\titlespacing*{\chapter}{0pt}{0pt}{24pt}
+
+% Header / footer
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\itshape\DocShort}
+\fancyhead[R]{\itshape CampusGPT}
+\fancyfoot[C]{Page \thepage}
+\renewcommand{\headrulewidth}{0.4pt}
+\fancypagestyle{plain}{%
+  \fancyhf{}\fancyhead[L]{\itshape\DocShort}\fancyhead[R]{\itshape CampusGPT}%
+  \fancyfoot[C]{Page \thepage}\renewcommand{\headrulewidth}{0.4pt}}
+
+% Algorithm box
+\newtcolorbox{algobox}[1]{enhanced,breakable,colback=white,colframe=algogreen,
+  coltitle=white,fonttitle=\bfseries\sffamily,title={#1},arc=2mm,boxrule=0.6pt,
+  left=6pt,right=6pt,top=4pt,bottom=4pt}
+
+% Code listings
+\lstset{basicstyle=\ttfamily\footnotesize, columns=fullflexible, keepspaces=true,
+  frame=single, rulecolor=\color{gray!50}, backgroundcolor=\color{gray!4},
+  keywordstyle=\color{algogreen}\bfseries, commentstyle=\color{gray}\itshape,
+  stringstyle=\color{red!50!black}, showstringspaces=false, breaklines=true,
+  xleftmargin=4pt, xrightmargin=4pt, aboveskip=6pt, belowskip=6pt,
+  captionpos=t}
+\renewcommand{\lstlistingname}{Listing}
+\renewcommand{\lstlistlistingname}{List of Listings}
+
+% ---------------------------------------------------------------------------
+% Title page: \MakeTitlePage{line 1}{line 2 (may be empty)}{version}
+% ---------------------------------------------------------------------------
+\newcommand{\MakeTitlePage}[3]{%
+\hypersetup{pageanchor=false}%
+\begin{titlepage}
+\thispagestyle{empty}
+\centering
+\vspace*{0.5cm}
+{\Huge\bfseries #1\ifx&#2&\else\\[4pt] #2\fi\par}
+\vspace{1.2cm}
+{\LARGE\bfseries CampusGPT\par}
+\vspace{0.3cm}
+{\large\itshape An AI-Powered University Intelligence and Student Assistance Platform\par}
+\vspace{1cm}
+Submitted in partial fulfilment of the requirements for the award of the degree of\par
+\vspace{0.3cm}
+{\Large\bfseries Bachelor of Technology\par}
+\vspace{0.15cm}
+Computer Science and Engineering\par
+Specialization: \textbf{\Specialization}\par
+\vspace{1cm}
+{\large\bfseries Prepared by\par}
+\vspace{0.3cm}
+\begin{tabular*}{0.8\textwidth}{@{\extracolsep{\fill}}lrr}
+\toprule
+\textbf{Name} & \textbf{SAP ID} & \textbf{Batch}\\
+\midrule
+\MemberOne\\
+\MemberTwo\\
+\MemberThree\\
+\MemberFour\\
+\bottomrule
+\end{tabular*}\par
+\vspace{1cm}
+Under the guidance of\par
+\vspace{0.15cm}
+{\large\bfseries \Mentor\par}
+\textit{Project Mentor}\par
+\vfill
+{\bfseries \School\par}
+{\bfseries \University\par}
+\UniversityAddress\par
+\vspace{0.8cm}
+{\large\bfseries October 2026 \quad$|$\quad Version #3\par}
+\end{titlepage}
+\hypersetup{pageanchor=true}}
+
+% Numbered channel marker used in diagrams, e.g. \circled{1}
+\newcommand{\circled}[1]{\textbf{(#1)}}
