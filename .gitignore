@@ -24,3 +24,7 @@ out/
 .DS_Store
 .vscode/
 .idea/
+
+# LaTeX build logs
+*.log
+*.aux
