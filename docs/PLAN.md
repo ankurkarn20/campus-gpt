@@ -6,6 +6,24 @@ Living document. Update it when a decision changes.
 - **Final deadline:** ~2026-11-13 (one month of daily work)
 - **Team:** multiple members; one main development machine
 
+## Progress log
+
+### 2026-10-13 — where we left off
+**Done:** SRS v1.1, Technical Design Document, presentation (18 slides); PostgreSQL + pgvector
+set up; full schema (23 tables, migration 0001); synthetic data generator (5,000 students,
+~20 s); 12 validation checks; 20 passing tests.
+
+**Start next session with:**
+1. `make db-start` (the database does not start automatically after a reboot), then
+   `make seed` and `make test` to confirm everything works.
+2. **Authentication (activity F):** login/logout endpoints in FastAPI, Argon2id password
+   check, server-side sessions stored as token hashes in `sessions`, HTTP-only cookie,
+   role check, and tests that one student can never read another's data.
+3. Then **student APIs + dashboard (activity G)**.
+
+**Teammates (no blockers):** write the synthetic policy documents (attendance, examinations,
+fees, hostel), clearly marked fictional — needed for RAG in Week 3.
+
 ## 1. Scope
 
 ### In scope (submission version)
