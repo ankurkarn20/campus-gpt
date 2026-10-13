@@ -33,7 +33,7 @@ Example questions:
 | Frontend | Next.js (TypeScript) |
 | LLM | Free hosted API (Groq or Google Gemini) behind an adapter; optional local model via Ollama for comparison |
 | Embeddings | Small local open-source embedding model (CPU) |
-| Local infra | Docker Compose for PostgreSQL |
+| Local infra | PostgreSQL installed natively (saves memory on an 8 GB laptop) |
 
 ## Status
 
