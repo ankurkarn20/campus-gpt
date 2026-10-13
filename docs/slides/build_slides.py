@@ -226,7 +226,7 @@ SECTIONS = [
     "Abstract", "Introduction & Problem Statement", "Objectives", "Literature Review",
     "Dataset Description", "Methodology", "System Architecture", "Data Flow Diagram",
     "Inter-Process Communication", "Database Design", "Implementation: Concepts and Libraries",
-    "Security and Data Isolation", "Evaluation Plan", "SWOT Analysis", "Project Schedule",
+    "Security and Data Isolation", "SWOT Analysis", "Project Schedule",
     "Limitations, Future Work & Conclusion", "References",
 ]
 
@@ -509,28 +509,7 @@ def build(template: Path):
         "Target: **0 leaked records** in every attack test.",
     ], size=18, bullets=True, space_after=10)
 
-    # 13. Evaluation Plan ---------------------------------------------------------
-    s = content_slide(prs, title("Evaluation Plan"))
-    table(s, LEFT, 1.15, [3.0, 5.6, 3.9], [
-        ["Metric", "How it is measured", "Target or comparison"],
-        ["Answer correctness", "50 benchmark questions with expected answers",
-         "Compared across 4 configurations"],
-        ["Citation correctness", "Cited chunk actually contains the supporting text",
-         "Every citation verifiable"],
-        ["Tool-selection accuracy", "Expected vs. actual tool calls per question",
-         "Hosted vs. local model"],
-        ["Cross-student leakage", "Scripted attack suite (IDs, prompts, PDFs)",
-         "0 leaked records (NFR-S1)"],
-        ["Chat latency", "Median end-to-end answer time", "< 8 s (NFR-P4)"],
-        ["Retrieval latency", "Hybrid search time per query", "< 500 ms (NFR-P3)"],
-    ], size=14, row_h=0.5)
-    panel(s, 4.95, 1.9, "Baselines",
-          "1. Plain LLM with no university context   ·   2. RAG only (documents, no "
-          "records)   ·   3. Database tools only (no documents)   ·   4. Full "
-          "CampusGPT. Results will be reported after implementation; none are claimed yet.",
-          size=20)
-
-    # 14. SWOT Analysis --------------------------------------------------------------
+    # 13. SWOT Analysis --------------------------------------------------------------
     s = content_slide(prs, title("SWOT Analysis"))
     quads = [
         ("Strengths", ["Answers grounded in records and cited policy",
@@ -557,7 +536,7 @@ def build(template: Path):
         textbox(s, x + 0.15, y + 0.08, 5.9, 0.45, name, size=20, bold=True)
         textbox(s, x + 0.15, y + 0.58, 5.9, 2.3, items, size=18, bullets=True, space_after=4)
 
-    # 15. Project Schedule -----------------------------------------------------------
+    # 14. Project Schedule -----------------------------------------------------------
     s = content_slide(prs, title("Project Schedule"))
     picture(s, "gantt", LEFT, 1.15, 8.6, 5.95, align="left")
     textbox(s, 9.3, 1.25, 3.7, 5.8, [
@@ -569,7 +548,7 @@ def build(template: Path):
         "Full PERT table (ES, EF, LS, slack) in the SRS",
     ], size=16, bullets=True, space_after=10)
 
-    # 16. Limitations, Future Work & Conclusion -----------------------------------------
+    # 15. Limitations, Future Work & Conclusion -----------------------------------------
     s = content_slide(prs, title("Limitations, Future Work & Conclusion"))
     heading(s, LEFT, 1.10, 6.0, "Limitations")
     textbox(s, LEFT, 1.60, 6.2, 3.0, [
@@ -592,7 +571,7 @@ def build(template: Path):
           "implementation follows the 31-day plan, and evaluation will measure accuracy, "
           "citations and leakage against simpler baselines.", size=18)
 
-    # 17. References ------------------------------------------------------------------
+    # 16. References ------------------------------------------------------------------
     s = content_slide(prs, title("References"))
     textbox(s, LEFT, 1.15, WIDTH, 5.9, [
         "[1] Cormack, G. V., Clarke, C. L. A., & Buettcher, S. (2009). Reciprocal rank fusion "
