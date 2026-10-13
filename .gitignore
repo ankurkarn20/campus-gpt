@@ -28,3 +28,7 @@ out/
 # LaTeX build logs
 *.log
 *.aux
+
+# Local tool environments and generated slide images
+.venv-docs/
+docs/slides/build/

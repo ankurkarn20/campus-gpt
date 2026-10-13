@@ -1,0 +1,29 @@
+% Gantt chart of the project schedule (13 Oct -- 12 Nov 2026)
+\begin{ganttchart}[
+    hgrid, vgrid={dotted},
+    time slot format=isodate,
+    x unit=0.42cm, y unit chart=0.55cm,
+    title height=1,
+    title label font=\scriptsize,
+    bar/.append style={fill=algogreen!25, draw=algogreen},
+    bar label font=\small,
+    milestone/.append style={fill=red!70},
+    link/.style={-latex, draw=gray}
+  ]{2026-10-13}{2026-11-12}
+  \gantttitlecalendar{month=name, day} \\
+  \ganttbar{A Requirements}{2026-10-13}{2026-10-14} \\
+  \ganttbar{B Toolchain}{2026-10-15}{2026-10-16} \\
+  \ganttbar{C Policy documents}{2026-10-15}{2026-10-19} \\
+  \ganttbar{D Database schema}{2026-10-17}{2026-10-19} \\
+  \ganttbar{E Data generator}{2026-10-20}{2026-10-23} \\
+  \ganttbar{F Auth \& RBAC}{2026-10-20}{2026-10-22} \\
+  \ganttbar{G APIs \& dashboard}{2026-10-24}{2026-10-28} \\
+  \ganttbar{H LLM \& tools}{2026-10-29}{2026-11-02} \\
+  \ganttbar{I RAG \& citations}{2026-10-20}{2026-10-24} \\
+  \ganttbar{J Weekly summary}{2026-11-03}{2026-11-05} \\
+  \ganttbar{K Admin upload}{2026-10-25}{2026-10-26} \\
+  \ganttbar{L Benchmark}{2026-10-20}{2026-10-24} \\
+  \ganttbar{M Testing \& eval.}{2026-11-06}{2026-11-09} \\
+  \ganttbar{N Report \& defense}{2026-11-10}{2026-11-12} \\
+  \ganttmilestone{Submission}{2026-11-12}
+\end{ganttchart}

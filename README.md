@@ -44,3 +44,4 @@ Planning complete — starting Week 1.
 | [Project plan](docs/PLAN.md) | Scope, timeline, decisions |
 | [Software Requirements Specification](docs/srs/campus-gpt-srs.pdf) | Requirements (v1.1) |
 | [Technical Design Document](docs/design/campus-gpt-technical-design.pdf) | Diagrams, IPC, programming concepts, libraries |
+| [Presentation](docs/slides/CampusGPT_Major_Project.pptx) | 19-slide major-project deck (UPES template) |

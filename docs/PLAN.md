@@ -106,4 +106,6 @@ Measure: answer correctness, citation correctness, tool-selection accuracy, late
 | Libraries | 5 | `docs/design` ch. 5 |
 | SRS Document | 10 | `docs/srs` |
 
+Slides: `python docs/slides/render_diagrams.py` then `python docs/slides/build_slides.py <sample-template.pptx>` (needs `python-pptx`; a local venv lives in `.venv-docs/`, git-ignored). The deck reuses the same diagram sources as the documents.
+
 Documents are LaTeX; shared team details and styling live in `docs/common/preamble.tex`, diagrams in `docs/diagrams/`. Build with `tectonic -X compile <file>.tex` from the file's own directory.

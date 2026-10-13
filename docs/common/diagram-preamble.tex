@@ -1,0 +1,11 @@
+% Settings shared by every diagram (used by the documents and the slide images).
+\usetikzlibrary{positioning,arrows.meta,shapes.geometric,fit,calc,backgrounds}
+\definecolor{algogreen}{HTML}{1F4D3A}
+\definecolor{tierblue}{HTML}{EEF3FA}
+\definecolor{tiergreen}{HTML}{EEF6F1}
+\definecolor{tieramber}{HTML}{FBF4E6}
+\definecolor{tiergray}{HTML}{F2F2F2}
+% Numbered channel marker used in diagrams, e.g. \circled{1}
+\newcommand{\circled}[1]{\textbf{(#1)}}
+% Never hyphenate words inside diagram labels
+\tikzset{every node/.append style={execute at begin node={\hyphenpenalty=10000\exhyphenpenalty=10000}}}

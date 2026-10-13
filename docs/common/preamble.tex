@@ -34,7 +34,6 @@
 \usepackage{fancyhdr}
 \usepackage{titlesec}
 \usepackage{tikz}
-\usetikzlibrary{positioning,arrows.meta,shapes.geometric,fit,calc,backgrounds}
 \usepackage{pgfgantt}
 \usepackage[most]{tcolorbox}
 \usepackage{caption}
@@ -43,11 +42,7 @@
 \usepackage[hidelinks]{hyperref}
 \usepackage{xurl}
 
-\definecolor{algogreen}{HTML}{1F4D3A}
-\definecolor{tierblue}{HTML}{EEF3FA}
-\definecolor{tiergreen}{HTML}{EEF6F1}
-\definecolor{tieramber}{HTML}{FBF4E6}
-\definecolor{tiergray}{HTML}{F2F2F2}
+\input{../common/diagram-preamble}
 \captionsetup[table]{position=above,skip=4pt}
 \setlength{\parindent}{0pt}
 \setlength{\parskip}{6pt}
@@ -132,6 +127,3 @@ Under the guidance of\par
 {\large\bfseries October 2026 \quad$|$\quad Version #3\par}
 \end{titlepage}
 \hypersetup{pageanchor=true}}
-
-% Numbered channel marker used in diagrams, e.g. \circled{1}
-\newcommand{\circled}[1]{\textbf{(#1)}}
