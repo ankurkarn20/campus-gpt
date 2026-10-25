@@ -14,6 +14,10 @@ class Settings(BaseSettings):
     test_database_url: str | None = None
     # Password given to the demo accounts created by the seed command.
     demo_password: str = "campusgpt-demo"
+    # Login sessions end this long after login, whatever the activity.
+    session_hours: int = 12
+    # Send the session cookie over HTTPS only. Off for local http://localhost development.
+    cookie_secure: bool = False
 
 
 @lru_cache

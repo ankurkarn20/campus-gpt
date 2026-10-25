@@ -8,6 +8,18 @@ Living document. Update it when a decision changes.
 
 ## Progress log
 
+### 2026-10-25 — authentication (activity F) done
+FastAPI app (`campusgpt/api/app.py`, run with `make api`, docs at `/docs`) with
+`POST /api/auth/login`, `POST /api/auth/logout`, `GET /api/auth/me`. Argon2id check (timing
+equalised for unknown emails), server-side sessions keyed by the SHA-256 of a CSPRNG token,
+HTTP-only SameSite=Lax cookie, 12-hour expiry, `current_user` / `require_role` dependencies,
+audit-log entries for login and logout. 13 new tests (33 total), including expired, forged and
+replayed tokens, role checks and per-student identity.
+
+**Next:** student APIs + dashboard (activity G): attendance, exams, fees and notices for the
+logged-in student, all scoped by `CurrentUser.student_id`. Login rate limiting (slowapi,
+NFR-S5) is still to do.
+
 ### 2026-10-13 — where we left off
 **Done:** SRS v1.1, Technical Design Document, presentation (18 slides); PostgreSQL + pgvector
 set up; full schema (23 tables, migration 0001); synthetic data generator (5,000 students,
