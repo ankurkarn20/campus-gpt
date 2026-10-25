@@ -1,14 +1,13 @@
 """Login, logout and the current user's identity."""
 from fastapi import APIRouter, Depends, HTTPException, Request, Response, status
 from pydantic import BaseModel, Field
-from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from campusgpt import auth
+from campusgpt import auth, student
 from campusgpt.auth import COOKIE_NAME, CurrentUser, current_user
 from campusgpt.config import get_settings
 from campusgpt.db import get_db
-from campusgpt.models import AuditLog, Program, Student
+from campusgpt.models import AuditLog
 
 router = APIRouter(prefix="/api/auth", tags=["auth"])
 
@@ -35,11 +34,9 @@ class Me(BaseModel):
 async def _me(db: AsyncSession, user: CurrentUser) -> Me:
     me = Me(email=user.email, role=user.role)
     if user.student_id is not None:
-        s, program = (await db.execute(
-            select(Student, Program.name).join(Program).where(Student.id == user.student_id)
-        )).one()
-        me.student = StudentProfile(name=s.name, roll_no=s.roll_no, program=program,
-                                    semester=s.current_semester, section=s.section)
+        p = await student.profile(db, user.student_id)
+        me.student = StudentProfile(name=p.name, roll_no=p.roll_no, program=p.program,
+                                    semester=p.semester, section=p.section)
     return me
 
 

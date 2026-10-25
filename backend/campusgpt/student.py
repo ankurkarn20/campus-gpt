@@ -97,6 +97,25 @@ class ActionItem:
     when: date | None
 
 
+@dataclass
+class Profile:
+    name: str
+    roll_no: str
+    program: str
+    department: str
+    semester: int
+    section: str
+
+
+async def profile(db: AsyncSession, student_id: int) -> Profile:
+    s, program, dept = (await db.execute(
+        select(Student, Program.name, Department.name).select_from(Student)
+        .join(Program, Program.id == Student.program_id)
+        .join(Department, Department.id == Program.department_id)
+        .where(Student.id == student_id))).one()
+    return Profile(s.name, s.roll_no, program, dept, s.current_semester, s.section)
+
+
 def rupees(amount: Decimal) -> str:
     """Indian digit grouping: 160000 -> ₹1,60,000.00."""
     whole, paise = f"{amount:.2f}".split(".")
@@ -167,15 +186,19 @@ async def fees(db: AsyncSession, student_id: int, today: date) -> list[Fee]:
     return out
 
 
-async def notices(db: AsyncSession, student_id: int, now: datetime,
-                  limit: int = 5) -> list[NoticeItem]:
-    """Latest notices addressed to everyone or to the student's department."""
+async def notices(db: AsyncSession, student_id: int, now: datetime, limit: int = 5,
+                  query: str | None = None) -> list[NoticeItem]:
+    """Latest notices addressed to everyone or to the student's department, optionally
+    only those containing every word of `query`."""
     dept = (select(Department.code).join(Program).join(Student)
             .where(Student.id == student_id).scalar_subquery())
     q = (select(Notice.title, Notice.body, Notice.published_at, Notice.audience)
          .where(or_(Notice.audience == "all", Notice.audience == dept),
                 Notice.published_at <= now)
          .order_by(Notice.published_at.desc()).limit(limit))
+    for word in (query or "").split():
+        pattern = f"%{word.replace('%', '').replace('_', '')}%"
+        q = q.where(or_(Notice.title.ilike(pattern), Notice.body.ilike(pattern)))
     return [NoticeItem(*row) for row in await db.execute(q)]
 
 

@@ -8,6 +8,21 @@ Living document. Update it when a decision changes.
 
 ## Progress log
 
+### 2026-10-25 — chat with tool calling (activity H) done
+`POST /api/chat` streams Server-Sent Events (FastAPI's built-in SSE): `status` while a tool
+runs, `tool` with the exact records used, `token` for answer text, `done` / `error`.
+`campusgpt/tools.py` (registry with `@tool`, Pydantic argument schemas, role check, audit
+entry per call; no tool accepts a student identity), `campusgpt/llm.py` (OpenAI-compatible
+adapter for Groq / Gemini, scripted provider for tests), `campusgpt/chat.py` (bounded
+tool loop, conversation history, messages saved with their sources). Frontend: chat panel
+beside the dashboard with suggested questions from the student's data, live steps,
+"Data used" chips, "Ask" buttons on weekly items, and a "What if I skip?" slider.
+122 tests. **Needs `LLM_API_KEY` in `.env`** to talk to a real model.
+
+**Next:** policy documents + RAG (`search_university_documents`), ingestion worker with
+LISTEN/NOTIFY and live progress for admin uploads, end-term eligibility check, security
+demo + audit viewer, calendar export, Hinglish questions in the benchmark.
+
 ### 2026-10-25 — student dashboard (activity G) done
 `GET /api/student/dashboard` (student role only) built on `campusgpt/student.py`, a read-only
 repository whose functions the chat tools will reuse: attendance with classes needed / can
@@ -137,6 +152,8 @@ Measure: answer correctness, citation correctness, tool-selection accuracy, late
 | 2026-10-13 | Student + admin roles only | One month deadline |
 | 2026-10-13 | Read-only tools in v1 | Avoid write-action security complexity |
 | 2026-10-13 | PostgreSQL + pgvector for both data and vectors | One database to run and back up |
+| 2026-10-25 | FastAPI's built-in `EventSourceResponse` instead of sse-starlette | Native since FastAPI 0.13x; one dependency fewer (update the libraries table in the design doc) |
+| 2026-10-25 | One OpenAI-compatible adapter for all hosted models; default Groq `openai/gpt-oss-120b` | Groq and Gemini both expose the same API shape; switching is two `.env` lines |
 | 2026-10-13 | Document ingestion runs in a separate worker process, woken by PostgreSQL LISTEN/NOTIFY over a durable `ingestion_jobs` table (claimed with `FOR UPDATE SKIP LOCKED`); chat answers stream over SSE | Keeps chat responsive; gives real, demonstrable IPC (evaluated component); no extra broker process on an 8 GB laptop |
 
 ## 8. Evaluation components (announced 2026-10-13)

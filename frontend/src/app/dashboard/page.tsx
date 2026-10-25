@@ -4,7 +4,9 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
 import { AttendanceChart } from "@/components/AttendanceChart";
+import { ChatProvider, useChat } from "@/components/ChatPanel";
 import { Card, Empty, Status, type Tone } from "@/components/ui";
+import { WhatIf } from "@/components/WhatIf";
 import {
   api, ApiError, formatDate, formatDateTime, formatRupees,
   type ActionItem, type Dashboard, type Fee, type Me,
@@ -82,13 +84,38 @@ export default function DashboardPage() {
       ) : !data ? (
         <Centered>Loading…</Centered>
       ) : (
-        <StudentDashboard data={data} />
+        <ChatProvider suggestions={suggestions(data)}>
+          <StudentDashboard data={data} />
+        </ChatProvider>
       )}
     </div>
   );
 }
 
+/** Questions that this student's own data makes worth asking. */
+function suggestions(d: Dashboard): string[] {
+  const out = ["What do I need to take care of this week?"];
+  const short = d.attendance.find((c) => c.status === "short");
+  if (short) out.push(`How many ${short.title} classes must I attend to reach 75%?`);
+  if (d.fees.some((f) => f.status === "overdue")) out.push("Which of my fees are overdue, and how much do I owe?");
+  const exam = d.exams[0];
+  if (exam) out.push(`When and where is my ${exam.title} ${EXAM_LABEL[exam.exam_type].toLowerCase()}?`);
+  const spare = d.attendance.find((c) => c.can_miss >= 2);
+  if (out.length < 4 && spare) out.push(`Can I miss 2 ${spare.title} classes?`);
+  if (out.length < 4) out.push("Any new notices about placements or hackathons?");
+  return out.slice(0, 4);
+}
+
+const ACTION_QUESTION: Record<ActionItem["kind"], (item: ActionItem) => string> = {
+  fee_overdue: () => "My fee is overdue. How much do I owe and what happens if I don't pay?",
+  fee_due: () => "Which fees are due soon and how much are they?",
+  attendance_short: (i) => `${i.title}. What should I do?`,
+  exam: (i) => `Tell me about my upcoming exam: ${i.title}`,
+  assignment: (i) => `What assignments are due this week? (${i.title})`,
+};
+
 function StudentDashboard({ data }: { data: Dashboard }) {
+  const chat = useChat();
   const exams = data.exams.slice(0, 6);
   const assignments = data.assignments.slice(0, 6);
   return (
@@ -104,9 +131,14 @@ function StudentDashboard({ data }: { data: Dashboard }) {
                   <p className="text-sm font-medium">{item.title}</p>
                   <p className="text-sm text-muted">{item.detail}</p>
                 </div>
-                <Status tone={ACTION_TONE[item.kind]}>
-                  {item.kind.startsWith("fee") ? "Fees" : item.kind === "attendance_short" ? "Attendance" : item.kind === "exam" ? "Exam" : "Assignment"}
-                </Status>
+                <div className="flex items-center gap-3">
+                  <Status tone={ACTION_TONE[item.kind]}>
+                    {item.kind.startsWith("fee") ? "Fees" : item.kind === "attendance_short" ? "Attendance" : item.kind === "exam" ? "Exam" : "Assignment"}
+                  </Status>
+                  <button onClick={() => chat.open(ACTION_QUESTION[item.kind](item))} className="text-xs text-accent hover:underline">
+                    Ask
+                  </button>
+                </div>
               </li>
             ))}
           </ul>
@@ -135,6 +167,7 @@ function StudentDashboard({ data }: { data: Dashboard }) {
                 ))}
               </tbody>
             </table>
+            <WhatIf courses={data.attendance} />
           </>
         )}
       </Card>

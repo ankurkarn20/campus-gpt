@@ -19,6 +19,14 @@ class Settings(BaseSettings):
     # Send the session cookie over HTTPS only. Off for local http://localhost development.
     cookie_secure: bool = False
 
+    # Chat model: any OpenAI-compatible chat-completions endpoint with tool calling.
+    # Groq (default) or Gemini: https://generativelanguage.googleapis.com/v1beta/openai
+    # with LLM_MODEL=gemini-3.8-flash.
+    llm_base_url: str = "https://api.groq.com/openai/v1"
+    llm_api_key: str | None = None
+    llm_model: str = "openai/gpt-oss-120b"
+    llm_timeout_seconds: float = 60
+
 
 @lru_cache
 def get_settings() -> Settings:
