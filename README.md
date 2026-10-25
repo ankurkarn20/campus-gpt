@@ -32,7 +32,7 @@ Example questions:
 | Database | PostgreSQL + pgvector (records and document vectors in one DB) |
 | Frontend | Next.js (TypeScript) |
 | LLM | Free hosted API (Groq or Google Gemini) behind an adapter; optional local model via Ollama for comparison |
-| Embeddings | Small local open-source embedding model (CPU) |
+| Embeddings | BGE-small (384 dimensions) on the CPU via fastembed / ONNX Runtime; hybrid search with PostgreSQL full-text, fused by Reciprocal Rank Fusion |
 | Local infra | PostgreSQL installed natively (saves memory on an 8 GB laptop) |
 
 ## Getting started
@@ -43,8 +43,8 @@ Requirements: Python 3.12, PostgreSQL 16 with the pgvector extension.
 cp .env.example .env              # then set the database passwords
 python3 -m venv .venv && .venv/bin/pip install -e "backend[dev]"
 make db-start                     # if you use the local cluster in ~/.local/share/campus-gpt
-make seed                         # migrate + generate 5,000 synthetic students (about 20 s)
-make test                         # 20 tests against the separate test database
+make seed                         # migrate, generate 5,000 synthetic students, index the policies
+make test                         # 162 tests against the separate test database
 ```
 
 `make seed` prints the demo accounts. All share the password in `DEMO_PASSWORD`
@@ -57,12 +57,18 @@ make test                         # 20 tests against the separate test database
 | `student.shortage@demo.campusgpt.example` | CSE, semester 3: below 75% in Database Management Systems |
 | `student.fees@demo.campusgpt.example` | ECE, semester 7: tuition fee overdue |
 
+The policy documents in [`docs/policies`](docs/policies) (attendance, examinations, fees,
+hostel, scholarships, academic integrity) are **fictional** and written for this project.
+`make policies` re-indexes them; the embedding model (about 65 MB) downloads on first use.
+
 The dataset is generated relative to `--as-of` (default: today), so there is always work due
 "this week". The same seed and date always produce the same data.
 
 ## Status
 
-Week 1 in progress: database schema, migrations and synthetic data generator done.
+Week 3: database, login, student dashboard, chat with tool calling, and policy search with
+verified citations are done. Next: admin upload with the ingestion worker (LISTEN/NOTIFY),
+end-term eligibility check, security demo, evaluation. See the [project plan](docs/PLAN.md).
 
 | Document | |
 |---|---|

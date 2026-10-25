@@ -8,6 +8,35 @@ Living document. Update it when a decision changes.
 
 ## Progress log
 
+### 2026-10-25 — policy documents and RAG done
+Six **synthetic** policy documents in `docs/policies/` (attendance, examinations, fees and
+refunds, hostel, scholarships, academic integrity), consistent with the generated data (75%
+rule, Rs 3,500 exam fee, no admit card with unpaid fees, 48-hour late window).
+`campusgpt/documents.py`: extract (Markdown, text, PDF via pypdf with header/footer and
+hyphenation cleaning), section-aware sliding-window chunking, BGE-small embeddings,
+versioning (same title = new version, old one superseded in the same transaction).
+`campusgpt/retrieval.py`: hybrid search, pgvector cosine + PostgreSQL full-text (OR-ed
+terms), fused with RRF (k = 60); `mode=semantic|lexical` for the evaluation. Tool
+`search_university_documents` returns passages with a `cite` such as "Attendance Policy §4".
+`make policies` (also run by `make seed`). 162 tests.
+
+Live with qwen3:4b: the model still **skipped the search** on rule questions and invented a
+citation ("Examination Policy §7"), so two model-independent safeguards in `chat.py`:
+1. **Prefetch:** every question is embedded; if the best passage has cosine >= 0.62
+   (`RAG_PREFETCH_MIN_SIMILARITY`), the passages are put into the system prompt before the
+   first model turn. As a fake tool turn instead, the model stopped calling record tools
+   ("What is my attendance in DBMS?" went unanswered), so it is in the instructions.
+2. **Citation check:** every `[Document §n]` in the answer is matched against the retrieved
+   cites (a clause §3.1 of a retrieved §3 counts); the `done` event lists them and the chat
+   panel warns about unverified ones.
+Similarity alone separates rule questions from record questions poorly (rule 0.60–0.80,
+record 0.46–0.71) -- evidence for the trained intent router.
+
+**Next:** admin upload + ingestion worker (LISTEN/NOTIFY, `FOR UPDATE SKIP LOCKED`) with
+live progress -- `documents.register()` / `index()` are ready for it; uploaded files need
+storing (bytea column or disk) so the worker can read them. Then eligibility check,
+security demo + audit viewer, .ics export, benchmark (include retrieval-mode comparison).
+
 ### 2026-10-25 — local model on the laptop GPU
 Ollama 0.40.2 in `~/.local/ollama` (no sudo), `make llm`. Model `qwen3:4b-instruct-2507-q4_K_M`
 (non-thinking; the thinking Qwen3 spends 400–600 tokens per reply). Runs on the RTX 3050 via
@@ -162,6 +191,8 @@ Measure: answer correctness, citation correctness, tool-selection accuracy, late
 | 2026-10-13 | Student + admin roles only | One month deadline |
 | 2026-10-13 | Read-only tools in v1 | Avoid write-action security complexity |
 | 2026-10-13 | PostgreSQL + pgvector for both data and vectors | One database to run and back up |
+| 2026-10-25 | fastembed (ONNX Runtime) instead of sentence-transformers for BGE-small | Same model and vectors without PyTorch (~1 GB less to install, faster CPU start); update the libraries table in the design doc |
+| 2026-10-25 | Policy passages prefetched by similarity, citations checked in code | The 4B local model skips the search tool and invents citations; both checks are deterministic |
 | 2026-10-25 | FastAPI's built-in `EventSourceResponse` instead of sse-starlette | Native since FastAPI 0.13x; one dependency fewer (update the libraries table in the design doc) |
 | 2026-10-25 | One OpenAI-compatible adapter for all hosted models; default Groq `openai/gpt-oss-120b` | Groq and Gemini both expose the same API shape; switching is two `.env` lines |
 | 2026-10-13 | Document ingestion runs in a separate worker process, woken by PostgreSQL LISTEN/NOTIFY over a durable `ingestion_jobs` table (claimed with `FOR UPDATE SKIP LOCKED`); chat answers stream over SSE | Keeps chat responsive; gives real, demonstrable IPC (evaluated component); no extra broker process on an 8 GB laptop |

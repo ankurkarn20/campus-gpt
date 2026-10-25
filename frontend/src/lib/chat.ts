@@ -8,12 +8,15 @@ export type ToolSource = {
   ok: boolean;
 };
 
+// A [Document §n] reference in an answer; verified when a retrieved passage backs it.
+export type Citation = { cite: string; verified: boolean };
+
 export type ChatEvent =
   | { kind: "conversation"; data: { id: number } }
   | { kind: "status"; data: { text: string } }
   | { kind: "tool"; data: ToolSource }
   | { kind: "token"; data: { text: string } }
-  | { kind: "done"; data: { message_id: number; conversation_id: number } }
+  | { kind: "done"; data: { message_id: number; conversation_id: number; citations: Citation[] } }
   | { kind: "error"; data: { message: string } };
 
 export async function streamChat(

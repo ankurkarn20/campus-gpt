@@ -1,5 +1,6 @@
 """Shared fixtures. Tests run against TEST_DATABASE_URL, never the development database."""
 import argparse
+import asyncio
 from datetime import date, datetime, time
 from pathlib import Path
 
@@ -8,10 +9,13 @@ import pytest
 from alembic import command
 from alembic.config import Config
 from fastapi.testclient import TestClient
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from campusgpt.api.app import create_app
 from campusgpt.api.student import IST, get_now
-from campusgpt.config import get_settings
+from campusgpt.config import REPO_ROOT, get_settings
+from campusgpt.db import make_async_engine
+from campusgpt.documents import load_directory
 from campusgpt.seed.__main__ import libpq_url
 from campusgpt.seed.generate import generate
 from campusgpt.seed.load import load
@@ -58,6 +62,29 @@ def seeded(migrated, dataset) -> str:
     return migrated
 
 
+POLICIES = REPO_ROOT / "docs" / "policies"
+
+
+async def in_session(url, fn, *, commit=False):
+    """Run fn(session) against the test database; its changes are rolled back unless
+    commit is set."""
+    engine = make_async_engine(url)
+    try:
+        async with AsyncSession(engine, expire_on_commit=False) as db:
+            result = await fn(db)
+            await (db.commit() if commit else db.rollback())
+            return result
+    finally:
+        await engine.dispose()
+
+
+@pytest.fixture
+def indexed(seeded, test_url):
+    """The synthetic policies, indexed. Function-scoped because reloading the dataset (as one
+    seed test does) empties the documents; files already indexed are skipped."""
+    return asyncio.run(in_session(test_url, lambda db: load_directory(db, POLICIES)))
+
+
 @pytest.fixture
 def conn(seeded):
     """A connection whose changes are rolled back after the test."""
@@ -67,7 +94,10 @@ def conn(seeded):
 
 
 @pytest.fixture
-def app(seeded, test_url):
+def app(seeded, test_url, monkeypatch):
+    # No automatic document search unless a test asks for it, so scripted conversations
+    # do not depend on whether the policies happen to be indexed.
+    monkeypatch.setattr(get_settings(), "rag_prefetch_min_similarity", 1.0)
     app = create_app(test_url)
     app.dependency_overrides[get_now] = lambda: NOW
     return app

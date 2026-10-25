@@ -8,6 +8,7 @@ else's records.
 """
 import dataclasses
 import json
+import re
 from collections.abc import Awaitable, Callable
 from dataclasses import dataclass
 from datetime import date, datetime
@@ -18,7 +19,7 @@ from typing import Any, Literal
 from pydantic import BaseModel, Field, ValidationError
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from campusgpt import student
+from campusgpt import retrieval, student
 from campusgpt.calc import ATTENDANCE_TARGET, classes_can_miss, classes_needed
 from campusgpt.models import AuditLog
 
@@ -142,6 +143,12 @@ class NoticeArgs(BaseModel):
     limit: int = Field(5, ge=1, le=20)
 
 
+class DocumentSearchArgs(BaseModel):
+    query: str = Field(min_length=2, max_length=300,
+                       description="The rule or topic to look up, in the student's words or "
+                                   "as keywords, e.g. 'medical leave attendance condonation'")
+
+
 # Common short names students use for courses.
 ALIASES = {"dbms": "database management", "oops": "object-oriented", "oop": "object-oriented",
            "daa": "analysis of algorithms", "coa": "computer organization",
@@ -235,3 +242,23 @@ async def get_my_weekly_summary(ctx: ToolContext, args: NoArgs):
                              await student.upcoming_exams(db, sid, ctx.now),
                              await student.assignments_due(db, sid, ctx.now),
                              await student.fees(db, sid, ctx.today))
+
+
+def citation(document: str, section: str | None) -> str:
+    """How the model should cite a passage: "Attendance Policy §4" for a numbered section."""
+    if not section:
+        return document
+    number = re.match(r"(\d+(?:\.\d+)*)\.?\s", section)
+    return f"{document} §{number.group(1)}" if number else f"{document}, {section}"
+
+
+@tool("search_university_documents", "Search the university's policy documents (attendance, "
+      "examinations, fees and refunds, hostel, scholarships, academic integrity) for the rules "
+      "that answer a question. Returns the most relevant passages with a citation for each.",
+      status="Searching university policies", args=DocumentSearchArgs,
+      roles=("student", "admin"))
+async def search_university_documents(ctx: ToolContext, args: DocumentSearchArgs):
+    return [{"cite": citation(p.document, p.section), "document": p.document,
+             "version": p.version, "section": p.section, "page": p.page, "text": p.content,
+             "chunk_id": p.chunk_id}
+            for p in await retrieval.search(ctx.db, args.query)]

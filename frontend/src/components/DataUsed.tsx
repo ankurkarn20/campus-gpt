@@ -36,8 +36,32 @@ function SourceDetail({ source }: { source: ToolSource }) {
       <p className="mb-1 font-mono text-subtle">
         {source.tool}({args.map(([k, v]) => `${k}=${JSON.stringify(v)}`).join(", ")})
       </p>
-      <Value value={source.result} />
+      {source.tool === "search_university_documents" && Array.isArray(source.result)
+        ? <Passages passages={source.result as Passage[]} />
+        : <Value value={source.result} />}
     </div>
+  );
+}
+
+type Passage = { cite: string; version: number; page: number | null; text: string };
+
+// Policy passages the answer may cite, with the citation the model was told to use.
+function Passages({ passages }: { passages: Passage[] }) {
+  if (!passages.length) return <p className="text-muted">No matching passages.</p>;
+  return (
+    <ol className="space-y-2">
+      {passages.map((p, i) => (
+        <li key={i}>
+          <p className="font-medium text-foreground">
+            {p.cite}
+            <span className="ml-2 font-normal text-subtle">
+              v{p.version}{p.page ? `, page ${p.page}` : ""}
+            </span>
+          </p>
+          <p className="whitespace-pre-line text-muted">{p.text}</p>
+        </li>
+      ))}
+    </ol>
   );
 }
 

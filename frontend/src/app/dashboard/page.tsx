@@ -96,12 +96,14 @@ export default function DashboardPage() {
 function suggestions(d: Dashboard): string[] {
   const out = ["What do I need to take care of this week?"];
   const short = d.attendance.find((c) => c.status === "short");
-  if (short) out.push(`How many ${short.title} classes must I attend to reach 75%?`);
+  if (short) out.push(`Can I sit my ${short.title} end-term exam?`,
+    `How many ${short.title} classes must I attend to reach 75%?`);
   if (d.fees.some((f) => f.status === "overdue")) out.push("Which of my fees are overdue, and how much do I owe?");
   const exam = d.exams[0];
   if (exam) out.push(`When and where is my ${exam.title} ${EXAM_LABEL[exam.exam_type].toLowerCase()}?`);
   const spare = d.attendance.find((c) => c.can_miss >= 2);
   if (out.length < 4 && spare) out.push(`Can I miss 2 ${spare.title} classes?`);
+  if (out.length < 4) out.push("What is the late fee if I pay my tuition after the due date?");
   if (out.length < 4) out.push("Any new notices about placements or hackathons?");
   return out.slice(0, 4);
 }

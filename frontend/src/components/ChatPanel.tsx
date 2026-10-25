@@ -5,13 +5,14 @@ import Markdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 
 import { DataUsed } from "@/components/DataUsed";
-import { streamChat, type ToolSource } from "@/lib/chat";
+import { streamChat, type Citation, type ToolSource } from "@/lib/chat";
 
 type Turn = {
   role: "user" | "assistant";
   text: string;
   steps: string[];          // live status lines while tools run
   sources: ToolSource[];
+  citations?: Citation[];
   pending?: boolean;
   error?: string;
 };
@@ -54,6 +55,7 @@ export function ChatProvider({ suggestions, children }: {
           case "status": update((t) => ({ ...t, steps: [...t.steps, e.data.text] })); break;
           case "tool": update((t) => ({ ...t, sources: [...t.sources, e.data] })); break;
           case "token": update((t) => ({ ...t, text: t.text + e.data.text })); break;
+          case "done": update((t) => ({ ...t, citations: e.data.citations })); break;
           case "error": update((t) => ({ ...t, error: e.data.message })); break;
         }
       });
@@ -116,7 +118,7 @@ function ChatWindow({ turns, busy, suggestions, onSend, onClose, onReset }: {
       <header className="flex items-center justify-between border-b border-border px-4 py-3">
         <div>
           <h2 className="font-semibold">CampusGPT</h2>
-          <p className="text-xs text-subtle">Answers from your records. Synthetic demo data.</p>
+          <p className="text-xs text-subtle">Answers from your records and university policies. Synthetic demo data.</p>
         </div>
         <div className="flex gap-1">
           {turns.length > 0 && (
@@ -133,7 +135,7 @@ function ChatWindow({ turns, busy, suggestions, onSend, onClose, onReset }: {
       <div className="flex-1 space-y-4 overflow-y-auto px-4 py-4">
         {turns.length === 0 && (
           <div>
-            <p className="text-sm text-muted">Ask about your attendance, exams, assignments, fees or notices. Try:</p>
+            <p className="text-sm text-muted">Ask about your attendance, exams, assignments, fees, notices or university rules. Try:</p>
             <ul className="mt-3 space-y-2">
               {suggestions.map((s) => (
                 <li key={s}>
@@ -167,6 +169,7 @@ function ChatWindow({ turns, busy, suggestions, onSend, onClose, onReset }: {
               </div>
             )}
             {t.error && <p role="alert" className="mt-1 text-critical">{t.error}</p>}
+            <UnverifiedCitations citations={t.citations} />
             {!t.pending && <DataUsed sources={t.sources} />}
           </div>
         ))}
@@ -184,5 +187,17 @@ function ChatWindow({ turns, busy, suggestions, onSend, onClose, onReset }: {
         </button>
       </form>
     </aside>
+  );
+}
+
+// Citations the answer makes that no retrieved passage supports: shown, never hidden.
+function UnverifiedCitations({ citations }: { citations?: Citation[] }) {
+  const bad = (citations ?? []).filter((c) => !c.verified);
+  if (!bad.length) return null;
+  return (
+    <p className="mt-2 rounded-md border border-critical px-2 py-1 text-xs text-critical">
+      Could not verify {bad.map((c) => c.cite).join(", ")}: no retrieved document passage
+      matches. Treat {bad.length === 1 ? "this reference" : "these references"} with caution.
+    </p>
   );
 }

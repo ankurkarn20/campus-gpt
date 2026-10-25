@@ -27,6 +27,15 @@ class Settings(BaseSettings):
     llm_model: str = "openai/gpt-oss-120b"
     llm_timeout_seconds: float = 60
 
+    # Document search. BGE-small runs on the CPU through ONNX Runtime (fastembed); the model
+    # (about 65 MB) is downloaded on first use into the cache directory.
+    embedding_model: str = "BAAI/bge-small-en-v1.5"
+    model_cache_dir: Path = Path.home() / ".cache" / "campusgpt" / "models"
+    # Small local models often answer rule questions without searching. The chat therefore
+    # searches the documents itself first and hands the passages to the model when the best
+    # one is at least this similar to the question (cosine, BGE-small). 1.0 turns it off.
+    rag_prefetch_min_similarity: float = 0.62
+
 
 @lru_cache
 def get_settings() -> Settings:
