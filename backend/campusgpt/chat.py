@@ -28,8 +28,8 @@ HISTORY_MESSAGES = 10
 SYSTEM_PROMPT = """You are CampusGPT, the helpdesk assistant of a university. You are talking \
 to a logged-in student.
 
-Today is {today:%A %d %B %Y}. Student: {name}, {program}, semester {semester}, \
-section {section}.
+Today is {today:%A %d %B %Y}. Student: {name}, roll number {roll_no}, {program}, \
+semester {semester}, section {section}.
 
 Rules:
 - For anything about this student's own records (attendance, exams, assignments, fees, \
@@ -79,7 +79,7 @@ async def run(db: AsyncSession, provider: Provider, user: CurrentUser, question:
 
     p = await student.profile(db, user.student_id)
     messages = [{"role": "system", "content": SYSTEM_PROMPT.format(
-        today=now, name=p.name, program=p.program, semester=p.semester, section=p.section)}]
+        today=now, name=p.name, roll_no=p.roll_no, program=p.program, semester=p.semester, section=p.section)}]
     messages += await _history(db, conversation_id)
     messages.append({"role": "user", "content": question})
     db.add(Message(conversation_id=conversation_id, role="user", content=question))

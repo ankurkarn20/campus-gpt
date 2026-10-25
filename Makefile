@@ -2,7 +2,7 @@
 PY      := .venv/bin/python
 ALEMBIC := .venv/bin/alembic -c backend/alembic.ini
 
-.PHONY: help db-start db-stop db-status migrate seed seed-small api web test lint psql
+.PHONY: help db-start db-stop db-status migrate seed seed-small llm api web test lint psql
 
 help:
 	@echo "make db-start     start the local PostgreSQL server"
@@ -10,6 +10,7 @@ help:
 	@echo "make migrate      apply database migrations"
 	@echo "make seed         rebuild the synthetic university (5,000 students, as of today)"
 	@echo "make seed-small   same with 300 students (faster)"
+	@echo "make llm          run the local model server (Ollama, http://localhost:11434)"
 	@echo "make api          run the API server on http://localhost:8000 (docs at /docs)"
 	@echo "make web          run the frontend on http://localhost:3000 (needs make api too)"
 	@echo "make test         run the test suite"
@@ -33,6 +34,12 @@ seed: migrate
 
 seed-small: migrate
 	cd backend && ../$(PY) -m campusgpt.seed --students 300
+
+# Local chat model. 8k context: instructions + tool results + history exceed Ollama's 4k default.
+LLM_MODEL_LOCAL := qwen3:4b-instruct-2507-q4_K_M
+llm:
+	@ollama list | grep -q "$(LLM_MODEL_LOCAL)" || ollama pull $(LLM_MODEL_LOCAL)
+	OLLAMA_HOST=127.0.0.1:11434 OLLAMA_CONTEXT_LENGTH=8192 OLLAMA_KEEP_ALIVE=30m ollama serve
 
 api:
 	cd backend && ../.venv/bin/uvicorn campusgpt.api.app:app --reload --port 8000

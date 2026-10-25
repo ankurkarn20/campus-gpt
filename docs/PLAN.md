@@ -8,6 +8,16 @@ Living document. Update it when a decision changes.
 
 ## Progress log
 
+### 2026-10-25 — local model on the laptop GPU
+Ollama 0.40.2 in `~/.local/ollama` (no sudo), `make llm`. Model `qwen3:4b-instruct-2507-q4_K_M`
+(non-thinking; the thinking Qwen3 spends 400–600 tokens per reply). Runs on the RTX 3050 via
+the open-source NVK/Vulkan driver, but speed is erratic (26 → 2.5 tokens/s); CPU-only is a
+steady 8.5 tokens/s. Install the NVIDIA driver for CUDA. Context raised to 8k (Ollama's 4k
+default silently truncates). First live results: correct tool choice for single questions
+(English and Hinglish), injection refused, what-if maths correct; **but it skipped the tool
+on a two-part question and invented an exam (date, room, course)** -- motivates the answer
+verifier and the intent router.
+
 ### 2026-10-25 — chat with tool calling (activity H) done
 `POST /api/chat` streams Server-Sent Events (FastAPI's built-in SSE): `status` while a tool
 runs, `tool` with the exact records used, `token` for answer text, `done` / `error`.

@@ -62,7 +62,7 @@ def test_tool_round_trip(app, client, conn):
 
     # The model saw the system prompt with today's date, then the tool result.
     system = llm.seen[0][0]["content"]
-    assert "13 October 2026" in system and "semester 3" in system
+    assert "13 October 2026" in system and "semester 3" in system and "2025CSE" in system
     assert json.loads(llm.seen[1][-1]["content"])[0]["code"] == "CSE301"
 
     saved = conn.execute("SELECT role, content, sources FROM messages WHERE conversation_id = %s "
