@@ -3,7 +3,7 @@ from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
 
-from campusgpt.api import auth
+from campusgpt.api import auth, student
 from campusgpt.db import make_async_engine
 
 
@@ -16,6 +16,7 @@ def create_app(database_url: str | None = None) -> FastAPI:
 
     app = FastAPI(title="CampusGPT", lifespan=lifespan)
     app.include_router(auth.router)
+    app.include_router(student.router)
 
     @app.get("/api/health")
     async def health():

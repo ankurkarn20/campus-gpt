@@ -2,7 +2,7 @@
 PY      := .venv/bin/python
 ALEMBIC := .venv/bin/alembic -c backend/alembic.ini
 
-.PHONY: help db-start db-stop db-status migrate seed seed-small api test lint psql
+.PHONY: help db-start db-stop db-status migrate seed seed-small api web test lint psql
 
 help:
 	@echo "make db-start     start the local PostgreSQL server"
@@ -11,6 +11,7 @@ help:
 	@echo "make seed         rebuild the synthetic university (5,000 students, as of today)"
 	@echo "make seed-small   same with 300 students (faster)"
 	@echo "make api          run the API server on http://localhost:8000 (docs at /docs)"
+	@echo "make web          run the frontend on http://localhost:3000 (needs make api too)"
 	@echo "make test         run the test suite"
 	@echo "make lint         run the linter"
 	@echo "make psql         open a SQL shell on the development database"
@@ -35,6 +36,9 @@ seed-small: migrate
 
 api:
 	cd backend && ../.venv/bin/uvicorn campusgpt.api.app:app --reload --port 8000
+
+web:
+	cd frontend && npm run dev
 
 test:
 	cd backend && ../.venv/bin/pytest -q

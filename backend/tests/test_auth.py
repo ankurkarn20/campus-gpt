@@ -5,35 +5,18 @@ import pytest
 from fastapi import Depends
 from fastapi.testclient import TestClient
 
-from campusgpt.api.app import create_app
 from campusgpt.auth import COOKIE_NAME, CurrentUser, require_role, token_digest
-from tests.conftest import DEMO_PASSWORD
-
-REGULAR = "student.regular@demo.campusgpt.example"
-SHORTAGE = "student.shortage@demo.campusgpt.example"
-ADMIN = "admin@demo.campusgpt.example"
+from tests.conftest import ADMIN, DEMO_PASSWORD, REGULAR, SHORTAGE, login
 
 
 @pytest.fixture
-def app(seeded, test_url):
-    app = create_app(test_url)
-
+def app(app):
     # A route that exists only in tests, to exercise the admin role check.
     @app.get("/api/test/admin-only")
     async def admin_only(user: CurrentUser = Depends(require_role("admin"))):
         return {"email": user.email}
 
     return app
-
-
-@pytest.fixture
-def client(app):
-    with TestClient(app) as c:
-        yield c
-
-
-def login(client, email, password=DEMO_PASSWORD):
-    return client.post("/api/auth/login", json={"email": email, "password": password})
 
 
 def audit(conn, action):

@@ -8,6 +8,19 @@ Living document. Update it when a decision changes.
 
 ## Progress log
 
+### 2026-10-25 — student dashboard (activity G) done
+`GET /api/student/dashboard` (student role only) built on `campusgpt/student.py`, a read-only
+repository whose functions the chat tools will reuse: attendance with classes needed / can
+miss (`campusgpt/calc.py`, exact `Fraction` arithmetic, checked against brute force), upcoming
+exams, assignments due, fees with balances, notices for the student's department, and the
+**"this week" summary** ranked with a binary heap. Next.js 16 frontend in `frontend/`
+(TypeScript, Tailwind, Recharts): login page and dashboard; `/api/*` is proxied to FastAPI so
+the cookie is same-origin. Run `make api` and `make web`, open http://localhost:3000.
+Node.js 24 is installed user-locally in `~/.local/node`. 109 tests pass.
+
+**Next:** chat with tool calling (activity H): LLM provider adapter (Groq/Gemini free tier),
+tool registry over `campusgpt/student.py`, SSE streaming, chat panel on the dashboard.
+
 ### 2026-10-25 — authentication (activity F) done
 FastAPI app (`campusgpt/api/app.py`, run with `make api`, docs at `/docs`) with
 `POST /api/auth/login`, `POST /api/auth/logout`, `GET /api/auth/me`. Argon2id check (timing
