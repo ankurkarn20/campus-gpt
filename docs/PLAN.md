@@ -8,6 +8,26 @@ Living document. Update it when a decision changes.
 
 ## Progress log
 
+### ▶ START HERE NEXT SESSION (written 2026-10-25)
+1. `make db-start` (the database does not start after a reboot), `make llm` in a second
+   terminal for the local model, then `make test` -- expect 162 passing.
+2. **Admin upload + ingestion worker** (activity: IPC, an evaluated component). Store the
+   uploaded file bytes in the database (planned: new `document_files` table or a `bytea`
+   column, Alembic migration 0002), so the upload, its file and its job commit together.
+   - `POST /api/admin/documents` (admin only): validate type/size, `documents.register()`,
+     insert an `ingestion_jobs` row, `pg_notify('ingest_jobs', ...)`, reply 202.
+   - `campusgpt/worker.py` (`make worker`): separate process, `LISTEN ingest_jobs` with a
+     30 s polling fallback, claim with `FOR UPDATE SKIP LOCKED`, call `documents.index()`,
+     set the job to done/failed in the same transaction; retry stale jobs (10 min, 3 tries).
+   - `GET /api/admin/documents[/{id}]` for status; admin page in the frontend with upload
+     form and live progress (poll every 2 s).
+   - Tests: enqueue/claim, two workers never take the same job, failure leaves nothing
+     searchable, superseded version disappears from search.
+3. Then: end-term eligibility check, security demo + audit viewer, .ics export, benchmark
+   (Hinglish questions, retrieval-mode comparison hybrid vs semantic vs lexical).
+4. Small debts: design doc libraries table says sentence-transformers (now fastembed);
+   login rate limiting (NFR-S5) still missing.
+
 ### 2026-10-25 — policy documents and RAG done
 Six **synthetic** policy documents in `docs/policies/` (attendance, examinations, fees and
 refunds, hostel, scholarships, academic integrity), consistent with the generated data (75%
