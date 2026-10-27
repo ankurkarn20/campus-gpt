@@ -2,7 +2,7 @@
 PY      := .venv/bin/python
 ALEMBIC := .venv/bin/alembic -c backend/alembic.ini
 
-.PHONY: help db-start db-stop db-status migrate seed seed-small policies llm api web test lint psql
+.PHONY: help db-start db-stop db-status migrate seed seed-small policies llm api worker web test lint psql
 
 help:
 	@echo "make db-start     start the local PostgreSQL server"
@@ -13,6 +13,7 @@ help:
 	@echo "make policies     index the synthetic policy documents in docs/policies"
 	@echo "make llm          run the local model server (Ollama, http://localhost:11434)"
 	@echo "make api          run the API server on http://localhost:8000 (docs at /docs)"
+	@echo "make worker       run the ingestion worker (indexes uploaded documents)"
 	@echo "make web          run the frontend on http://localhost:3000 (needs make api too)"
 	@echo "make test         run the test suite"
 	@echo "make lint         run the linter"
@@ -52,6 +53,9 @@ llm:
 
 api:
 	cd backend && ../.venv/bin/uvicorn campusgpt.api.app:app --reload --port 8000
+
+worker:
+	cd backend && ../$(PY) -m campusgpt.worker
 
 web:
 	cd frontend && npm run dev

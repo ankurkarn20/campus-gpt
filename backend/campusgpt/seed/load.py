@@ -10,7 +10,7 @@ RESET_TABLES = [
     "attendance", "submissions", "payments", "class_sessions", "exams", "assignments",
     "enrollments", "invoices", "course_offerings", "students", "courses", "faculty",
     "programs", "departments", "notices", "messages", "conversations", "audit_logs",
-    "ingestion_jobs", "document_chunks", "documents", "sessions", "users",
+    "ingestion_jobs", "document_files", "document_chunks", "documents", "sessions", "users",
 ]
 LOAD_ORDER = list(COLUMNS)  # parents before children
 

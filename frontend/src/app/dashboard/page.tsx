@@ -42,7 +42,7 @@ export default function DashboardPage() {
       try {
         const who = await api<Me>("/api/auth/me");
         setMe(who);
-        if (who.role !== "student") return;
+        if (who.role === "admin") return router.replace("/admin");
         setData(await api<Dashboard>("/api/student/dashboard"));
       } catch (err) {
         if (err instanceof ApiError && err.status === 401) router.replace("/login");
@@ -77,11 +77,7 @@ export default function DashboardPage() {
         </button>
       </header>
 
-      {me.role !== "student" ? (
-        <Card title="Administrator">
-          <Empty>The admin console is not built yet.</Empty>
-        </Card>
-      ) : !data ? (
+      {!data ? (
         <Centered>Loading…</Centered>
       ) : (
         <ChatProvider suggestions={suggestions(data)}>

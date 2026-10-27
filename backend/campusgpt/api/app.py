@@ -3,7 +3,7 @@ from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
 
-from campusgpt.api import auth, chat, student
+from campusgpt.api import admin, auth, chat, student
 from campusgpt.config import get_settings
 from campusgpt.db import make_async_engine
 from campusgpt.llm import Provider, make_provider
@@ -23,6 +23,7 @@ def create_app(database_url: str | None = None, llm: Provider | None = None) -> 
     app.include_router(auth.router)
     app.include_router(student.router)
     app.include_router(chat.router)
+    app.include_router(admin.router)
 
     @app.get("/api/health")
     async def health():

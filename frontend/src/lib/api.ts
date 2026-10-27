@@ -67,6 +67,24 @@ export type Dashboard = {
   notices: NoticeItem[];
 };
 
+export type AdminDocument = {
+  id: number;
+  title: string;
+  category: string;
+  version: number;
+  status: "processing" | "active" | "superseded" | "failed";
+  file_name: string;
+  created_at: string;
+  chunks: number;
+  job: {
+    state: "queued" | "processing" | "done" | "failed";
+    progress: string | null;
+    attempts: number;
+    error: string | null;
+    updated_at: string;
+  } | null;
+};
+
 export class ApiError extends Error {
   constructor(public status: number, message: string) {
     super(message);
@@ -76,7 +94,10 @@ export class ApiError extends Error {
 export async function api<T>(path: string, init?: RequestInit): Promise<T> {
   const res = await fetch(path, {
     ...init,
-    headers: { "content-type": "application/json", ...init?.headers },
+    // FormData sets its own multipart content type (with the boundary).
+    headers: init?.body instanceof FormData
+      ? init.headers
+      : { "content-type": "application/json", ...init?.headers },
     credentials: "same-origin",
   });
   if (!res.ok) {

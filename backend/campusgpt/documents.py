@@ -13,6 +13,7 @@ import io
 import re
 import sys
 from collections import Counter
+from collections.abc import Awaitable, Callable
 from dataclasses import dataclass
 from pathlib import Path
 
@@ -218,17 +219,25 @@ async def register(db: AsyncSession, *, title: str, category: str, file_name: st
     return doc
 
 
-async def index(db: AsyncSession, doc: Document, data: bytes) -> int:
+async def _no_progress(_: str) -> None:
+    pass
+
+
+async def index(db: AsyncSession, doc: Document, data: bytes,
+                on_progress: Callable[[str], Awaitable[None]] = _no_progress) -> int:
     """Extract, chunk, embed and store `doc`, then make it the active version. Runs in the
-    caller's transaction, so on failure nothing becomes visible to search. Returns the
-    number of chunks."""
+    caller's transaction, so on failure nothing becomes visible to search. `on_progress`
+    is told what is happening (for the admin console). Returns the number of chunks."""
+    await on_progress("Extracting text")
     _, _, blocks = extract(doc.file_name, data)
     chunks = chunk_blocks(blocks)
+    await on_progress(f"Embedding {len(chunks)} chunks")
     vectors = await asyncio.to_thread(embed_passages,
                                       [embedding_text(doc.title, c) for c in chunks])
     db.add_all(DocumentChunk(document_id=doc.id, chunk_index=i, section=c.section,
                              page=c.page, content=c.content, embedding=v)
                for i, (c, v) in enumerate(zip(chunks, vectors, strict=True)))
+    await on_progress("Saving")
     await db.execute(update(Document)
                      .where(func.lower(Document.title) == doc.title.lower(),
                             Document.status == "active", Document.id != doc.id)

@@ -1,4 +1,5 @@
-"""Policy documents, their searchable chunks, the ingestion job queue, and notices."""
+"""Policy documents, their uploaded files, searchable chunks, the ingestion job queue, and
+notices."""
 from datetime import datetime
 
 from pgvector.sqlalchemy import Vector
@@ -12,6 +13,7 @@ from sqlalchemy import (
     Identity,
     Index,
     Integer,
+    LargeBinary,
     SmallInteger,
     String,
     Text,
@@ -48,6 +50,20 @@ class Document(Base):
     file_name: Mapped[str] = mapped_column(String(255))
     content_sha256: Mapped[str] = mapped_column(String(64))
     created_at: Mapped[datetime] = created_at_column()
+
+
+class DocumentFile(Base):
+    """The uploaded file itself. Stored in the database so that the upload, its file and its
+    ingestion job are committed together; the worker reads the bytes from here."""
+
+    __tablename__ = "document_files"
+
+    document_id: Mapped[int] = mapped_column(
+        ForeignKey("documents.id", ondelete="CASCADE"), primary_key=True
+    )
+    content_type: Mapped[str] = mapped_column(String(100))
+    size_bytes: Mapped[int] = mapped_column(Integer)
+    data: Mapped[bytes] = mapped_column(LargeBinary)
 
 
 class DocumentChunk(Base):
@@ -94,6 +110,8 @@ class IngestionJob(Base):
     state: Mapped[str] = mapped_column(String(16), server_default="queued")
     attempts: Mapped[int] = mapped_column(SmallInteger, server_default="0")
     error: Mapped[str | None] = mapped_column(Text)
+    # What the worker is doing right now, shown in the admin console ("Embedding 12 chunks").
+    progress: Mapped[str | None] = mapped_column(String(80))
     created_at: Mapped[datetime] = created_at_column()
     updated_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), server_default=func.now(), nullable=False

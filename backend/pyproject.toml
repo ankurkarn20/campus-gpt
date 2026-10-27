@@ -17,6 +17,7 @@ dependencies = [
     "httpx>=0.27,<1",
     "fastembed>=0.5,<1",
     "pypdf>=5,<7",
+    "python-multipart>=0.0.9,<1",  # file uploads
 ]
 
 [project.optional-dependencies]
@@ -38,4 +39,6 @@ target-version = "py312"
 
 [tool.ruff.lint.flake8-bugbear]
 # FastAPI's dependency-injection idiom: Depends(...) in parameter defaults.
-extend-immutable-calls = ["fastapi.Depends", "campusgpt.auth.require_role"]
+extend-immutable-calls = [
+    "fastapi.Depends", "fastapi.File", "fastapi.Form", "campusgpt.auth.require_role",
+]

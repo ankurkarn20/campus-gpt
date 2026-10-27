@@ -9,6 +9,7 @@ const DEMO_ACCOUNTS = [
   ["student.regular@demo.campusgpt.example", "Regular student"],
   ["student.shortage@demo.campusgpt.example", "Attendance shortage"],
   ["student.fees@demo.campusgpt.example", "Fees overdue"],
+  ["admin@demo.campusgpt.example", "Administrator"],
 ];
 
 export default function LoginPage() {
@@ -23,11 +24,11 @@ export default function LoginPage() {
     setBusy(true);
     setError(null);
     try {
-      await api<Me>("/api/auth/login", {
+      const me = await api<Me>("/api/auth/login", {
         method: "POST",
         body: JSON.stringify({ email, password }),
       });
-      router.replace("/dashboard");
+      router.replace(me.role === "admin" ? "/admin" : "/dashboard");
     } catch (err) {
       setError(err instanceof ApiError ? err.message : "Could not reach the server");
       setBusy(false);

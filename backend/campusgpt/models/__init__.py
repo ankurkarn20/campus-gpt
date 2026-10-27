@@ -18,11 +18,11 @@ from campusgpt.models.academic import (
 from campusgpt.models.accounts import User, UserSession
 from campusgpt.models.base import Base
 from campusgpt.models.chat import AuditLog, Conversation, Message
-from campusgpt.models.documents import Document, DocumentChunk, IngestionJob, Notice
+from campusgpt.models.documents import Document, DocumentChunk, DocumentFile, IngestionJob, Notice
 
 __all__ = [
     "Assignment", "Attendance", "AuditLog", "Base", "ClassSession", "Conversation", "Course",
-    "CourseOffering", "Department", "Document", "DocumentChunk", "Enrollment", "Exam",
-    "Faculty", "IngestionJob", "Invoice", "Message", "Notice", "Payment", "Program",
+    "CourseOffering", "Department", "Document", "DocumentChunk", "DocumentFile", "Enrollment",
+    "Exam", "Faculty", "IngestionJob", "Invoice", "Message", "Notice", "Payment", "Program",
     "Student", "Submission", "User", "UserSession",
 ]
