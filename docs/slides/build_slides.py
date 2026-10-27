@@ -466,7 +466,7 @@ def build(template: Path):
     heading(s, 6.90, 1.10, 6.0, "Libraries")
     textbox(s, 6.90, 1.60, 6.0, 2.6, [
         "**Backend**: FastAPI, Pydantic, SQLAlchemy 2, psycopg 3, Alembic",
-        "**AI & documents**: sentence-transformers, pypdf, httpx",
+        "**AI & documents**: fastembed (BGE-small), pypdf, httpx",
         "**Security**: argon2-cffi, slowapi",
         "**Frontend**: Next.js, React, TypeScript, Tailwind CSS",
         "**Data & tests**: Faker, NumPy, pytest",

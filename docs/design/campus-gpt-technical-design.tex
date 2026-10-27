@@ -553,9 +553,9 @@ simpler to secure.\\
 slowapi & Rate limiting per user and IP & Custom middleware & Decorator-based limits per
 route.\\
 \multicolumn{4}{@{}l}{\textit{AI and document processing}}\\
-sentence-\allowbreak transformers \cite{reimers2019sbert} & Runs the BGE-small embedding
-model~\cite{xiao2024cpack} on the CPU & Paid embedding APIs & Free, offline, and no document
-text leaves the machine.\\
+fastembed & Runs the BGE-small embedding model~\cite{xiao2024cpack} on the CPU through
+ONNX Runtime & sentence-transformers, paid embedding APIs & Free and offline; needs no
+PyTorch, a much larger install; no document text leaves the machine.\\
 pypdf & PDF text extraction & PyMuPDF, pdfplumber & Pure Python with a permissive licence
 (PyMuPDF is AGPL).\\
 \multicolumn{4}{@{}l}{\textit{Synthetic data generation}}\\
@@ -687,10 +687,6 @@ D.~Varrazzo, ``Psycopg 3 documentation.'' [Online]. Available:
 \bibitem{owasp-passwords}
 OWASP Foundation, ``Password Storage Cheat Sheet.'' [Online]. Available:
 \url{https://cheatsheetseries.owasp.org/cheatsheets/Password_Storage_Cheat_Sheet.html}
-
-\bibitem{reimers2019sbert}
-N.~Reimers and I.~Gurevych, ``Sentence-BERT: Sentence embeddings using Siamese
-BERT-networks,'' in \emph{Proc. EMNLP-IJCNLP}, 2019, pp.~3982--3992.
 
 \bibitem{xiao2024cpack}
 S.~Xiao \emph{et al.}, ``C-Pack: Packed resources for general Chinese embeddings,'' in

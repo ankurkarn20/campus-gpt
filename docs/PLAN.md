@@ -8,25 +8,32 @@ Living document. Update it when a decision changes.
 
 ## Progress log
 
-### ▶ START HERE NEXT SESSION (written 2026-10-25)
-1. `make db-start` (the database does not start after a reboot), `make llm` in a second
-   terminal for the local model, then `make test` -- expect 162 passing.
-2. **Admin upload + ingestion worker** (activity: IPC, an evaluated component). Store the
-   uploaded file bytes in the database (planned: new `document_files` table or a `bytea`
-   column, Alembic migration 0002), so the upload, its file and its job commit together.
-   - `POST /api/admin/documents` (admin only): validate type/size, `documents.register()`,
-     insert an `ingestion_jobs` row, `pg_notify('ingest_jobs', ...)`, reply 202.
-   - `campusgpt/worker.py` (`make worker`): separate process, `LISTEN ingest_jobs` with a
-     30 s polling fallback, claim with `FOR UPDATE SKIP LOCKED`, call `documents.index()`,
-     set the job to done/failed in the same transaction; retry stale jobs (10 min, 3 tries).
-   - `GET /api/admin/documents[/{id}]` for status; admin page in the frontend with upload
-     form and live progress (poll every 2 s).
-   - Tests: enqueue/claim, two workers never take the same job, failure leaves nothing
-     searchable, superseded version disappears from search.
-3. Then: end-term eligibility check, security demo + audit viewer, .ics export, benchmark
-   (Hinglish questions, retrieval-mode comparison hybrid vs semantic vs lexical).
-4. Small debts: design doc libraries table says sentence-transformers (now fastembed);
-   login rate limiting (NFR-S5) still missing.
+### ▶ START HERE NEXT SESSION (written 2026-10-27)
+1. `make db-start`, `make migrate` (0002 is new), `make llm` for the local model, then
+   `make test` -- expect 179 passing. For the full app: `make api`, `make worker`, `make web`.
+2. **End-term eligibility check** (attendance >= 75% per course, exam fee paid, no
+   integrity hold): a chat tool + dashboard card, citing the attendance and exam policies.
+3. Then: security demo + audit viewer (admin page next to /admin), .ics calendar export,
+   benchmark (Hinglish questions; retrieval modes hybrid vs semantic vs lexical; local vs
+   hosted model; text-to-SQL security baseline), answer verifier and intent router.
+4. Small debts: login rate limiting (NFR-S5) still missing; SRS/slides may still mention
+   sentence-transformers (design doc and slides fixed).
+
+### 2026-10-27 — admin upload and ingestion worker done (IPC component)
+- `POST /api/admin/documents` (admin only, multipart): checks type (.md/.txt/.pdf), size
+  (10 MB), category and duplicates of an active file (409), then in **one transaction**
+  stores the document, its bytes (new `document_files` table, migration 0002), a `queued`
+  job and `pg_notify('ingest_jobs', job_id)`; replies 202. Audited as `document_upload`.
+- `campusgpt/worker.py` (`make worker`): separate process; `LISTEN ingest_jobs` with a 30 s
+  polling fallback; claims with `FOR UPDATE SKIP LOCKED`; indexes in one transaction that
+  also marks the job done; unreadable files fail at once, other errors retry (3 attempts);
+  jobs with no progress for 10 min are reclaimed; SIGTERM finishes the current job first.
+  Progress ("Embedding 12 chunks") is written to `ingestion_jobs.progress` as it goes.
+- Measured end to end (API, worker and web as separate processes): the worker claimed the
+  job 44 ms after the upload committed, document searchable 1.3 s after upload.
+- Frontend `/admin`: upload form + document table, polls every 2 s while a job runs.
+  Admins are sent there from login/dashboard; "Administrator" added to the demo accounts.
+- Design doc libraries table now says fastembed (ONNX Runtime), not sentence-transformers.
 
 ### 2026-10-25 — policy documents and RAG done
 Six **synthetic** policy documents in `docs/policies/` (attendance, examinations, fees and
