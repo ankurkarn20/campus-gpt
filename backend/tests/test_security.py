@@ -136,6 +136,7 @@ def test_sql_in_tool_arguments_is_only_ever_data(app, client, conn):
         REFUSAL]))
     login(client, SHORTAGE)
     tool = of(ask(client, "attendance"), "tool")[0]
-    assert tool["result"] == {"error": "No enrolled course matches "
-                                       "'DBMS'; DROP TABLE students; --'."}
+    assert tool["result"]["error"].startswith(
+        "No enrolled course matches 'DBMS'; DROP TABLE students; --'.")
+    assert len(tool["result"]["your_courses"]) == 5
     assert conn.execute("SELECT count(*) FROM students").fetchone()[0] == students

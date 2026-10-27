@@ -7,7 +7,7 @@ from fastapi.sse import EventSourceResponse, ServerSentEvent
 from pydantic import BaseModel, Field
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from campusgpt import chat
+from campusgpt import chat, ratelimit
 from campusgpt.api.student import get_now
 from campusgpt.auth import CurrentUser, require_role
 from campusgpt.db import get_db
@@ -35,7 +35,9 @@ async def checked_request(body: ChatRequest,
     return body
 
 
-@router.post("", response_class=EventSourceResponse)
+@router.post("", response_class=EventSourceResponse, dependencies=[
+    Depends(ratelimit.per_ip("chat", "chat_rate_per_ip")),
+    Depends(ratelimit.per_user("chat", "chat_rate_per_user"))])
 async def ask(body: ChatRequest = Depends(checked_request),
               user: CurrentUser = Depends(require_role("student")),
               db: AsyncSession = Depends(get_db),

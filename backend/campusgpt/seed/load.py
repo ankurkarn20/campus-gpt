@@ -8,8 +8,8 @@ from campusgpt.seed.generate import ATTENDANCE_COLUMNS, COLUMNS, Dataset
 # reference users, so they are cleared too; a reseed always starts from a clean state.
 RESET_TABLES = [
     "attendance", "submissions", "payments", "class_sessions", "exams", "assignments",
-    "enrollments", "invoices", "course_offerings", "students", "courses", "faculty",
-    "programs", "departments", "notices", "messages", "conversations", "audit_logs",
+    "enrollments", "timetable_slots", "invoices", "course_offerings", "students", "courses",
+    "faculty", "programs", "departments", "notices", "messages", "conversations", "audit_logs",
     "ingestion_jobs", "document_files", "document_chunks", "documents", "sessions", "users",
 ]
 LOAD_ORDER = list(COLUMNS)  # parents before children

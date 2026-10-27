@@ -467,7 +467,7 @@ def build(template: Path):
     textbox(s, 6.90, 1.60, 6.0, 2.6, [
         "**Backend**: FastAPI, Pydantic, SQLAlchemy 2, psycopg 3, Alembic",
         "**AI & documents**: fastembed (BGE-small), pypdf, httpx",
-        "**Security**: argon2-cffi, slowapi",
+        "**Security**: argon2-cffi, limits (rate limiting)",
         "**Frontend**: Next.js, React, TypeScript, Tailwind CSS",
         "**Data & tests**: Faker, NumPy, pytest",
     ], size=16, bullets=True, space_after=4)

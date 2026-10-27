@@ -3,7 +3,7 @@ from fastapi import APIRouter, Depends, HTTPException, Request, Response, status
 from pydantic import BaseModel, Field
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from campusgpt import auth, student
+from campusgpt import auth, ratelimit, student
 from campusgpt.auth import COOKIE_NAME, CurrentUser, current_user
 from campusgpt.config import get_settings
 from campusgpt.db import get_db
@@ -40,10 +40,14 @@ async def _me(db: AsyncSession, user: CurrentUser) -> Me:
     return me
 
 
-@router.post("/login")
+@router.post("/login", dependencies=[Depends(ratelimit.per_ip("login", "login_rate_per_ip"))])
 async def login(body: LoginRequest, response: Response,
                 db: AsyncSession = Depends(get_db)) -> Me:
-    user = await auth.authenticate(db, body.email, body.password)
+    try:
+        user = await auth.authenticate(db, body.email, body.password)
+    except auth.LoginThrottled as e:
+        await db.commit()  # keep the audit entry
+        raise ratelimit.too_many(e.retry_after, "Too many failed logins for this account") from e
     if user is None:
         await db.commit()  # keep the audit entry for the failed attempt
         raise HTTPException(status.HTTP_401_UNAUTHORIZED, "Incorrect email or password")

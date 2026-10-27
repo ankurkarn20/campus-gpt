@@ -11,7 +11,7 @@ import json
 import re
 from collections.abc import Awaitable, Callable
 from dataclasses import dataclass
-from datetime import date, datetime
+from datetime import date, datetime, time, timedelta
 from decimal import Decimal
 from fractions import Fraction
 from typing import Any, Literal
@@ -20,6 +20,7 @@ from pydantic import BaseModel, ConfigDict, Field, ValidationError
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from campusgpt import retrieval, student
+from campusgpt import term as calendar
 from campusgpt.calc import ATTENDANCE_TARGET, classes_can_miss, classes_needed
 from campusgpt.models import AuditLog
 
@@ -87,8 +88,9 @@ def to_jsonable(value: Any) -> Any:
         return [to_jsonable(v) for v in value]
     if isinstance(value, Decimal):
         return float(value)
-    if isinstance(value, datetime | date):
-        return value.isoformat()
+    if isinstance(value, datetime | date | time):
+        return value.isoformat(timespec="minutes") if isinstance(value, time) \
+            else value.isoformat()
     return value
 
 
@@ -155,6 +157,12 @@ class AssignmentArgs(CourseFilter):
     include_submitted: bool = Field(True, description="Include already submitted work")
 
 
+class ClassesArgs(CourseFilter):
+    day: Literal["today", "tomorrow", "Monday", "Tuesday", "Wednesday", "Thursday",
+                 "Friday"] | None = Field(None, description="Only this day's classes. Omit "
+                                                            "for the next few classes.")
+
+
 class NoticeArgs(ToolArgs):
     query: str | None = Field(None, max_length=100,
                               description="Words that must appear, e.g. 'hackathon'")
@@ -181,6 +189,34 @@ def matches(course: str | None, code: str, title: str) -> bool:
     return needle == code.lower() or needle in title.lower()
 
 
+TITLE_STOPWORDS = {"and", "with", "of", "the", "to", "in", "for"}
+
+
+def mentioned_courses(question: str, courses: list[tuple[str, str]]) -> list[str]:
+    """Codes of the (code, title) courses that `question` names: by code, by a common short
+    name ("dbms"), or by every significant word of the title, singular or plural ("computer
+    network" names Computer Networks)."""
+    q = question.lower()
+    words = set(re.findall(r"[a-z0-9]+", q))
+    found = []
+    for code, title in courses:
+        roots = [w.rstrip("s") for w in re.findall(r"[a-z]+", title.lower())
+                 if w not in TITLE_STOPWORDS]
+        if (code.lower() in words
+                or any(alias in words and fragment in title.lower()
+                       for alias, fragment in ALIASES.items())
+                or (roots and all(root in q for root in roots))):
+            found.append(code)
+    return found
+
+
+def no_such_course(course: str | None, all_courses) -> dict:
+    """The error for a course filter that matched nothing, listing the student's courses so
+    the model can retry with the right code (models often guess codes from titles)."""
+    return {"error": f"No enrolled course matches '{course}'. Retry with one of these codes.",
+            "your_courses": sorted({f"{c.code} {c.title}" for c in all_courses})}
+
+
 # -- tools ---------------------------------------------------------------------------------
 @tool("get_my_profile", "The student's name, roll number, program, semester and section.",
       status="Looking up your profile")
@@ -192,9 +228,9 @@ async def get_my_profile(ctx: ToolContext, args: NoArgs):
       "percentage, whether it is below the 75% requirement, classes needed to recover and "
       "classes that can still be missed.", status="Checking your attendance", args=CourseFilter)
 async def get_my_attendance(ctx: ToolContext, args: CourseFilter):
-    rows = [c for c in await student.attendance(ctx.db, ctx.student_id)
-            if matches(args.course, c.code, c.title)]
-    return rows or {"error": f"No enrolled course matches '{args.course}'."}
+    courses = await student.attendance(ctx.db, ctx.student_id, ctx.today)
+    rows = [c for c in courses if matches(args.course, c.code, c.title)]
+    return rows or no_such_course(args.course, courses)
 
 
 @tool("calculate_attendance_requirement", "Exact attendance arithmetic for one course: "
@@ -202,8 +238,11 @@ async def get_my_attendance(ctx: ToolContext, args: CourseFilter):
       "the next N classes. Use this instead of doing the arithmetic yourself.",
       status="Calculating attendance", args=AttendanceRequirementArgs)
 async def calculate_attendance_requirement(ctx: ToolContext, args: AttendanceRequirementArgs):
-    courses = [c for c in await student.attendance(ctx.db, ctx.student_id)
+    courses = [c for c in await student.attendance(ctx.db, ctx.student_id, ctx.today)
                if matches(args.course, c.code, c.title)]
+    if not courses:
+        return no_such_course(args.course,
+                              await student.attendance(ctx.db, ctx.student_id, ctx.today))
     if len(courses) != 1:
         return {"error": f"'{args.course}' matches {len(courses)} courses; be more specific.",
                 "courses": [c.code for c in courses]}
@@ -220,6 +259,33 @@ async def calculate_attendance_requirement(ctx: ToolContext, args: AttendanceReq
         "can_still_miss": classes_can_miss(attended, held, target),
         "university_minimum_percent": float(ATTENDANCE_TARGET * 100),
     }
+
+
+@tool("get_my_classes", "The student's class timetable: always the next classes (date, time, "
+      "room, faculty) and the weekly timetable; with `day`, also that day's classes or why "
+      "there are none. Use for 'when is my next class', 'classes tomorrow', 'where is my DBMS "
+      "class'.",
+      status="Checking your timetable", args=ClassesArgs)
+async def get_my_classes(ctx: ToolContext, args: ClassesArgs):
+    timetable = await student.timetable(ctx.db, ctx.student_id)
+    slots = [s for s in timetable if matches(args.course, s.code, s.title)]
+    if not slots:
+        return no_such_course(args.course, timetable)
+    result = {"now": ctx.now, "next_classes": student.upcoming_classes(slots, ctx.now, 3)}
+    if args.day:
+        if args.day in ("today", "tomorrow"):
+            day = ctx.today + timedelta(days=args.day == "tomorrow")
+        else:                                  # the next such weekday, today included
+            wd = ("Monday", "Tuesday", "Wednesday", "Thursday", "Friday").index(args.day)
+            day = ctx.today + timedelta(days=(wd - ctx.today.weekday()) % 7)
+        meetings = [m for m in student.upcoming_classes(slots, ctx.now, 1000) if m.date == day]
+        term = calendar.term_for(day)
+        reason = calendar.no_class_reason(term, day) or (
+            "no more classes today" if day == ctx.today else "no classes that day")
+        result["day"] = {"date": day, "weekday": day.strftime("%A"),
+                         "classes": meetings or f"None: {reason}."}
+    result["weekly_timetable"] = slots
+    return result
 
 
 @tool("get_my_exams", "The student's upcoming exams (quiz, mid-term, end-term) with date, "
@@ -256,7 +322,7 @@ async def search_notices(ctx: ToolContext, args: NoticeArgs):
       status="Preparing your week")
 async def get_my_weekly_summary(ctx: ToolContext, args: NoArgs):
     db, sid = ctx.db, ctx.student_id
-    return student.this_week(ctx.today, await student.attendance(db, sid),
+    return student.this_week(ctx.today, await student.attendance(db, sid, ctx.today),
                              await student.upcoming_exams(db, sid, ctx.now),
                              await student.assignments_due(db, sid, ctx.now),
                              await student.fees(db, sid, ctx.today))
@@ -289,9 +355,10 @@ ATTENDANCE_SHORTAGE_RULES = [("Attendance Policy", "3"), ("Attendance Policy", "
       args=CourseFilter)
 async def check_end_term_eligibility(ctx: ToolContext, args: CourseFilter):
     e = await student.eligibility(ctx.db, ctx.student_id, ctx.today)
-    e.courses = [c for c in e.courses if matches(args.course, c.code, c.title)]
+    all_courses, e.courses = e.courses, [c for c in e.courses
+                                         if matches(args.course, c.code, c.title)]
     if not e.courses:
-        return {"error": f"No enrolled course matches '{args.course}'."}
+        return no_such_course(args.course, all_courses)
     e.summary = student.eligibility_summary(e)      # for the courses asked about
     rules = ELIGIBILITY_RULES + (ATTENDANCE_SHORTAGE_RULES if any(
         c.status in ("condonation_needed", "debarred") for c in e.courses) else [])

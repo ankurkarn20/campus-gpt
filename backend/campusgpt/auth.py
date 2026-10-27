@@ -6,6 +6,7 @@ its SHA-256 digest, so a leaked sessions table cannot be replayed. A student's i
 always taken from the session, never from request bodies or model output.
 """
 import hashlib
+import math
 import secrets
 from dataclasses import dataclass
 from datetime import UTC, datetime, timedelta
@@ -13,7 +14,7 @@ from datetime import UTC, datetime, timedelta
 from argon2 import PasswordHasher
 from argon2.exceptions import InvalidHashError, VerificationError
 from fastapi import Depends, HTTPException, Request, status
-from sqlalchemy import delete, select
+from sqlalchemy import delete, func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from campusgpt.config import get_settings
@@ -47,9 +48,43 @@ def _password_matches(password_hash: str | None, password: str) -> bool:
     return password_hash is not None
 
 
+class LoginThrottled(Exception):
+    """Too many failed logins for this account recently; retry after `retry_after` s."""
+
+    def __init__(self, retry_after: int):
+        super().__init__(retry_after)
+        self.retry_after = retry_after
+
+
+async def _throttle_wait(db: AsyncSession, user: User) -> int:
+    """Seconds this account must wait before another attempt (0 if none). Counts the failed
+    logins (rejected passwords, not throttled attempts) since the later of the last success
+    and the start of the window; the wait ends when the oldest of them leaves the window."""
+    settings = get_settings()
+    window = timedelta(minutes=settings.login_failure_window_minutes)
+    since = datetime.now(UTC) - window
+    last_ok = await db.scalar(select(func.max(AuditLog.created_at)).where(
+        AuditLog.user_id == user.id, AuditLog.action == "login",
+        AuditLog.outcome == "success"))
+    failures = (await db.scalars(
+        select(AuditLog.created_at)
+        .where(AuditLog.user_id == user.id, AuditLog.action == "login",
+               AuditLog.outcome == "denied", AuditLog.detail.is_(None),
+               AuditLog.created_at > max(since, last_ok or since))
+        .order_by(AuditLog.created_at.desc()).limit(settings.login_max_failures))).all()
+    if len(failures) < settings.login_max_failures:
+        return 0
+    return max(1, math.ceil((failures[-1] + window - datetime.now(UTC)).total_seconds()))
+
+
 async def authenticate(db: AsyncSession, email: str, password: str) -> User | None:
-    """Return the user if the credentials are valid. Writes an audit entry either way."""
+    """Return the user if the credentials are valid. Writes an audit entry either way.
+    Raises LoginThrottled, without checking the password, while the account is throttled."""
     user = await db.scalar(select(User).where(User.email == email.strip().lower()))
+    if user is not None and (wait := await _throttle_wait(db, user)):
+        db.add(AuditLog(user_id=user.id, action="login", outcome="denied",
+                        detail={"reason": "too many failed attempts"}))
+        raise LoginThrottled(wait)
     ok = _password_matches(user.password_hash if user else None, password)
     if ok and _hasher.check_needs_rehash(user.password_hash):
         user.password_hash = _hasher.hash(password)

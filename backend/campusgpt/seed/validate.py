@@ -55,6 +55,19 @@ CHECKS: dict[str, str] = {
              + (SELECT count(*) FROM notices WHERE NOT is_synthetic)""",
     "class sessions fall on weekdays": """
         SELECT count(*) FROM class_sessions WHERE extract(isodow FROM held_on) > 5""",
+    "class sessions are held on their timetabled weekdays": """
+        SELECT count(*) FROM class_sessions cs
+        WHERE NOT EXISTS (SELECT 1 FROM timetable_slots t WHERE t.offering_id = cs.offering_id
+                          AND t.weekday = extract(isodow FROM cs.held_on) - 1)""",
+    "no student has two classes at the same time": """
+        SELECT count(*) FROM (
+            SELECT e.student_id FROM enrollments e
+            JOIN timetable_slots t ON t.offering_id = e.offering_id
+            GROUP BY e.student_id, t.weekday, t.starts_at HAVING count(*) > 1) clashes""",
+    "no room hosts two classes at the same time": """
+        SELECT count(*) FROM (
+            SELECT 1 FROM timetable_slots
+            GROUP BY room, weekday, starts_at HAVING count(*) > 1) clashes""",
 }
 
 

@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 import { AttendanceChart } from "@/components/AttendanceChart";
 import { ChatProvider, useChat } from "@/components/ChatPanel";
 import { EligibilityCard } from "@/components/EligibilityCard";
+import { TimetableCard } from "@/components/TimetableCard";
 import { Card, Empty, Status, type Tone } from "@/components/ui";
 import { WhatIf } from "@/components/WhatIf";
 import {
@@ -73,9 +74,20 @@ export default function DashboardPage() {
             </p>
           )}
         </div>
-        <button onClick={logout} className="rounded-md border border-border px-3 py-1.5 text-sm hover:bg-surface">
-          Log out
-        </button>
+        <div className="flex items-center gap-2">
+          {me.role === "student" && (
+            <a
+              href="/api/student/calendar.ics" download
+              title="Upcoming exams, assignment deadlines and fee due dates, for Google Calendar, Outlook or your phone"
+              className="rounded-md border border-border px-3 py-1.5 text-sm hover:bg-surface"
+            >
+              Add to calendar
+            </a>
+          )}
+          <button onClick={logout} className="rounded-md border border-border px-3 py-1.5 text-sm hover:bg-surface">
+            Log out
+          </button>
+        </div>
       </header>
 
       {!data ? (
@@ -91,7 +103,7 @@ export default function DashboardPage() {
 
 /** Questions that this student's own data makes worth asking. */
 function suggestions(d: Dashboard): string[] {
-  const out = ["What do I need to take care of this week?"];
+  const out = ["What do I need to take care of this week?", "When is my next class?"];
   const short = d.attendance.find((c) => c.status === "short");
   if (short) out.push(`Can I sit my ${short.title} end-term exam?`,
     `How many ${short.title} classes must I attend to reach 75%?`);
@@ -145,6 +157,8 @@ function StudentDashboard({ data }: { data: Dashboard }) {
         )}
       </Card>
 
+      <TimetableCard slots={data.timetable} next={data.next_classes} />
+
       <EligibilityCard data={data.eligibility} />
 
       <Card title="Attendance" className="lg:col-span-2">
@@ -163,7 +177,7 @@ function StudentDashboard({ data }: { data: Dashboard }) {
                     <td>
                       {c.status === "short" ? <Status tone="critical">Attend next {c.classes_needed}</Status>
                         : c.status === "at_risk" ? <Status tone="warning">Can&apos;t miss any</Status>
-                        : <Status tone="good">Can miss {c.can_miss}</Status>}
+                        : <Status tone="good">{c.classes_left > 0 && c.can_miss === c.classes_left ? `Can miss all ${c.classes_left} left` : `Can miss ${c.can_miss}`}</Status>}
                     </td>
                   </tr>
                 ))}

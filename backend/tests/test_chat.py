@@ -123,7 +123,9 @@ def test_what_if_calculation(app, client):
         [ToolCall("c1", "calculate_attendance_requirement", '{"course": "DBMS", "miss_next": 2}')],
         [TextChunk("done")]]))
     login(client, SHORTAGE)
-    r = of(ask(client, "What if I skip the next 2 DBMS classes?"), "tool")[0]["result"]
+    events = ask(client, "What if I skip the next 2 DBMS classes?")
+    [r] = [t["result"] for t in of(events, "tool")
+           if t["tool"] == "calculate_attendance_requirement"]
     now, after = r["now"], r["after_missing"]
     assert after["held"] == now["held"] + 2 and after["attended"] == now["attended"]
     assert not after["meets_target"]
@@ -214,3 +216,34 @@ async def test_openai_errors_become_provider_unavailable(anyio_backend):
         lambda req: httpx.Response(429, text="rate limited")))
     with pytest.raises(ProviderUnavailable, match="429"):
         await collect(p)
+
+
+@pytest.mark.parametrize("question, course", [
+    ("how many holidays can i take in computer network", "CSE501"),
+    ("can I bunk 2 classes of CSE502?", "CSE502"),
+    ("kitni classes miss kar sakta hoon", None),
+])
+def test_questions_about_missing_classes_get_the_attendance_first(app, client, question,
+                                                                   course):
+    llm = use(app, ScriptedProvider([[TextChunk("You can miss 5.")]]))
+    login(client, REGULAR)
+    tool = of(ask(client, question), "tool")[0]
+    assert tool["tool"] == "get_my_attendance" and tool["arguments"].get("course") == course
+    instructions = llm.seen[0][0]["content"]
+    assert '"can_miss"' in instructions and "get_my_attendance because" in instructions
+
+
+@pytest.mark.parametrize("question", ["what time does the hostel gate close",
+                                      "how do I apply for hostel leave",
+                                      "when is my next exam"])
+def test_other_questions_do_not_fetch_attendance(app, client, question):
+    use(app, ScriptedProvider([[TextChunk("...")]]))
+    login(client, REGULAR)
+    assert not of(ask(client, question), "tool")
+
+
+def test_a_named_course_is_resolved_to_its_code(app, client):
+    llm = use(app, ScriptedProvider([[TextChunk("...")]]))
+    login(client, REGULAR)
+    ask(client, "where is my compiler design class")
+    assert "names this enrolled course: CSE504 Compiler Design" in llm.seen[0][0]["content"]

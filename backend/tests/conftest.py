@@ -11,6 +11,7 @@ from alembic.config import Config
 from fastapi.testclient import TestClient
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from campusgpt import ratelimit
 from campusgpt.api.app import create_app
 from campusgpt.api.student import IST, get_now
 from campusgpt.config import REPO_ROOT, get_settings
@@ -98,6 +99,10 @@ def app(seeded, test_url, monkeypatch):
     # No automatic document search unless a test asks for it, so scripted conversations
     # do not depend on whether the policies happen to be indexed.
     monkeypatch.setattr(get_settings(), "rag_prefetch_min_similarity", 1.0)
+    # Tests log in and chat far faster than a person; test_ratelimit sets real limits.
+    for name in ("login_rate_per_ip", "chat_rate_per_user", "chat_rate_per_ip"):
+        monkeypatch.setattr(get_settings(), name, "10000/minute")
+    ratelimit.reset()
     app = create_app(test_url)
     app.dependency_overrides[get_now] = lambda: NOW
     return app

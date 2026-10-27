@@ -7,9 +7,10 @@ reproducible against a dataset generated for a fixed date.
 """
 import heapq
 from dataclasses import dataclass
-from datetime import date, datetime, timedelta
+from datetime import date, datetime, time, timedelta
 from decimal import Decimal
 from fractions import Fraction
+from zoneinfo import ZoneInfo
 
 from sqlalchemy import and_, column, extract, func, or_, select, table
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -30,10 +31,12 @@ from campusgpt.models import (
     Department,
     Enrollment,
     Exam,
+    Faculty,
     Notice,
     Program,
     Student,
     Submission,
+    TimetableSlot,
 )
 
 # Views defined in the initial migration.
@@ -45,6 +48,7 @@ invoice_balances = table("invoice_balances", column("student_id"), column("term"
                          column("paid"), column("balance"))
 
 WEEK = timedelta(days=7)
+IST = ZoneInfo("Asia/Kolkata")
 
 
 @dataclass
@@ -56,7 +60,8 @@ class CourseAttendance:
     percentage: float
     status: str            # ok | at_risk (cannot miss another class) | short (below target)
     classes_needed: int
-    can_miss: int
+    can_miss: int          # never more than classes_left
+    classes_left: int      # still to be held this term, from the timetable
 
 
 @dataclass
@@ -138,19 +143,91 @@ def _course_join(q, offering_col):
              .join(Course, Course.id == CourseOffering.course_id))
 
 
-async def attendance(db: AsyncSession, student_id: int) -> list[CourseAttendance]:
+def _weekdays():
+    """Scalar subquery: the weekdays (0 = Monday) an offering meets, from its timetable."""
+    return (select(func.array_agg(TimetableSlot.weekday))
+            .where(TimetableSlot.offering_id == attendance_summary.c.offering_id)
+            .scalar_subquery())
+
+
+async def attendance(db: AsyncSession, student_id: int, today: date) -> list[CourseAttendance]:
+    term = calendar.term_for(today)
     a = attendance_summary.c
-    q = _course_join(select(Course.code, Course.title, a.classes_held, a.classes_attended),
+    q = _course_join(select(Course.code, Course.title, a.classes_held, a.classes_attended,
+                            _weekdays()),
                      a.offering_id).where(a.student_id == student_id).order_by(Course.code)
     out = []
-    for code, title, held, attended in await db.execute(q):
+    for code, title, held, attended, weekdays in await db.execute(q):
         needed, spare = classes_needed(attended, held), classes_can_miss(attended, held)
+        left = calendar.classes_left(term, weekdays or [], today)
         short = held > 0 and Fraction(attended, held) < ATTENDANCE_TARGET
         out.append(CourseAttendance(
             code, title, held, attended,
             percentage=round(100 * attended / held, 2) if held else 100.0,
             status="short" if short else "at_risk" if held and spare == 0 else "ok",
-            classes_needed=needed, can_miss=spare))
+            classes_needed=needed, can_miss=min(spare, left), classes_left=left))
+    return out
+
+
+DAY_NAMES = ("Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday")
+
+
+@dataclass
+class ClassSlot:
+    """A weekly class in the student's timetable."""
+    day: str
+    weekday: int           # 0 = Monday
+    starts_at: time
+    ends_at: time
+    code: str
+    title: str
+    room: str
+    faculty: str
+
+
+@dataclass
+class ClassMeeting:
+    """One upcoming class."""
+    date: date
+    day: str
+    starts_at: datetime
+    ends_at: datetime
+    code: str
+    title: str
+    room: str
+    faculty: str
+
+
+async def timetable(db: AsyncSession, student_id: int) -> list[ClassSlot]:
+    t = TimetableSlot
+    q = (_course_join(select(t.weekday, t.starts_at, t.duration_minutes, Course.code,
+                             Course.title, t.room, Faculty.name), t.offering_id)
+         .join(Faculty, Faculty.id == CourseOffering.faculty_id)
+         .join(Enrollment, Enrollment.offering_id == t.offering_id)
+         .where(Enrollment.student_id == student_id).order_by(t.weekday, t.starts_at))
+    return [ClassSlot(DAY_NAMES[wd], wd, start,
+                      (datetime.combine(date.min, start) + timedelta(minutes=minutes)).time(),
+                      code, title, room, faculty)
+            for wd, start, minutes, code, title, room, faculty in await db.execute(q)]
+
+
+def upcoming_classes(slots: list[ClassSlot], now: datetime, limit: int = 5) -> list[ClassMeeting]:
+    """The next `limit` classes after `now` (in IST), on teaching days only: none on
+    holidays, in the mid-term week, or after the last teaching day."""
+    now = now.astimezone(IST)
+    term = calendar.term_for(now.date())
+    out = []
+    for day in calendar.days(now.date(), term.last_teaching_day):
+        if not term.is_teaching_day(day):
+            continue
+        for s in slots:
+            start = datetime.combine(day, s.starts_at, tzinfo=IST)
+            if s.weekday == day.weekday() and start > now:
+                out.append(ClassMeeting(day, s.day, start,
+                                        datetime.combine(day, s.ends_at, tzinfo=IST),
+                                        s.code, s.title, s.room, s.faculty))
+                if len(out) == limit:
+                    return out
     return out
 
 

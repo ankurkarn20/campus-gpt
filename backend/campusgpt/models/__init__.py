@@ -14,6 +14,7 @@ from campusgpt.models.academic import (
     Program,
     Student,
     Submission,
+    TimetableSlot,
 )
 from campusgpt.models.accounts import User, UserSession
 from campusgpt.models.base import Base
@@ -24,5 +25,5 @@ __all__ = [
     "Assignment", "Attendance", "AuditLog", "Base", "ClassSession", "Conversation", "Course",
     "CourseOffering", "Department", "Document", "DocumentChunk", "DocumentFile", "Enrollment",
     "Exam", "Faculty", "IngestionJob", "Invoice", "Message", "Notice", "Payment", "Program",
-    "Student", "Submission", "User", "UserSession",
+    "Student", "Submission", "TimetableSlot", "User", "UserSession",
 ]

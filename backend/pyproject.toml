@@ -18,10 +18,11 @@ dependencies = [
     "fastembed>=0.5,<1",
     "pypdf>=5,<7",
     "python-multipart>=0.0.9,<1",  # file uploads
+    "limits>=3.13,<6",             # rate limiting
 ]
 
 [project.optional-dependencies]
-dev = ["pytest>=8,<9", "ruff>=0.6"]
+dev = ["pytest>=8,<9", "ruff>=0.6", "icalendar>=6,<8"]
 
 [build-system]
 requires = ["setuptools>=68"]

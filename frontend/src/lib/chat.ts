@@ -34,6 +34,7 @@ export const TOOL_LABELS: Record<string, string> = {
   get_my_profile: "Your profile",
   get_my_attendance: "Attendance records",
   calculate_attendance_requirement: "Attendance calculator",
+  get_my_classes: "Timetable",
   get_my_exams: "Exam schedule",
   get_my_assignments: "Assignments",
   get_my_fee_status: "Fee records",

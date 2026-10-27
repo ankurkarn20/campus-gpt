@@ -19,7 +19,21 @@ export type CourseAttendance = {
   status: "ok" | "at_risk" | "short";
   classes_needed: number;
   can_miss: number;
+  classes_left: number;
 };
+
+export type ClassSlot = {
+  day: string;
+  weekday: number; // 0 = Monday
+  starts_at: string; // "14:00:00"
+  ends_at: string;
+  code: string;
+  title: string;
+  room: string;
+  faculty: string;
+};
+
+export type ClassMeeting = Omit<ClassSlot, "weekday"> & { date: string };
 
 export type UpcomingExam = {
   code: string;
@@ -89,6 +103,8 @@ export type Dashboard = {
   fees: Fee[];
   notices: NoticeItem[];
   eligibility: Eligibility;
+  timetable: ClassSlot[];
+  next_classes: ClassMeeting[];
 };
 
 export type AdminDocument = {

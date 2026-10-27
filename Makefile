@@ -52,8 +52,13 @@ llm:
 		|| { echo "Model missing: start 'ollama serve', then run 'ollama pull $(LLM_MODEL_LOCAL)'"; exit 1; }
 	OLLAMA_HOST=127.0.0.1:11434 OLLAMA_CONTEXT_LENGTH=8192 OLLAMA_KEEP_ALIVE=30m ollama serve
 
+# Forwarded headers are not trusted by default: Next.js passes X-Forwarded-For from the
+# browser through unchanged, so trusting it would let anyone pick their own address and
+# dodge the per-IP rate limits. Behind nginx/Caddy that appends the real address, run
+# `make api API_PROXY_HEADERS="--proxy-headers --forwarded-allow-ips 127.0.0.1"`.
+API_PROXY_HEADERS ?= --no-proxy-headers
 api:
-	cd backend && ../.venv/bin/uvicorn campusgpt.api.app:app --reload --port 8000
+	cd backend && ../.venv/bin/uvicorn campusgpt.api.app:app --reload --port 8000 $(API_PROXY_HEADERS)
 
 worker:
 	cd backend && ../$(PY) -m campusgpt.worker

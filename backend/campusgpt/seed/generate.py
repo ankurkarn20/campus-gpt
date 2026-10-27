@@ -28,6 +28,11 @@ IST = ZoneInfo("Asia/Kolkata")
 EMAIL_DOMAIN = "students.campusgpt.example"   # .example is reserved: never a real address
 DEMO_DOMAIN = "demo.campusgpt.example"
 ATTENDANCE_THRESHOLD = 0.75
+# Class meetings: 50 minutes, on the hour, lunch from 13:00 to 14:00.
+CLASS_TIMES = [time(h) for h in (9, 10, 11, 12, 14, 15, 16)]
+CLASS_MINUTES = 50
+CLASSROOMS = [f"{block}-{floor}{n:02d}" for block in "ABCD" for floor in (1, 2, 3, 4)
+              for n in range(1, 13)]
 
 
 def term_for(as_of: date) -> Term:
@@ -90,6 +95,8 @@ COLUMNS = {
                  "section", "is_synthetic"),
     "course_offerings": ("id", "course_id", "faculty_id", "term", "section"),
     "enrollments": ("id", "student_id", "offering_id"),
+    "timetable_slots": ("id", "offering_id", "weekday", "starts_at", "duration_minutes",
+                        "room"),
     "class_sessions": ("id", "offering_id", "held_on"),
     "exams": ("id", "offering_id", "exam_type", "starts_at", "duration_minutes", "room"),
     "assignments": ("id", "offering_id", "title", "due_at", "max_marks"),
@@ -110,6 +117,8 @@ class Generator:
         self.as_of = as_of
         self.term = term_for(as_of)
         self.rng = np.random.default_rng(seed)
+        # Its own stream, so adding the timetable left every other generated value unchanged.
+        self.timetable_rng = np.random.default_rng([seed, 1])
         self.fake = Faker("en_IN")
         self.fake.seed_instance(seed)
         self.demo_password = demo_password
@@ -262,8 +271,10 @@ class Generator:
                     enrollment_ids = [self._add("enrollments", (s["id"], oid))
                                       for s in section_members]
                     self.offerings.append({"id": oid, "course_id": course_id, "dept": dept,
-                                               "students": section_members,
-                                               "enrollment_ids": enrollment_ids})
+                                           "group": (dept, semester, section),
+                                           "faculty_id": faculty_id,
+                                           "students": section_members,
+                                           "enrollment_ids": enrollment_ids})
 
     def _attendance(self):
         term, as_of = self.term, self.as_of
@@ -280,8 +291,10 @@ class Generator:
         self.habit = habit
 
         self.attendance_stats = {}    # enrollment id -> (attended, held)
+        busy = defaultdict(set)       # (who, weekday) -> class times taken
         for off in self.offerings:
             days = sorted(self.rng.choice(5, size=3, replace=False))  # Mon..Fri
+            self._schedule(off, [int(d) for d in days], busy)
             held = [d for d in calendar.days(term.start, last_class)
                     if d.weekday() in days and term.is_teaching_day(d)]
             session_ids = [self._add("class_sessions", (off["id"], d)) for d in held]
@@ -311,6 +324,29 @@ class Generator:
             for i, eid in enumerate(off["enrollment_ids"]):
                 self.attendance_stats[eid] = (int(present[i].sum()), len(held))
             self.ds.attendance.append((off["enrollment_ids"], session_ids, present))
+
+    def _schedule(self, off, days: list[int], busy) -> None:
+        """Timetable slots for an offering meeting on `days`: one time for all its days if
+        possible, never clashing for the section, the room or (when avoidable) the faculty
+        member."""
+        group, teacher = ("section", off["group"]), ("faculty", off["faculty_id"])
+
+        def free(t, day, strict=True):
+            return (t not in busy[group, day] and t not in busy["rooms", day, t]
+                    and (not strict or t not in busy[teacher, day]))
+
+        times = [CLASS_TIMES[i] for i in self.timetable_rng.permutation(len(CLASS_TIMES))]
+        common = next((t for t in times if all(free(t, d) for d in days)), None)
+        for day in days:
+            t = common or next((t for t in times if free(t, day)), None) \
+                or next(t for t in times if free(t, day, strict=False))
+            taken = busy["rooms", day, t]
+            room = next(r for r in (CLASSROOMS[i] for i in self.timetable_rng.permutation(
+                len(CLASSROOMS))) if r not in taken)
+            taken.add(room)
+            busy[group, day].add(t)
+            busy[teacher, day].add(t)
+            self._add("timetable_slots", (off["id"], day, t, CLASS_MINUTES, room))
 
     def _assessments(self):
         term, as_of = self.term, self.as_of

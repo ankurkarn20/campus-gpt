@@ -548,10 +548,11 @@ argon2-cffi & Password hashing with Argon2id & bcrypt & Memory-hard algorithm re
 by OWASP~\cite{owasp-passwords}.\\
 httpx & Async HTTP client for LLM providers & requests, vendor SDKs & Non-blocking; one
 client for all providers avoids vendor lock-in.\\
-sse-starlette & Server-Sent Events responses & WebSockets & One-way streaming is enough and
-simpler to secure.\\
-slowapi & Rate limiting per user and IP & Custom middleware & Decorator-based limits per
-route.\\
+FastAPI \texttt{EventSourceResponse} & Server-Sent Events responses & sse-starlette,
+WebSockets & Built into FastAPI; one-way streaming is enough and simpler to secure.\\
+limits & Moving-window rate limits per user and IP & slowapi, custom counters & The
+engine behind slowapi, used directly as FastAPI dependencies, which also works on the
+streaming chat endpoint.\\
 \multicolumn{4}{@{}l}{\textit{AI and document processing}}\\
 fastembed & Runs the BGE-small embedding model~\cite{xiao2024cpack} on the CPU through
 ONNX Runtime & sentence-transformers, paid embedding APIs & Free and offline; needs no

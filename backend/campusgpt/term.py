@@ -41,6 +41,21 @@ class Term:
                 and not self.mid_term_week <= day < self.mid_term_week + timedelta(days=6))
 
 
+def no_class_reason(term: Term, day: date) -> str | None:
+    """Why there are no classes on `day`, or None on a teaching day."""
+    if term.is_teaching_day(day):
+        return None
+    if day < term.start:
+        return "before the term starts"
+    if day > term.last_teaching_day:
+        return "teaching has ended for the term (end-term examinations)"
+    if day.weekday() >= 5:
+        return "weekend"
+    if (day.month, day.day) in HOLIDAYS:
+        return "public holiday"
+    return "mid-term examination week"
+
+
 def term_for(day: date) -> Term:
     """The term containing `day`: odd terms run from late July, even terms from January."""
     if day.month >= 7:

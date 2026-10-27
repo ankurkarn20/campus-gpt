@@ -19,6 +19,14 @@ class Settings(BaseSettings):
     # Send the session cookie over HTTPS only. Off for local http://localhost development.
     cookie_secure: bool = False
 
+    # Rate limits (NFR-S5), in the `limits` notation: "10/minute", "100/hour".
+    login_rate_per_ip: str = "10/minute"
+    chat_rate_per_user: str = "10/minute"
+    chat_rate_per_ip: str = "30/minute"
+    # An account accepts no logins for a while after this many failed ones in the window.
+    login_max_failures: int = 5
+    login_failure_window_minutes: int = 15
+
     # Chat model: any OpenAI-compatible chat-completions endpoint with tool calling.
     # Groq (default) or Gemini: https://generativelanguage.googleapis.com/v1beta/openai
     # with LLM_MODEL=gemini-3.8-flash.

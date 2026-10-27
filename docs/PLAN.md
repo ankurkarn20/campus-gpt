@@ -8,16 +8,58 @@ Living document. Update it when a decision changes.
 
 ## Progress log
 
-### ▶ START HERE NEXT SESSION (written 2026-10-27, after the security demo)
-1. `make db-start`, `make migrate`, `make llm`, then `make test` -- expect 207 passing.
-   Reseed (`make seed`) before any demo: the data is generated relative to today.
-2. **Login rate limiting** (NFR-S5, slowapi) and **.ics calendar export** (small items).
-3. **Benchmark** (the main remaining work): ~50 questions with expected answers (English
+### ▶ START HERE NEXT SESSION (written 2026-10-27, after the timetable)
+1. `make db-start`, `make migrate` (0003 is new), `make llm`, then `make test` -- expect 230
+   passing. Reseed (`make seed`) before any demo: the data is generated relative to today.
+2. **Benchmark** (the main remaining work): ~50 questions with expected answers (English
    and Hinglish), the four configurations (plain LLM / RAG only / DB only / full), retrieval
    modes, local qwen3 4B vs hosted Groq gpt-oss-120b (`GROQ_API_KEY` is in `.env`), the
-   text-to-SQL security baseline; then the answer verifier and intent router.
-4. Design doc: add the security demonstration (attack suite, audit log) to the security
-   section, and rebuild the PDF.
+   text-to-SQL security baseline. Include the failures found in user testing below.
+3. **Answer verifier** next: every room, time, date, name and number in an answer must
+   appear in a tool result (the model invented a whole class slot after a failed lookup).
+   Then the intent router, measured against the keyword routing now in chat.py.
+4. Design doc: add the security demonstration, the timetable and the routing safeguards.
+
+### 2026-10-27 — timetable, and fixes from the user's own testing
+- **Timetable** (migration 0003, `timetable_slots`): every offering meets 3 weekdays a week
+  at a fixed 50-minute slot (09:00-17:00, lunch 13-14) and room; generated from its own
+  random stream, so all other data is unchanged. Validation proves no student, room or
+  (5,000 students: also no faculty) clashes. `student.timetable()`, `upcoming_classes()`
+  (teaching days only), chat tool `get_my_classes` (always the next classes; for a day, its
+  classes or the exact reason there are none), dashboard Timetable card, and every
+  remaining class in the .ics export.
+- `can_miss` is now capped at the classes left this term (`classes_left` from the timetable).
+- **Failures the user hit, and the fixes** (all in code, not model judgement):
+  1. "how many holidays can i take in computer network" was answered from the Hostel Rules
+     (the policy prefetch matched "holidays"/"leave") without the attendance records.
+     Fix: questions about missing classes (miss/skip/bunk/leave/holiday/chutti + a course
+     or "classes") get `get_my_attendance` prefetched, plus a prompt rule. Live: "12" (then
+     "11", all classes left), Hinglish too.
+  2. "next class when": no timetable existed. Then the model asked for today's classes,
+     got "none", called Tuesday "a weekend" and invented a Monday class. Fix: the tool
+     always returns the next classes and states why a day has none.
+  3. "where is my compiler design class": the model guessed code CSE301, got an error, and
+     invented day, time, room and faculty. Fixes: course-not-found errors list the
+     student's courses; a course named in the question is resolved to its code in the
+     instructions. Live: correct slots, rooms and faculty.
+
+### 2026-10-27 — rate limits (NFR-S5) and calendar export done
+- `campusgpt/ratelimit.py`: moving-window limits (`limits` library, in memory) as FastAPI
+  dependencies: login 10/min per IP; chat 10/min per user and 30/min per IP. Per account:
+  after 5 failed logins in 15 min (counted from the audit log, since the last success)
+  even the right password gets 429 until the oldest failure leaves the window; throttled
+  attempts are audited but do not extend the lock. All limits are settings.
+- **Finding:** Next.js rewrites send no X-Forwarded-For (self-hosted Next 15+ has no client
+  IP) but pass one from the browser through, so uvicorn's default trust of 127.0.0.1 let
+  anyone spoof their address. `make api` now runs with `--no-proxy-headers` (locally the
+  per-IP limits are one global limit); behind nginx/Caddy set `API_PROXY_HEADERS`.
+  Verified: spoofed X-Forwarded-For through the proxy is counted as 127.0.0.1.
+- `GET /api/student/calendar.ics` (`campusgpt/ics.py`, RFC 5545 by hand: CRLF, 75-octet
+  folding, escaping, UTC times, stable UIDs, reminders): upcoming exams, unsubmitted
+  assignments, fees still to pay. "Add to calendar" button on the dashboard. Tests parse
+  the file with `icalendar` (dev dependency).
+- Design doc and slides: libraries now say `limits` (not slowapi) and FastAPI's built-in
+  EventSourceResponse (not sse-starlette).
 
 ### 2026-10-27 — security demonstration and audit viewer done
 - Tool arguments now refuse unknown fields (`ToolArgs`, `extra="forbid"`; schemas say

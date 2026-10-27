@@ -45,6 +45,12 @@ Rules:
 notices, what to do this week) call the tools. Never guess or invent figures, dates or rooms.
 - For attendance arithmetic (classes needed, what if I miss N classes) call \
 calculate_attendance_requirement; do not compute it yourself.
+- For the timetable (next class, classes today or tomorrow, where or when a class is) call \
+get_my_classes.
+- "How many holidays / leaves / bunks can I take in <course>" means how many more classes \
+of that course the student can miss and stay at 75%: answer with "can_miss" from \
+get_my_attendance (and "classes_needed" if they are already below 75%). Hostel leave is a \
+different thing.
 - You do not know this university's rules. For any question about rules or procedures \
 (attendance requirement and condonation, exam eligibility and conduct, grading, re-evaluation, \
 fees, late fees, refunds, hostel, scholarships, misconduct) first call \
@@ -70,6 +76,34 @@ Policy passages found by search_university_documents for the student's latest qu
 (they may not all be relevant; cite them as instructed, and still call the record tools for \
 anything about the student's own records):
 {passages}"""
+
+
+PREFETCHED_RECORDS = """
+
+The student's attendance records, fetched with get_my_attendance because the question is \
+about missing classes ("can_miss" = classes they can still miss and stay at 75%, \
+"classes_needed" = classes to attend in a row to get back to 75%):
+{records}"""
+
+# A question about missing classes: one of these words, plus a course or "class" named.
+MISSING_CLASSES = re.compile(r"\b(miss|missed|skip|bunk|leaves?|holidays?|absent|absence|"
+                             r"chh?utti|off)\b", re.IGNORECASE)
+CLASS_WORDS = re.compile(r"\b(class|classes|lectures?|how many|kitni|kitne)\b", re.IGNORECASE)
+
+
+COURSES_NAMED = """
+
+The question names this enrolled course: {courses}. Use exactly this code in tool calls."""
+
+
+def attendance_prefetch(question: str, named: list[str]) -> ToolCall | None:
+    """The attendance lookup a question about missing classes needs (for the course it
+    names, if exactly one), or None. Small models answer such questions from policy text
+    ("holidays" matches hostel leave) instead of the student's own records."""
+    if not MISSING_CLASSES.search(question) or not (named or CLASS_WORDS.search(question)):
+        return None
+    args = {"course": named[0]} if len(named) == 1 else {}
+    return ToolCall("prefetch-attendance", "get_my_attendance", json.dumps(args))
 
 
 @dataclass
@@ -130,6 +164,19 @@ async def run(db: AsyncSession, provider: Provider, user: CurrentUser, question:
         # tend to answer at once instead of also fetching the student's records.
         messages[0]["content"] += PREFETCHED.format(
             passages=json.dumps(source["result"], ensure_ascii=False))
+    # Courses the question names, resolved here: models guess codes from titles.
+    courses = await student.attendance(db, user.student_id, now.date())
+    named = tools.mentioned_courses(question, [(c.code, c.title) for c in courses])
+    if len(named) == 1:
+        messages[0]["content"] += COURSES_NAMED.format(courses=", ".join(
+            f"{c.code} {c.title}" for c in courses if c.code in named))
+    if call := attendance_prefetch(question, named):
+        yield ChatEvent("status", {"text": tools.TOOLS[call.name].status})
+        source = await _execute(ctx, call)
+        sources.append(source)
+        yield ChatEvent("tool", source)
+        messages[0]["content"] += PREFETCHED_RECORDS.format(
+            records=json.dumps(source["result"], ensure_ascii=False))
     try:
         for round_no in range(MAX_TOOL_ROUNDS + 1):
             # Last round: no tools offered, so the model has to answer.

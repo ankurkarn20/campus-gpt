@@ -3,7 +3,7 @@
 Derived values (attendance percentage, invoice balance and payment status) are not stored;
 the views attendance_summary and invoice_balances compute them (see the initial migration).
 """
-from datetime import date, datetime
+from datetime import date, datetime, time
 from decimal import Decimal
 
 from sqlalchemy import (
@@ -16,6 +16,7 @@ from sqlalchemy import (
     Numeric,
     SmallInteger,
     String,
+    Time,
     UniqueConstraint,
     true,
 )
@@ -103,6 +104,25 @@ class CourseOffering(Base):
     faculty_id: Mapped[int] = mapped_column(ForeignKey("faculty.id"), index=True)
     term: Mapped[str] = mapped_column(String(16))
     section: Mapped[str] = mapped_column(String(4))
+
+
+class TimetableSlot(Base):
+    """A weekly class meeting of an offering: the same weekday, time and room every teaching
+    week (no classes on holidays or in the mid-term week; see campusgpt.term)."""
+
+    __tablename__ = "timetable_slots"
+    __table_args__ = (
+        UniqueConstraint("offering_id", "weekday"),
+        CheckConstraint("weekday BETWEEN 0 AND 4", name="weekday"),   # Monday..Friday
+        CheckConstraint("duration_minutes > 0", name="duration"),
+    )
+
+    id: Mapped[int] = id_column()
+    offering_id: Mapped[int] = mapped_column(ForeignKey("course_offerings.id"), index=True)
+    weekday: Mapped[int] = mapped_column(SmallInteger)
+    starts_at: Mapped[time] = mapped_column(Time)
+    duration_minutes: Mapped[int] = mapped_column(SmallInteger)
+    room: Mapped[str] = mapped_column(String(10))
 
 
 class Enrollment(Base):
