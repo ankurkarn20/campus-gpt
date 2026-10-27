@@ -109,6 +109,37 @@ export type AdminDocument = {
   } | null;
 };
 
+export type AuditEntry = {
+  id: number;
+  created_at: string;
+  user: string | null;
+  role: "student" | "admin" | null;
+  action: string;
+  tool_name: string | null;
+  outcome: "success" | "denied" | "error";
+  detail: Record<string, unknown> | null;
+};
+
+export type AuditPage = {
+  entries: AuditEntry[];
+  next_before: number | null;
+  counts: { action: string; outcome: AuditEntry["outcome"]; count: number }[];
+};
+
+export type Attack = { id: string; category: string; prompt: string };
+
+export type AttackResult = {
+  id: string;
+  category: string;
+  prompt: string;
+  answer: string;
+  tools: { tool: string; arguments: Record<string, unknown>; ok: boolean }[];
+  verdict: "blocked" | "leaked";
+  leaks: string[];
+  notes: string[];
+  seconds: number;
+};
+
 export class ApiError extends Error {
   constructor(public status: number, message: string) {
     super(message);

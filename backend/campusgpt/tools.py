@@ -16,7 +16,7 @@ from decimal import Decimal
 from fractions import Fraction
 from typing import Any, Literal
 
-from pydantic import BaseModel, Field, ValidationError
+from pydantic import BaseModel, ConfigDict, Field, ValidationError
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from campusgpt import retrieval, student
@@ -100,7 +100,19 @@ async def execute(ctx: ToolContext, name: str, raw_args: str) -> Any:
                             outcome="denied"))
         raise ToolNotPermitted(name)
     try:
-        args = spec.args.model_validate(json.loads(raw_args or "{}"))
+        raw = json.loads(raw_args or "{}")
+    except ValueError:
+        raw = None
+    unexpected = sorted(set(raw) - set(spec.args.model_fields)) if isinstance(raw, dict) else []
+    if unexpected:
+        # Names only: the values may be another student's identifiers.
+        ctx.db.add(AuditLog(user_id=ctx.user_id, action="tool_call", tool_name=name,
+                            outcome="denied", detail={"reason": "unexpected arguments",
+                                                      "fields": unexpected[:10]}))
+        raise ToolValidationError(f"unexpected arguments {', '.join(unexpected)}: tools only "
+                                  "ever act on the logged-in student")
+    try:
+        args = spec.args.model_validate(raw if raw is not None else json.loads(raw_args))
     except (ValueError, ValidationError) as e:
         ctx.db.add(AuditLog(user_id=ctx.user_id, action="tool_call", tool_name=name,
                             outcome="error", detail={"reason": "invalid arguments"}))
@@ -112,16 +124,22 @@ async def execute(ctx: ToolContext, name: str, raw_args: str) -> Any:
 
 
 # -- argument models -----------------------------------------------------------------------
-class NoArgs(BaseModel):
+class ToolArgs(BaseModel):
+    """Base of every tool's arguments. Unknown fields are refused rather than ignored, so an
+    attempt to pass e.g. a student_id is rejected and audited instead of silently dropped."""
+    model_config = ConfigDict(extra="forbid")
+
+
+class NoArgs(ToolArgs):
     pass
 
 
-class CourseFilter(BaseModel):
+class CourseFilter(ToolArgs):
     course: str | None = Field(None, description="Course code or part of its title, e.g. "
                                                   "'CSE301' or 'DBMS'. Omit for all courses.")
 
 
-class AttendanceRequirementArgs(BaseModel):
+class AttendanceRequirementArgs(ToolArgs):
     course: str = Field(description="Course code or part of its title")
     target_percent: float = Field(75, ge=1, le=100,
                                   description="Attendance target in percent (default 75)")
@@ -137,13 +155,13 @@ class AssignmentArgs(CourseFilter):
     include_submitted: bool = Field(True, description="Include already submitted work")
 
 
-class NoticeArgs(BaseModel):
+class NoticeArgs(ToolArgs):
     query: str | None = Field(None, max_length=100,
                               description="Words that must appear, e.g. 'hackathon'")
     limit: int = Field(5, ge=1, le=20)
 
 
-class DocumentSearchArgs(BaseModel):
+class DocumentSearchArgs(ToolArgs):
     query: str = Field(min_length=2, max_length=300,
                        description="The rule or topic to look up, in the student's words or "
                                    "as keywords, e.g. 'medical leave attendance condonation'")

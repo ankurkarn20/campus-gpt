@@ -1,10 +1,10 @@
 "use client";
 
-import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
 
+import { AdminShell } from "@/components/AdminShell";
 import { Card, Empty, Status, type Tone } from "@/components/ui";
-import { api, ApiError, formatDateTime, type AdminDocument, type Me } from "@/lib/api";
+import { api, ApiError, formatDateTime, type AdminDocument } from "@/lib/api";
 
 // Mirrors campusgpt.documents.CATEGORIES.
 const CATEGORIES = ["academic", "examinations", "fees", "hostel", "scholarships", "notices", "other"];
@@ -25,33 +25,24 @@ const titleFromFileName = (name: string) =>
   name.replace(/\.[^.]+$/, "").replace(/[-_]+/g, " ").replace(/\b\w/g, (c) => c.toUpperCase()).trim();
 
 export default function AdminPage() {
-  const router = useRouter();
-  const [me, setMe] = useState<Me | null>(null);
+  return (
+    <AdminShell title="Policy documents">
+      <Documents />
+    </AdminShell>
+  );
+}
+
+function Documents() {
   const [docs, setDocs] = useState<AdminDocument[] | null>(null);
   const [error, setError] = useState<string | null>(null);
 
-  const refresh = useCallback(async () => {
-    try {
-      setDocs(await api<AdminDocument[]>("/api/admin/documents"));
-    } catch (err) {
-      if (err instanceof ApiError && err.status === 401) router.replace("/login");
-      else setError(err instanceof Error ? err.message : "Something went wrong");
-    }
-  }, [router]);
+  const refresh = useCallback(() =>
+    api<AdminDocument[]>("/api/admin/documents").then(setDocs).catch((err) =>
+      setError(err instanceof Error ? err.message : "Something went wrong")), []);
 
   useEffect(() => {
-    (async () => {
-      try {
-        const who = await api<Me>("/api/auth/me");
-        if (who.role !== "admin") return router.replace("/dashboard");
-        setMe(who);
-        await refresh();
-      } catch (err) {
-        if (err instanceof ApiError && err.status === 401) router.replace("/login");
-        else setError(err instanceof Error ? err.message : "Something went wrong");
-      }
-    })();
-  }, [router, refresh]);
+    void refresh();
+  }, [refresh]);
 
   // Follow ingestion live: poll while any job is still queued or running.
   const busy = docs?.some(inProgress) ?? false;
@@ -61,36 +52,18 @@ export default function AdminPage() {
     return () => clearInterval(timer);
   }, [busy, refresh]);
 
-  async function logout() {
-    await api("/api/auth/logout", { method: "POST" }).catch(() => undefined);
-    router.replace("/login");
-  }
-
-  if (error) return <Centered>Could not load the admin console: {error}</Centered>;
-  if (!me || !docs) return <Centered>Loading…</Centered>;
+  if (error) return <Empty>Could not load the documents: {error}</Empty>;
+  if (!docs) return <Empty>Loading…</Empty>;
 
   return (
-    <div className="mx-auto w-full max-w-6xl px-4 py-6 sm:px-6">
-      <header className="mb-6 flex flex-wrap items-center justify-between gap-3">
-        <div>
-          <p className="text-sm text-muted">CampusGPT · Administrator</p>
-          <h1 className="text-2xl font-semibold">Policy documents</h1>
-          <p className="text-sm text-muted">{me.email}</p>
-        </div>
-        <button onClick={logout} className="rounded-md border border-border px-3 py-1.5 text-sm hover:bg-surface">
-          Log out
-        </button>
-      </header>
-
-      <div className="grid gap-4 lg:grid-cols-3">
-        <UploadForm onUploaded={refresh} />
-        <Card
-          title="Documents" className="lg:col-span-2"
-          action={busy && <span className="text-xs text-subtle">Updating every {POLL_MS / 1000} s…</span>}
-        >
-          {docs.length === 0 ? <Empty>No documents yet.</Empty> : <DocumentTable docs={docs} />}
-        </Card>
-      </div>
+    <div className="grid gap-4 lg:grid-cols-3">
+      <UploadForm onUploaded={refresh} />
+      <Card
+        title="Documents" className="lg:col-span-2"
+        action={busy && <span className="text-xs text-subtle">Updating every {POLL_MS / 1000} s…</span>}
+      >
+        {docs.length === 0 ? <Empty>No documents yet.</Empty> : <DocumentTable docs={docs} />}
+      </Card>
     </div>
   );
 }
@@ -219,8 +192,4 @@ function JobCell({ job }: { job: AdminDocument["job"] }) {
       {job.state === "queued" && job.error && <span className="block text-subtle">Last error: {job.error}</span>}
     </span>
   );
-}
-
-function Centered({ children }: { children: React.ReactNode }) {
-  return <main className="flex flex-1 items-center justify-center p-8 text-sm text-muted">{children}</main>;
 }

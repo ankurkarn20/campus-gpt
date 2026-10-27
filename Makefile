@@ -2,7 +2,7 @@
 PY      := .venv/bin/python
 ALEMBIC := .venv/bin/alembic -c backend/alembic.ini
 
-.PHONY: help db-start db-stop db-status migrate seed seed-small policies llm api worker web test lint psql
+.PHONY: help db-start db-stop db-status migrate seed seed-small policies llm api worker web security test lint psql
 
 help:
 	@echo "make db-start     start the local PostgreSQL server"
@@ -15,6 +15,7 @@ help:
 	@echo "make api          run the API server on http://localhost:8000 (docs at /docs)"
 	@echo "make worker       run the ingestion worker (indexes uploaded documents)"
 	@echo "make web          run the frontend on http://localhost:3000 (needs make api too)"
+	@echo "make security     run the attack prompts against the chat (needs make llm)"
 	@echo "make test         run the test suite"
 	@echo "make lint         run the linter"
 	@echo "make psql         open a SQL shell on the development database"
@@ -59,6 +60,9 @@ worker:
 
 web:
 	cd frontend && npm run dev
+
+security:
+	cd backend && ../$(PY) -m campusgpt.security
 
 test:
 	cd backend && ../.venv/bin/pytest -q

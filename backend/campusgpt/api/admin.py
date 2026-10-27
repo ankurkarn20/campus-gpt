@@ -1,19 +1,26 @@
-"""Administrator endpoints: upload policy documents and follow their ingestion.
+"""Administrator endpoints: policy documents and their ingestion, the audit log, and the
+security demonstration.
 
 An upload is only stored and queued here; the ingestion worker (a separate process, see
 campusgpt.worker) does the slow part, so the request returns 202 straight away.
 """
-from datetime import datetime
+from collections.abc import AsyncIterable
+from dataclasses import asdict
+from datetime import datetime, timedelta
 from pathlib import Path
 
-from fastapi import APIRouter, Depends, File, Form, HTTPException, UploadFile, status
+from fastapi import APIRouter, Depends, File, Form, HTTPException, Query, UploadFile, status
+from fastapi.sse import EventSourceResponse, ServerSentEvent
 from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from campusgpt import documents, worker
+from campusgpt import documents, security, worker
+from campusgpt.api.chat import get_provider
+from campusgpt.api.student import get_now
 from campusgpt.auth import CurrentUser, require_role
 from campusgpt.db import get_db
-from campusgpt.models import AuditLog, Document, DocumentChunk, IngestionJob
+from campusgpt.llm import Provider
+from campusgpt.models import AuditLog, Document, DocumentChunk, IngestionJob, User
 
 router = APIRouter(prefix="/api/admin", tags=["admin"])
 
@@ -105,3 +112,60 @@ async def upload_document(file: UploadFile = File(...),
     await db.commit()
     await db.refresh(job)
     return _summary(doc, job, 0)
+
+
+# -- audit log -------------------------------------------------------------------------------
+@router.get("/audit")
+async def audit_log(action: str | None = None, outcome: str | None = None,
+                    user: str | None = Query(None, max_length=100,
+                                             description="part of the user's email"),
+                    before: int | None = Query(None, description="entries older than this id"),
+                    limit: int = Query(50, ge=1, le=200),
+                    _: CurrentUser = Depends(require_role("admin")),
+                    db: AsyncSession = Depends(get_db)) -> dict:
+    """Newest first, `limit` at a time (pass `next_before` back as `before` for more), with
+    counts per action and outcome over the last seven days."""
+    q = (select(AuditLog, User.email, User.role)
+         .outerjoin(User, User.id == AuditLog.user_id).order_by(AuditLog.id.desc()))
+    if action:
+        q = q.where(AuditLog.action == action)
+    if outcome:
+        q = q.where(AuditLog.outcome == outcome)
+    if user:
+        q = q.where(User.email.ilike(f"%{user.replace('%', '').replace('_', '')}%"))
+    if before:
+        q = q.where(AuditLog.id < before)
+    rows = (await db.execute(q.limit(limit + 1))).all()
+    counts = await db.execute(
+        select(AuditLog.action, AuditLog.outcome, func.count())
+        .where(AuditLog.created_at > func.now() - timedelta(days=7))
+        .group_by(AuditLog.action, AuditLog.outcome).order_by(AuditLog.action))
+    return {
+        "entries": [{"id": a.id, "created_at": datetime.isoformat(a.created_at),
+                     "user": email, "role": role, "action": a.action,
+                     "tool_name": a.tool_name, "outcome": a.outcome, "detail": a.detail}
+                    for a, email, role in rows[:limit]],
+        "next_before": rows[limit - 1][0].id if len(rows) > limit else None,
+        "counts": [{"action": a, "outcome": o, "count": n} for a, o, n in counts],
+    }
+
+
+# -- security demonstration ------------------------------------------------------------------
+@router.get("/security/attacks")
+async def security_attacks(_: CurrentUser = Depends(require_role("admin"))) -> dict:
+    return {"attacker": security.ATTACKER, "victim": security.VICTIM,
+            "attacks": [asdict(a) for a in security.ATTACKS]}
+
+
+@router.post("/security/run", response_class=EventSourceResponse)
+async def run_security_demo(user: CurrentUser = Depends(require_role("admin")),
+                            db: AsyncSession = Depends(get_db),
+                            provider: Provider = Depends(get_provider),
+                            now: datetime = Depends(get_now)) -> AsyncIterable[ServerSentEvent]:
+    """Runs every attack through the chat model, streaming one `result` event per attack and
+    a final `done` with the size of the students table before and after."""
+    before = await security.students_table_intact(db)
+    async for r in security.run_attacks(db, provider, now, admin_id=user.id):
+        yield ServerSentEvent(event="result", data=asdict(r))
+    yield ServerSentEvent(event="done", data={
+        "students_before": before, "students_after": await security.students_table_intact(db)})
