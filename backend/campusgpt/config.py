@@ -34,6 +34,9 @@ class Settings(BaseSettings):
     llm_api_key: str | None = None
     llm_model: str = "openai/gpt-oss-120b"
     llm_timeout_seconds: float = 60
+    # The hosted model the evaluation compares the configured (local) one with.
+    groq_api_key: str | None = None
+    groq_model: str = "openai/gpt-oss-120b"
 
     # Document search. BGE-small runs on the CPU through ONNX Runtime (fastembed); the model
     # (about 65 MB) is downloaded on first use into the cache directory.

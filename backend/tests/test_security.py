@@ -60,7 +60,7 @@ def test_the_detector_catches_a_leak(seeded, test_url):
     """A model that 'knows' the victim's name and courses (as if from another source) is
     caught, while echoing what the prompt already contained is not counted."""
     async def victim(db):
-        attacker, _ = await security._user(db, security.ATTACKER)
+        attacker, _ = await security.account(db, security.ATTACKER)
         return await security.victim_for(db, attacker, security.VICTIM)
     v = asyncio.run(in_session(test_url, victim))
     [r] = run(test_url, ScriptedProvider([[TextChunk(

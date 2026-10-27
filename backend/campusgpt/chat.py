@@ -106,6 +106,31 @@ def attendance_prefetch(question: str, named: list[str]) -> ToolCall | None:
     return ToolCall("prefetch-attendance", "get_my_attendance", json.dumps(args))
 
 
+PLAIN_PROMPT = """You are the helpdesk assistant of a university, talking to a student.
+
+Today is {today:%A %d %B %Y}. Student: {name}, roll number {roll_no}, {program}, \
+semester {semester}, section {section}.
+
+Answer briefly and directly, in the language the student used (English, Hindi or Hinglish)."""
+
+
+@dataclass(frozen=True)
+class Pipeline:
+    """What the chat may use: the policy documents (search tool and passage prefetch) and
+    the student's records (record tools, attendance prefetch, course-name resolution).
+    Production uses both; the evaluation switches each off to measure what it contributes.
+    With neither, the model answers from its own knowledge with a plain prompt."""
+    documents: bool = True
+    records: bool = True
+    retrieval_mode: retrieval.Mode = "hybrid"
+
+    def offers(self, name: str) -> bool:
+        return self.documents if name == SEARCH_TOOL else self.records
+
+
+FULL = Pipeline()
+
+
 @dataclass
 class ChatEvent:
     kind: str                      # conversation | status | tool | token | done | error
@@ -135,25 +160,31 @@ async def _history(db: AsyncSession, conversation_id: int) -> list[dict]:
 
 async def run(db: AsyncSession, provider: Provider, user: CurrentUser, question: str,
               conversation_id: int | None, now: datetime,
-              prefetch_min_similarity: float | None = None) -> AsyncIterator[ChatEvent]:
+              prefetch_min_similarity: float | None = None,
+              pipeline: Pipeline = FULL) -> AsyncIterator[ChatEvent]:
     if conversation_id is None:
         conversation_id = await start_conversation(db, user, question)
     yield ChatEvent("conversation", {"id": conversation_id})
 
     p = await student.profile(db, user.student_id)
-    messages = [{"role": "system", "content": SYSTEM_PROMPT.format(
+    prompt = SYSTEM_PROMPT if pipeline.documents or pipeline.records else PLAIN_PROMPT
+    messages = [{"role": "system", "content": prompt.format(
         today=now, name=p.name, roll_no=p.roll_no, program=p.program, semester=p.semester, section=p.section)}]
     messages += await _history(db, conversation_id)
     messages.append({"role": "user", "content": question})
     db.add(Message(conversation_id=conversation_id, role="user", content=question))
     await db.commit()
 
-    ctx = tools.ToolContext(db, user.id, user.role, user.student_id, now)
-    definitions = tools.definitions(user.role)
+    ctx = tools.ToolContext(db, user.id, user.role, user.student_id, now,
+                            documents=pipeline.documents,
+                            retrieval_mode=pipeline.retrieval_mode)
+    definitions = [d for d in tools.definitions(user.role)
+                   if pipeline.offers(d["function"]["name"])]
     answer, sources = "", []
     threshold = (get_settings().rag_prefetch_min_similarity if prefetch_min_similarity is None
                  else prefetch_min_similarity)
-    best = await retrieval.search(db, question, k=1, mode="semantic")
+    best = (await retrieval.search(db, question, k=1, mode="semantic")
+            if pipeline.documents else [])
     if best and best[0].similarity >= threshold:
         call = ToolCall("prefetch", SEARCH_TOOL, json.dumps({"query": question[:300]}))
         yield ChatEvent("status", {"text": tools.TOOLS[SEARCH_TOOL].status})
@@ -165,12 +196,13 @@ async def run(db: AsyncSession, provider: Provider, user: CurrentUser, question:
         messages[0]["content"] += PREFETCHED.format(
             passages=json.dumps(source["result"], ensure_ascii=False))
     # Courses the question names, resolved here: models guess codes from titles.
-    courses = await student.attendance(db, user.student_id, now.date())
+    courses = (await student.attendance(db, user.student_id, now.date())
+               if pipeline.records else [])
     named = tools.mentioned_courses(question, [(c.code, c.title) for c in courses])
     if len(named) == 1:
         messages[0]["content"] += COURSES_NAMED.format(courses=", ".join(
             f"{c.code} {c.title}" for c in courses if c.code in named))
-    if call := attendance_prefetch(question, named):
+    if pipeline.records and (call := attendance_prefetch(question, named)):
         yield ChatEvent("status", {"text": tools.TOOLS[call.name].status})
         source = await _execute(ctx, call)
         sources.append(source)

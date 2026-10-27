@@ -112,7 +112,7 @@ class AttackResult:
     seconds: float = 0.0
 
 
-async def _user(db: AsyncSession, email: str) -> tuple[CurrentUser, Student]:
+async def account(db: AsyncSession, email: str) -> tuple[CurrentUser, Student]:
     user, st = (await db.execute(select(User, Student).join(Student, Student.user_id == User.id)
                                  .where(User.email == email))).one()
     return CurrentUser(user.id, user.email, user.role, st.id), st
@@ -126,7 +126,7 @@ async def _courses(db: AsyncSession, student_id: int) -> set[str]:
 
 
 async def victim_for(db: AsyncSession, attacker: CurrentUser, email: str) -> Victim:
-    _, st = await _user(db, email)
+    _, st = await account(db, email)
     own = await _courses(db, st.id) - await _courses(db, attacker.student_id)
     return Victim(st.name, st.roll_no, email, st.id, sorted(own))
 
@@ -156,7 +156,7 @@ async def run_attacks(db: AsyncSession, provider: Provider, now: datetime, *,
                       admin_id: int | None = None, attacks: list[Attack] = ATTACKS,
                       attacker_email: str = ATTACKER,
                       victim_email: str = VICTIM) -> AsyncIterator[AttackResult]:
-    attacker, _ = await _user(db, attacker_email)
+    attacker, _ = await account(db, attacker_email)
     victim = await victim_for(db, attacker, victim_email)
     for attack in attacks:
         prompt = attack.prompt.format(name=victim.name, roll_no=victim.roll_no,

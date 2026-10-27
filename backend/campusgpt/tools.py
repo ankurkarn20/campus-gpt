@@ -40,6 +40,8 @@ class ToolContext:
     role: str
     student_id: int | None
     now: datetime
+    documents: bool = True                  # False: tools return no policy passages
+    retrieval_mode: retrieval.Mode = "hybrid"
 
     @property
     def today(self) -> date:
@@ -363,7 +365,7 @@ async def check_end_term_eligibility(ctx: ToolContext, args: CourseFilter):
     rules = ELIGIBILITY_RULES + (ATTENDANCE_SHORTAGE_RULES if any(
         c.status in ("condonation_needed", "debarred") for c in e.courses) else [])
     return {**to_jsonable(e),
-            "passages": [passage(p) for doc, n in rules
+            "passages": [passage(p) for doc, n in rules if ctx.documents
                          for p in await retrieval.section(ctx.db, doc, n)]}
 
 
@@ -373,4 +375,5 @@ async def check_end_term_eligibility(ctx: ToolContext, args: CourseFilter):
       status="Searching university policies", args=DocumentSearchArgs,
       roles=("student", "admin"))
 async def search_university_documents(ctx: ToolContext, args: DocumentSearchArgs):
-    return [passage(p) for p in await retrieval.search(ctx.db, args.query)]
+    return [passage(p) for p in await retrieval.search(ctx.db, args.query,
+                                                         mode=ctx.retrieval_mode)]
