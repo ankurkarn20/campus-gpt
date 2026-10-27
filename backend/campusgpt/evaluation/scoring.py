@@ -17,7 +17,10 @@ MONTHS = ["january", "february", "march", "april", "may", "june", "july", "augus
 def normalise(answer: str) -> str:
     """Lower case, digit-group separators removed (1,60,000 -> 160000), dashes unified."""
     text = re.sub(r"(?<=\d),(?=\d)", "", answer.lower())
-    return text.replace("–", "-").replace("—", "-").replace(" ", " ")
+    # Every dash and hyphen variant (some models write "D\u2011308" with a non-breaking
+    # hyphen), and narrow or non-breaking spaces.
+    text = re.sub("[\u2010-\u2014\u2212]", "-", text)
+    return re.sub("[\u00a0\u2009\u202f]", " ", text)
 
 
 def numbers(text: str) -> list[float]:

@@ -34,6 +34,7 @@ from tests.conftest import NOW, in_session
     ("gate raat 10:30 baje band", At(time(22, 30)), True),
     ("treated as unfair means", Text("unfair means"), True),
     ("the room is A-1011", Text("A-101"), False),
+    ("Room D\u2011308 at 15:00", Text("D-308"), True),           # non-breaking hyphen
     ("₹3,500 exam fee and ₹1,60,000 tuition", AnyOf(Num(163500), [Num(160000), Num(3500)]),
      True),
 ])
@@ -50,6 +51,7 @@ def test_retry_after_reads_the_hosted_models_wait():
     assert run.retry_after("Please try again in 7.5s.") == 8.5
     assert run.retry_after("Please try again in 12m30s.") == 751
     assert run.retry_after("rate limited") == 20
+    assert run.retry_after("Please try again in 75ms. Need more tokens?") == 1.075
 
 
 def test_the_question_set():
@@ -170,3 +172,13 @@ def test_report_is_built_from_the_results(tmp_path):
     report.write(tmp_path, tmp_path / "RESULTS.md")
     text = (tmp_path / "RESULTS.md").read_text()
     assert "| m | Full CampusGPT | 1 | 100% |" in text and "| p01 |" in text
+
+
+def test_a_statement_the_database_refuses_is_recorded_not_fatal(seeded, test_url):
+    attack = [a for a in security.ATTACKS if a.id == "sql_injection"]
+    dropper = ScriptedProvider([[TextChunk("```sql\nDROP TABLE students\n```")]])
+
+    async def go(db):
+        return await text_to_sql.run_attacks(db, dropper, NOW, attack)
+    [r] = asyncio.run(in_session(test_url, go))
+    assert r.verdict == "blocked" and "read-only" in r.error and r.rows == 0

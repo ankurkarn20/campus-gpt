@@ -1,6 +1,6 @@
 {
  "model": "qwen3:4b-instruct-2507-q4_K_M",
- "run_at": "2026-10-27T19:24:33.772545+05:30",
+ "run_at": "2026-10-27T21:13:34.539922+05:30",
  "results": [
   {
    "id": "p01",
@@ -342,14 +342,14 @@
    "config": "full",
    "model": "qwen3:4b-instruct-2507-q4_K_M",
    "question": "How soon after returning to classes must I apply for condonation?",
-   "answer": "",
+   "answer": "According to the Attendance Policy §4.2, an application for condonation must be submitted to the department office within **seven days** of returning to classes. Applications submitted later are not considered.",
    "facts": [
     "7"
    ],
    "found": [
-    false
+    true
    ],
-   "correct": false,
+   "correct": true,
    "tools": [
     "search_university_documents"
    ],
@@ -357,8 +357,8 @@
    "citations": [],
    "cite_expected": false,
    "citations_verified": true,
-   "seconds": 99.33,
-   "error": "The assistant is unavailable right now. Please try again in a minute.",
+   "seconds": 9.32,
+   "error": null,
    "tags": []
   },
   {
@@ -683,23 +683,28 @@
    "config": "full",
    "model": "qwen3:4b-instruct-2507-q4_K_M",
    "question": "How much is the end-term examination fee?",
-   "answer": "",
+   "answer": "The end-term examination fee is ₹3,500 per course. [Fee Payment and Refund Policy §1]",
    "facts": [
     "3500"
    ],
    "found": [
-    false
+    true
    ],
-   "correct": false,
+   "correct": true,
    "tools": [
     "search_university_documents"
    ],
    "tools_ok": true,
-   "citations": [],
-   "cite_expected": false,
+   "citations": [
+    {
+     "cite": "Fee Payment and Refund Policy §1",
+     "verified": true
+    }
+   ],
+   "cite_expected": true,
    "citations_verified": true,
-   "seconds": 1.2,
-   "error": "The assistant is unavailable right now. Please try again in a minute.",
+   "seconds": 2.08,
+   "error": null,
    "tags": []
   },
   {
@@ -1044,23 +1049,32 @@
    "config": "full",
    "model": "qwen3:4b-instruct-2507-q4_K_M",
    "question": "Agar exam hall mein phone pakda gaya toh kya hoga?",
-   "answer": "",
+   "answer": "Agar exam hall mein phone pakda gaya toh usse **unfair means** ke taur par treat kiya jayega aur iska result **academic misconduct** hoga [Academic Integrity Policy §3].  \n\nIs case mein student ko **exam debar** kar diya jayega aur uski exam eligibility khatam ho jayegi.  \n\nAgar student ne exam mein phone use kiya hai toh uska exam result **invalid** ho jayega aur uski **supplementary exam** ke liye eligibility nahi hoga [Examination Regulations §5].  \n\n⚠️ Note: Phone ko exam hall mein carry karne se **unfair means** ke taur par consider kiya jata hai, chahe wo use kiya ho ya nahi.  \n\nAgar aapne exam mein phone use kiya hai, toh aapko **Academic Integrity Office** se contact karna chahiye.",
    "facts": [
     "unfair means"
    ],
    "found": [
-    false
+    true
    ],
-   "correct": false,
+   "correct": true,
    "tools": [
     "search_university_documents"
    ],
    "tools_ok": true,
-   "citations": [],
-   "cite_expected": false,
+   "citations": [
+    {
+     "cite": "Academic Integrity Policy §3",
+     "verified": true
+    },
+    {
+     "cite": "Examination Regulations §5",
+     "verified": true
+    }
+   ],
+   "cite_expected": true,
    "citations_verified": true,
-   "seconds": 4.07,
-   "error": "The assistant is unavailable right now. Please try again in a minute.",
+   "seconds": 5.71,
+   "error": null,
    "tags": []
   },
   {
@@ -1264,25 +1278,27 @@
    "config": "full",
    "model": "qwen3:4b-instruct-2507-q4_K_M",
    "question": "where is my compiler design class",
-   "answer": "",
+   "answer": "Your **Compiler Design (CSE504)** class is:\n\n- **Thursday, 29 October 2026**: 15:00 – 15:50 in **A-101**\n- **Friday, 30 October 2026**: 15:00 – 15:50 in **C-210**\n- **Monday, 2 November 2026**: 15:00 – 15:50 in **D-308**\n\nNext class is on **Thursday, 29 October 2026** in **A-101**.",
    "facts": [
     "D-308",
     "A-101",
     "C-210"
    ],
    "found": [
-    false,
-    false,
-    false
+    true,
+    true,
+    true
    ],
-   "correct": false,
-   "tools": [],
-   "tools_ok": false,
+   "correct": true,
+   "tools": [
+    "get_my_classes"
+   ],
+   "tools_ok": true,
    "citations": [],
    "cite_expected": null,
    "citations_verified": true,
-   "seconds": 3.9,
-   "error": "The assistant is unavailable right now. Please try again in a minute.",
+   "seconds": 5.06,
+   "error": null,
    "tags": [
     "regression"
    ]
@@ -1504,23 +1520,31 @@
    "config": "full",
    "model": "qwen3:4b-instruct-2507-q4_K_M",
    "question": "Am I eligible for my end-term exams?",
-   "answer": "",
+   "answer": "Yes, you are eligible for all end-term exams.  \n\nHere’s the breakdown:  \n- **Attendance**: In every course, you are at or above 75% (or can stay above it even if you miss all remaining classes).  \n- **Fees**: All examination and tuition fees are paid in full.  \n- **Admit cards**: Will be issued on the student portal starting 18 November 2026.  \n\n✅ **All courses**: Eligible to sit end-term exams.  \n📌 **No action needed** — you are clear to take the exams.  \n\n*Source: Examination Regulations §2 [Examination Regulations §2]*",
    "facts": [
     "yes | eligible for all | you are eligible | you're eligible | you can sit"
    ],
    "found": [
-    false
+    true
    ],
-   "correct": false,
+   "correct": true,
    "tools": [
-    "search_university_documents"
+    "search_university_documents",
+    "get_my_attendance",
+    "get_my_fee_status",
+    "check_end_term_eligibility"
    ],
-   "tools_ok": false,
-   "citations": [],
-   "cite_expected": false,
+   "tools_ok": true,
+   "citations": [
+    {
+     "cite": "Examination Regulations §2",
+     "verified": true
+    }
+   ],
+   "cite_expected": true,
    "citations_verified": true,
-   "seconds": 0.82,
-   "error": "The assistant is unavailable right now. Please try again in a minute.",
+   "seconds": 6.7,
+   "error": null,
    "tags": []
   },
   {
@@ -2164,23 +2188,28 @@
    "config": "rag",
    "model": "qwen3:4b-instruct-2507-q4_K_M",
    "question": "What time do the hostel gates close?",
-   "answer": "",
+   "answer": "The hostel gates close at 10:30 pm. [Hostel Rules §3]",
    "facts": [
     "22:30"
    ],
    "found": [
-    false
+    true
    ],
-   "correct": false,
+   "correct": true,
    "tools": [
     "search_university_documents"
    ],
    "tools_ok": true,
-   "citations": [],
-   "cite_expected": false,
+   "citations": [
+    {
+     "cite": "Hostel Rules §3",
+     "verified": true
+    }
+   ],
+   "cite_expected": true,
    "citations_verified": true,
-   "seconds": 0.77,
-   "error": "The assistant is unavailable right now. Please try again in a minute.",
+   "seconds": 1.43,
+   "error": null,
    "tags": []
   },
   {

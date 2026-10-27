@@ -8,17 +8,39 @@ Living document. Update it when a decision changes.
 
 ## Progress log
 
-### ▶ START HERE NEXT SESSION (written 2026-10-27, after the timetable)
-1. `make db-start`, `make migrate` (0003 is new), `make llm`, then `make test` -- expect 230
-   passing. Reseed (`make seed`) before any demo: the data is generated relative to today.
-2. **Benchmark** (the main remaining work): ~50 questions with expected answers (English
-   and Hinglish), the four configurations (plain LLM / RAG only / DB only / full), retrieval
-   modes, local qwen3 4B vs hosted Groq gpt-oss-120b (`GROQ_API_KEY` is in `.env`), the
-   text-to-SQL security baseline. Include the failures found in user testing below.
-3. **Answer verifier** next: every room, time, date, name and number in an answer must
-   appear in a tool result (the model invented a whole class slot after a failed lookup).
-   Then the intent router, measured against the keyword routing now in chat.py.
-4. Design doc: add the security demonstration, the timetable and the routing safeguards.
+### ▶ START HERE NEXT SESSION (written 2026-10-27, after the benchmark)
+1. `make db-start`, `make llm`, then `make test` -- expect 260 passing. Reseed (`make seed`)
+   before any demo: the data is generated relative to today. Never run the test suite while
+   the local model is answering (7.6 GB RAM: the kernel kills llama-server).
+2. **Finish the hosted runs** (Groq free tier: 8k tokens/min, 200k/day; the daily quota ran
+   out): `cd backend && ../.venv/bin/python -m campusgpt.evaluation chat --model groq
+   --configs full --only r10,c05,c06,c07` (r10 was mis-scored, see below), then
+   `make bench-security MODEL=groq`. Results merge; RESULTS.md regenerates itself.
+3. **Answer verifier** (evidence below), then the intent router.
+4. Design doc: evaluation chapter (tables from docs/evaluation/RESULTS.md), security
+   demonstration, timetable, routing safeguards.
+
+### 2026-10-27 — evaluation done (`campusgpt/evaluation`, docs/evaluation/)
+- 50 questions (34 English, 16 Hinglish; 26 policy, 17 records, 7 combined), ground truth for
+  records computed from the database at run time, scored by code (numbers, dates, times,
+  phrases; no model judge). `chat.Pipeline` switches documents/records off for ablations.
+- **Retrieval** (26 policy questions): hybrid Hit@1 85%, Hit@4 96%, MRR 0.90, p95 < 11 ms.
+  Semantic alone is better for English Hit@1 (95%), hybrid much better for Hinglish
+  (83% vs 50%). Miss: p04 (condonation limit, §4.4) ranks 5th, outside the 4 passages.
+- **Chat, local qwen3 4B**: plain 20%, RAG only 56%, DB only 42%, **full 86%** (policy 96%,
+  records 82%). **Groq gpt-oss-120b, full: 96%** (47/50 so far).
+- **Security**: text-to-SQL baseline (the model writes SQL, told to keep to the student)
+  leaked on 2 of 12 (innocent-sounding "compare me with my section", "who is the topper");
+  several "blocked" queries targeted the victim and returned 0 rows only by chance
+  (by_roll_no: `WHERE s.roll_no = '2023ECE0001'`). CampusGPT 0/12.
+- Findings for the next steps:
+  * "When is my next exam?": local model filtered to end-term exams and skipped the quiz
+    (real data, wrong reading). Fix: a prompt rule that "exam" includes quizzes/mid-terms.
+  * p04 fails on both models: retrieval rank 5. Consider k=5 or section-aware retrieval.
+  * gpt-oss ignores the citation format (writes 【14】): cited 20% vs 81% for qwen.
+  * r04 (holidays) still flips between runs on the 4B model: verifier territory.
+  * Scorer fix: models write room numbers with U+2011 hyphens (r10 on Groq was correct).
+  * Out-of-memory: llama-server killed when the test suite or another heavy process runs.
 
 ### 2026-10-27 — timetable, and fixes from the user's own testing
 - **Timetable** (migration 0003, `timetable_slots`): every offering meets 3 weekdays a week

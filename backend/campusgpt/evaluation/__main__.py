@@ -88,8 +88,10 @@ async def main(args) -> int:
             elif args.command == "security":
                 provider, model = provider_for(args.model)
                 from campusgpt import security
-                baseline = await text_to_sql.run_attacks(db, run.Patient(provider), now)
-                campus = [r async for r in security.run_attacks(db, run.Patient(provider), now)]
+                attacks = security.ATTACKS + text_to_sql.INDIRECT
+                baseline = await text_to_sql.run_attacks(db, run.Patient(provider), now, attacks)
+                campus = [r async for r in security.run_attacks(db, run.Patient(provider), now,
+                                                                attacks=attacks)]
                 save(RESULTS / f"security-{args.model}.json", {
                     "model": model, "run_at": now.isoformat(),
                     "text_to_sql": run.as_dicts(baseline), "campusgpt": run.as_dicts(campus)})

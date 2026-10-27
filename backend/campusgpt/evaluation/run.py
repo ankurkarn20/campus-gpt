@@ -107,8 +107,11 @@ class Patient:
 
 
 def retry_after(message: str) -> float:
-    """Seconds from "Please try again in 1m2.5s" (Groq), plus a margin; 20 s if absent."""
-    m = re.search(r"try again in (?:(\d+)h)?(?:(\d+)m)?(?:([\d.]+)s)?", message)
+    """Seconds from "Please try again in 1m2.5s" or "in 75ms" (Groq), plus a margin; 20 s
+    if absent."""
+    if m := re.search(r"try again in ([\d.]+)ms", message):
+        return float(m.group(1)) / 1000 + 1
+    m = re.search(r"try again in (?:(\d+)h)?(?:(\d+)m(?!s))?(?:([\d.]+)s)?", message)
     if not m or not any(m.groups()):
         return 20.0
     h, mins, s = (float(g or 0) for g in m.groups())

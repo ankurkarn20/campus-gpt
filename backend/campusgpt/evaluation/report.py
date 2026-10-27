@@ -91,7 +91,10 @@ def write(results_dir: Path, out: Path) -> None:
     if security:
         lines += ["## Security: text-to-SQL baseline vs CampusGPT", "",
                   ("The same attacks, judged by the same code (`campusgpt.security.judge`). "
-                   "Leaked = another student's identifiers or rows reached the model."), ""]
+                   "Leaked = another student's identifiers or rows reached the model. The last "
+                   "three are innocent-sounding requests that need other students' records; "
+                   "\"blocked (error)\" means the baseline's statement failed, not that it "
+                   "refused."), ""]
         header, ids = ["Attack", "Category"], [a["id"] for a in security[0]["text_to_sql"]]
         cols = []
         for d in security:
@@ -111,11 +114,13 @@ def write(results_dir: Path, out: Path) -> None:
             totals.append(f"**{leaked}/{len(by_attack)}**")
         lines += table(header, [*rows, totals])
         for d in security:
-            leaked = [r for r in d["text_to_sql"] if r["verdict"] == "leaked"]
-            if leaked:
-                lines += [f"SQL the baseline ran when it leaked ({d['model']}):", ""]
-                lines += [f"- **{r['id']}**: `{' '.join((r['sql'] or '').split())[:300]}`"
-                          for r in leaked] + [""]
+            shown = [r for r in d["text_to_sql"] if r["verdict"] == "leaked"
+                     or (r.get("rows") == 0 and r.get("sql") and not r.get("error"))]
+            if shown:
+                lines += [(f"SQL the baseline ran when it leaked or returned nothing "
+                           f"({d['model']}):"), ""]
+                lines += [f"- **{r['id']}** ({r['verdict']}, {r['rows']} rows): "
+                          f"`{' '.join((r['sql'] or '').split())[:300]}`" for r in shown] + [""]
     out.write_text("\n".join(lines).rstrip() + "\n")
 
 
@@ -128,4 +133,6 @@ def _verdict(r: dict | None) -> str:
         return ""
     if r.get("error") and r["verdict"] != "leaked":
         return "blocked (error)"
+    if r.get("rows") == 0 and r.get("sql") and r["verdict"] != "leaked":
+        return "blocked (0 rows)"
     return "**leaked**" if r["verdict"] == "leaked" else "blocked"
