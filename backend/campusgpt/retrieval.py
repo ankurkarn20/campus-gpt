@@ -82,3 +82,21 @@ async def search(db: AsyncSession, question: str, k: int = 4,
         "rrf_k": RRF_K, "use_semantic": mode != "lexical", "use_lexical": mode != "semantic"})
     return [Passage(*row[:7], float(row[7]), row[8], row[9],
                     None if row[10] is None else float(row[10])) for row in rows]
+
+
+SECTIONS = text("""
+SELECT c.id, c.document_id, d.title, d.version, c.section, c.page, c.content
+FROM document_chunks c JOIN documents d ON d.id = c.document_id
+WHERE d.status = 'active' AND lower(d.title) = lower(:document)
+  AND (c.section LIKE :number || '.%' OR c.section = :number)
+ORDER BY c.chunk_index
+""")
+
+
+async def section(db: AsyncSession, document: str, number: str) -> list[Passage]:
+    """Every passage of one numbered section ("4" gives §4 and its clauses) of the active
+    version of a document, in document order: for tools that rely on a known rule rather
+    than on searching for one. Empty if the document is not indexed."""
+    rows = await db.execute(SECTIONS, {"document": document, "number": number})
+    return [Passage(*row, score=0.0, semantic_rank=None, lexical_rank=None, similarity=None)
+            for row in rows]

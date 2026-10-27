@@ -38,4 +38,5 @@ async def dashboard(user: CurrentUser = Depends(require_role("student")),
         "assignments": [asdict(a) for a in assignments],
         "fees": [asdict(f) for f in fees],
         "notices": [asdict(n) for n in await student.notices(db, sid, now)],
+        "eligibility": asdict(await student.eligibility(db, sid, today)),
     }

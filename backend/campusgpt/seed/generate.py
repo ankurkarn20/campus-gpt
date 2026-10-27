@@ -20,7 +20,9 @@ import numpy as np
 from argon2 import PasswordHasher
 from faker import Faker
 
+from campusgpt import term as calendar
 from campusgpt.seed import catalog
+from campusgpt.term import Term
 
 IST = ZoneInfo("Asia/Kolkata")
 EMAIL_DOMAIN = "students.campusgpt.example"   # .example is reserved: never a real address
@@ -28,38 +30,13 @@ DEMO_DOMAIN = "demo.campusgpt.example"
 ATTENDANCE_THRESHOLD = 0.75
 
 
-@dataclass(frozen=True)
-class Term:
-    code: str
-    start: date          # Monday of the first teaching week
-    end: date            # last day of end-term examinations
-    odd: bool
-
-    @property
-    def mid_term_week(self) -> date:
-        return self.start + timedelta(weeks=7)
-
-    @property
-    def end_term_start(self) -> date:
-        return self.end - timedelta(days=12)
-
-    def semesters(self, duration: int) -> list[int]:
-        return [s for s in range(1 if self.odd else 2, duration + 1, 2)]
-
-
 def term_for(as_of: date) -> Term:
-    if as_of.month >= 7:
-        start, end, odd = date(as_of.year, 7, 20), date(as_of.year, 12, 5), True
-        code = f"{as_of.year}-ODD"
-    else:
-        start, end, odd = date(as_of.year, 1, 12), date(as_of.year, 5, 23), False
-        code = f"{as_of.year}-EVEN"
-    start -= timedelta(days=start.weekday())  # align to Monday
-    term = Term(code, start, end, odd)
-    earliest, latest = start + timedelta(weeks=5), term.end_term_start - timedelta(days=14)
+    """The term to generate, provided `as_of` leaves some of it on either side."""
+    term = calendar.term_for(as_of)
+    earliest, latest = term.start + timedelta(weeks=5), term.end_term_start - timedelta(days=14)
     if not earliest <= as_of <= latest:
         raise ValueError(
-            f"as_of {as_of} must fall between {earliest} and {latest} for term {code}, so the "
+            f"as_of {as_of} must fall between {earliest} and {latest} for term {term.code}, so the "
             "dataset has both past and upcoming activity. Pass --as-of with a date in range."
         )
     return term
@@ -153,12 +130,6 @@ class Generator:
         row_id = len(rows) + 1
         rows.append((row_id, *row))
         return row_id
-
-    def _days(self, start: date, end: date):
-        day = start
-        while day <= end:
-            yield day
-            day += timedelta(days=1)
 
     # -- generation steps --------------------------------------------------------
     def generate(self) -> Dataset:
@@ -296,9 +267,7 @@ class Generator:
 
     def _attendance(self):
         term, as_of = self.term, self.as_of
-        holidays = {date(as_of.year, m, d) for m, d in catalog.HOLIDAYS}
-        mid_week = {term.mid_term_week + timedelta(days=k) for k in range(6)}
-        last_class = min(as_of - timedelta(days=1), term.end_term_start - timedelta(days=1))
+        last_class = min(as_of - timedelta(days=1), term.last_teaching_day)
 
         # Each student has an underlying attendance habit: most attend regularly, some don't.
         habit = {}
@@ -313,8 +282,8 @@ class Generator:
         self.attendance_stats = {}    # enrollment id -> (attended, held)
         for off in self.offerings:
             days = sorted(self.rng.choice(5, size=3, replace=False))  # Mon..Fri
-            held = [d for d in self._days(term.start, last_class)
-                    if d.weekday() in days and d not in holidays and d not in mid_week]
+            held = [d for d in calendar.days(term.start, last_class)
+                    if d.weekday() in days and term.is_teaching_day(d)]
             session_ids = [self._add("class_sessions", (off["id"], d)) for d in held]
             off["session_dates"] = held
             p = np.array([habit[s["id"]] for s in off["students"]])
@@ -454,7 +423,7 @@ class Generator:
         for dept in depts:
             plan(mid - timedelta(days=10), "mid_term", mid, dept)
             plan(mid + timedelta(days=14), "attendance", mid + timedelta(days=24), dept)
-        for m, d in catalog.HOLIDAYS:
+        for m, d in calendar.HOLIDAYS:
             holiday = date(as_of.year, m, d)
             if term.start <= holiday <= term.end:
                 plan(holiday - timedelta(days=6), "holiday", holiday,

@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 
 import { AttendanceChart } from "@/components/AttendanceChart";
 import { ChatProvider, useChat } from "@/components/ChatPanel";
+import { EligibilityCard } from "@/components/EligibilityCard";
 import { Card, Empty, Status, type Tone } from "@/components/ui";
 import { WhatIf } from "@/components/WhatIf";
 import {
@@ -94,6 +95,7 @@ function suggestions(d: Dashboard): string[] {
   const short = d.attendance.find((c) => c.status === "short");
   if (short) out.push(`Can I sit my ${short.title} end-term exam?`,
     `How many ${short.title} classes must I attend to reach 75%?`);
+  if (!d.eligibility.admit_card_ok) out.push("Will I get my admit card for the end-term exams?");
   if (d.fees.some((f) => f.status === "overdue")) out.push("Which of my fees are overdue, and how much do I owe?");
   const exam = d.exams[0];
   if (exam) out.push(`When and where is my ${exam.title} ${EXAM_LABEL[exam.exam_type].toLowerCase()}?`);
@@ -142,6 +144,8 @@ function StudentDashboard({ data }: { data: Dashboard }) {
           </ul>
         )}
       </Card>
+
+      <EligibilityCard data={data.eligibility} />
 
       <Card title="Attendance" className="lg:col-span-2">
         {data.attendance.length === 0 ? <Empty>No classes recorded yet.</Empty> : (

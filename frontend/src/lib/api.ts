@@ -57,6 +57,29 @@ export type ActionItem = {
   when: string | null;
 };
 
+export type CourseEligibility = {
+  code: string;
+  title: string;
+  held: number;
+  attended: number;
+  percentage: number;
+  classes_left: number;
+  status: "safe" | "on_track" | "condonation_needed" | "debarred";
+  attend_at_least: number;
+  best_percentage: number;
+};
+
+export type Eligibility = {
+  term: string;
+  last_teaching_day: string;
+  end_term_starts: string;
+  admit_cards_from: string;
+  admit_card_ok: boolean;
+  fee_holds: { description: string; balance: number; due_date: string; overdue: boolean }[];
+  courses: CourseEligibility[];
+  condonation_limit_exceeded: boolean;
+};
+
 export type Dashboard = {
   today: string;
   this_week: ActionItem[];
@@ -65,6 +88,7 @@ export type Dashboard = {
   assignments: AssignmentDue[];
   fees: Fee[];
   notices: NoticeItem[];
+  eligibility: Eligibility;
 };
 
 export type AdminDocument = {

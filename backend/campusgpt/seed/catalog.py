@@ -128,9 +128,6 @@ DESIGNATION_WEIGHTS = {"Professor": 0.15, "Associate Professor": 0.25,
 SECTION_SIZE = 60          # maximum students per section
 EXAM_FEE = 3_500           # end-term examination fee per student, rupees
 
-# Fixed national holidays (month, day): no classes.
-HOLIDAYS = [(1, 26), (8, 15), (10, 2)]
-
 # kind -> (title, body). Dates in the text always match the generated schedule.
 NOTICE_TEMPLATES = {
     "tuition": ("Tuition fee due for {term}",

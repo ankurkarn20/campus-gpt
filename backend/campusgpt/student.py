@@ -11,12 +11,20 @@ from datetime import date, datetime, timedelta
 from decimal import Decimal
 from fractions import Fraction
 
-from sqlalchemy import and_, column, or_, select, table
+from sqlalchemy import and_, column, extract, func, or_, select, table
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from campusgpt.calc import ATTENDANCE_TARGET, classes_can_miss, classes_needed
+from campusgpt import term as calendar
+from campusgpt.calc import (
+    ATTENDANCE_TARGET,
+    MAX_CONDONED_COURSES,
+    attendance_outlook,
+    classes_can_miss,
+    classes_needed,
+)
 from campusgpt.models import (
     Assignment,
+    ClassSession,
     Course,
     CourseOffering,
     Department,
@@ -31,7 +39,8 @@ from campusgpt.models import (
 # Views defined in the initial migration.
 attendance_summary = table("attendance_summary", column("student_id"), column("offering_id"),
                            column("classes_held"), column("classes_attended"))
-invoice_balances = table("invoice_balances", column("student_id"), column("description"),
+invoice_balances = table("invoice_balances", column("student_id"), column("term"),
+                         column("description"),
                          column("amount"), column("due_date"), column("status"),
                          column("paid"), column("balance"))
 
@@ -184,6 +193,129 @@ async def fees(db: AsyncSession, student_id: int, today: date) -> list[Fee]:
             status = "partially_paid" if paid > 0 else "pending"
         out.append(Fee(description, amount, paid, balance, due, status))
     return out
+
+
+# Invoice descriptions written by the seed generator, followed by the term code.
+EXAM_FEE_PREFIX = "End-term examination fee"
+TUITION_PREFIX = "Tuition fee"
+
+
+@dataclass
+class CourseEligibility:
+    code: str
+    title: str
+    held: int
+    attended: int
+    percentage: float
+    classes_left: int
+    status: str             # safe | on_track | condonation_needed | debarred
+    attend_at_least: int    # of classes_left
+    best_percentage: float  # attending every remaining class
+    verdict: str = ""       # the outcome in words, so the chat model need not interpret it
+
+
+@dataclass
+class FeeHold:
+    description: str
+    balance: Decimal
+    due_date: date
+    overdue: bool
+
+
+@dataclass
+class Eligibility:
+    """Forecast for the end-term examinations (Examination Regulations §2): per course, the
+    attendance the student can still reach; for the admit card, the fees still unpaid."""
+    term: str
+    last_teaching_day: date
+    end_term_starts: date
+    admit_cards_from: date
+    admit_card_ok: bool          # no unpaid exam or tuition fee
+    fee_holds: list[FeeHold]
+    courses: list[CourseEligibility]
+    # More courses need condonation than the two a term allows (Attendance Policy §4.4).
+    condonation_limit_exceeded: bool
+    summary: str = ""
+
+
+# A course where at most this many of the remaining classes can be missed is worth a mention.
+TIGHT_MARGIN = 2
+
+
+def course_verdict(c: CourseEligibility) -> str:
+    left, need, best = c.classes_left, c.attend_at_least, c.best_percentage
+    if c.status == "safe":
+        return f"Eligible: stays at or above 75% even if all {left} classes left are missed."
+    if c.status == "on_track":
+        which = f"all {left}" if need == left else f"at least {need} of the {left}"
+        return (f"Eligible only by attending {which} classes left (then at least 75%); "
+                f"missing more means falling below 75%.")
+    if c.status == "condonation_needed":
+        return (f"Cannot reach 75%: at most {best}% even attending all {left} classes left. "
+                "Can sit the exam only if the shortage is condoned (medical or other approved "
+                "reason, at least 65%).")
+    return (f"Will be debarred from this end-term exam: at most {best}% even attending all "
+            f"{left} classes left, below the 65% minimum for condonation.")
+
+
+def eligibility_summary(e: Eligibility) -> str:
+    todo = [f"pay {rupees(h.balance)} {h.description} "
+            f"({'overdue since' if h.overdue else 'due'} {h.due_date:%d %b})"
+            for h in e.fee_holds]
+    todo += [f"{c.title}: {c.verdict[0].lower()}{c.verdict[1:].rstrip('.')}" for c in e.courses
+             if c.status != "safe"
+             and (c.status != "on_track" or c.classes_left - c.attend_at_least <= TIGHT_MARGIN)]
+    if not todo:
+        return ("Eligible for all end-term exams: no fee holds, and attendance in every course "
+                "can stay at or above 75%.")
+    if any(c.status == "debarred" for c in e.courses):
+        lead = "Will be debarred from at least one end-term exam."
+    elif e.fee_holds:
+        lead = (f"Not eligible yet: admit cards (issued from {e.admit_cards_from:%d %b}) are "
+                "withheld until all fees are paid.")
+    else:
+        lead = "Eligible, on conditions."
+    return f"{lead} To do: " + " ".join(f"({i}) {t}." for i, t in enumerate(todo, 1))
+
+
+async def eligibility(db: AsyncSession, student_id: int, today: date) -> Eligibility:
+    term = calendar.term_for(today)
+    a = attendance_summary.c
+    # The weekdays each course meets, read from the classes held so far (0 = Monday).
+    weekdays = (select(func.array_agg(extract("isodow", ClassSession.held_on).distinct()))
+                .where(ClassSession.offering_id == a.offering_id).scalar_subquery())
+    q = (_course_join(select(Course.code, Course.title, a.classes_held, a.classes_attended,
+                             weekdays), a.offering_id)
+         .where(a.student_id == student_id).order_by(Course.code))
+    courses = []
+    for code, title, held, attended, isodays in await db.execute(q):
+        left = calendar.classes_left(term, [int(d) - 1 for d in isodays or []], today)
+        o = attendance_outlook(attended, held, left)
+        courses.append(CourseEligibility(
+            code, title, held, attended,
+            percentage=round(100 * attended / held, 2) if held else 100.0,
+            classes_left=left, status=o.status, attend_at_least=o.attend_at_least,
+            best_percentage=o.best_percentage))
+        courses[-1].verdict = course_verdict(courses[-1])
+
+    v = invoice_balances.c
+    unpaid = await db.execute(
+        select(v.description, v.balance, v.due_date)
+        .where(v.student_id == student_id, v.term == term.code, v.status == "issued",
+               v.balance > 0,
+               or_(v.description.startswith(EXAM_FEE_PREFIX),
+                   v.description.startswith(TUITION_PREFIX)))
+        .order_by(v.due_date))
+    holds = [FeeHold(d, balance, due, due < today) for d, balance, due in unpaid]
+    condonations = sum(c.status == "condonation_needed" for c in courses)
+    e = Eligibility(
+        term=term.code, last_teaching_day=term.last_teaching_day,
+        end_term_starts=term.end_term_start,
+        admit_cards_from=term.end_term_start - timedelta(days=5),
+        admit_card_ok=not holds, fee_holds=holds, courses=courses,
+        condonation_limit_exceeded=condonations > MAX_CONDONED_COURSES)
+    e.summary = eligibility_summary(e)
+    return e
 
 
 async def notices(db: AsyncSession, student_id: int, now: datetime, limit: int = 5,

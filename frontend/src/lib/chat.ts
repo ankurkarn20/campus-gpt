@@ -68,5 +68,6 @@ export const TOOL_LABELS: Record<string, string> = {
   get_my_fee_status: "Fee records",
   search_notices: "Notices",
   get_my_weekly_summary: "This week",
+  check_end_term_eligibility: "End-term eligibility",
   search_university_documents: "University documents",
 };

@@ -252,13 +252,40 @@ def citation(document: str, section: str | None) -> str:
     return f"{document} §{number.group(1)}" if number else f"{document}, {section}"
 
 
+def passage(p: retrieval.Passage) -> dict:
+    return {"cite": citation(p.document, p.section), "document": p.document,
+            "version": p.version, "section": p.section, "page": p.page, "text": p.content,
+            "chunk_id": p.chunk_id}
+
+
+# The rules the eligibility check applies (document title, section number).
+ELIGIBILITY_RULES = [("Examination Regulations", "2")]
+ATTENDANCE_SHORTAGE_RULES = [("Attendance Policy", "3"), ("Attendance Policy", "4")]
+
+
+@tool("check_end_term_eligibility", "Whether the student can sit each end-term exam: for "
+      "every course, the classes left this term, how many of them must be attended to finish "
+      "at 75% (or whether only condonation or nothing can save it), plus any unpaid "
+      "examination or tuition fee that blocks the admit card. Includes the policy passages "
+      "the check applies, with citations.", status="Checking your end-term eligibility",
+      args=CourseFilter)
+async def check_end_term_eligibility(ctx: ToolContext, args: CourseFilter):
+    e = await student.eligibility(ctx.db, ctx.student_id, ctx.today)
+    e.courses = [c for c in e.courses if matches(args.course, c.code, c.title)]
+    if not e.courses:
+        return {"error": f"No enrolled course matches '{args.course}'."}
+    e.summary = student.eligibility_summary(e)      # for the courses asked about
+    rules = ELIGIBILITY_RULES + (ATTENDANCE_SHORTAGE_RULES if any(
+        c.status in ("condonation_needed", "debarred") for c in e.courses) else [])
+    return {**to_jsonable(e),
+            "passages": [passage(p) for doc, n in rules
+                         for p in await retrieval.section(ctx.db, doc, n)]}
+
+
 @tool("search_university_documents", "Search the university's policy documents (attendance, "
       "examinations, fees and refunds, hostel, scholarships, academic integrity) for the rules "
       "that answer a question. Returns the most relevant passages with a citation for each.",
       status="Searching university policies", args=DocumentSearchArgs,
       roles=("student", "admin"))
 async def search_university_documents(ctx: ToolContext, args: DocumentSearchArgs):
-    return [{"cite": citation(p.document, p.section), "document": p.document,
-             "version": p.version, "section": p.section, "page": p.page, "text": p.content,
-             "chunk_id": p.chunk_id}
-            for p in await retrieval.search(ctx.db, args.query)]
+    return [passage(p) for p in await retrieval.search(ctx.db, args.query)]
