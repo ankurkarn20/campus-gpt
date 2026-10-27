@@ -25,6 +25,7 @@ def ask(client, message, conversation_id=None):
     r = client.post("/api/chat", json={"message": message, "conversation_id": conversation_id})
     assert r.status_code == 200, r.text
     assert r.headers["content-type"].startswith("text/event-stream")
+    assert r.headers["cache-control"] == "no-cache, no-transform"   # proxies must not gzip it
     events = []
     for block in r.text.strip().split("\n\n"):
         fields = dict(line.split(": ", 1) for line in block.splitlines() if ": " in line)

@@ -131,6 +131,7 @@ function ChatWindow({ turns, busy, suggestions, onSend, onClose, onReset }: {
           </button>
         </div>
       </header>
+      <ChatProgress turn={turns[turns.length - 1]} />
 
       <div className="flex-1 space-y-4 overflow-y-auto px-4 py-4">
         {turns.length === 0 && (
@@ -187,6 +188,46 @@ function ChatWindow({ turns, busy, suggestions, onSend, onClose, onReset }: {
         </button>
       </form>
     </aside>
+  );
+}
+
+// How far an answer has got, from what the stream has shown so far. There is no true
+// percentage: each tool step moves the bar further through the first part, and the answer's
+// length moves it through the rest. It fills when the answer is done, then fades out.
+function progress(t: Turn): number {
+  if (!t.pending) return 1;
+  if (t.text) return 0.6 + 0.35 * (1 - Math.exp(-t.text.length / 600));
+  return 0.1 + 0.45 * (1 - 0.6 ** t.steps.length);
+}
+
+function stage(t: Turn): string {
+  if (!t.pending) return "Done";
+  if (t.text) return "Writing the answer";
+  return t.steps[t.steps.length - 1] ?? "Thinking";
+}
+
+function ChatProgress({ turn }: { turn?: Turn }) {
+  const active = turn?.role === "assistant" && turn.pending;
+  // The finished turn whose bar has faded out; a running turn is always shown.
+  const [faded, setFaded] = useState<Turn>();
+  useEffect(() => {
+    if (active || !turn) return;
+    const hide = setTimeout(() => setFaded(turn), 600);
+    return () => clearTimeout(hide);
+  }, [active, turn]);
+  if (!turn || turn.role !== "assistant" || faded === turn) return null;
+  const value = progress(turn);
+  return (
+    <div
+      role="progressbar" aria-label={stage(turn)} aria-valuemin={0} aria-valuemax={100}
+      aria-valuenow={Math.round(value * 100)}
+      className={`h-1 w-full bg-border transition-opacity duration-500 ${active ? "opacity-100" : "opacity-0"}`}
+    >
+      <div
+        className={`h-full transition-[width] duration-500 ease-out ${turn.error ? "bg-critical" : "bg-accent"}`}
+        style={{ width: `${value * 100}%` }}
+      />
+    </div>
   );
 }
 
