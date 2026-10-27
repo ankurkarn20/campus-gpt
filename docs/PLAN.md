@@ -8,16 +8,35 @@ Living document. Update it when a decision changes.
 
 ## Progress log
 
-### ▶ START HERE NEXT SESSION (written 2026-10-27)
-1. `make db-start`, `make migrate` (0002 is new), `make llm` for the local model, then
-   `make test` -- expect 179 passing. For the full app: `make api`, `make worker`, `make web`.
-2. **End-term eligibility check** (attendance >= 75% per course, exam fee paid, no
-   integrity hold): a chat tool + dashboard card, citing the attendance and exam policies.
-3. Then: security demo + audit viewer (admin page next to /admin), .ics calendar export,
-   benchmark (Hinglish questions; retrieval modes hybrid vs semantic vs lexical; local vs
+### ▶ START HERE NEXT SESSION (written 2026-10-27, after eligibility)
+1. `make db-start`, `make migrate`, `make llm`, then `make test` -- expect 197 passing.
+   Reseed (`make seed`) before any demo: the data is generated relative to today.
+2. **Security demo + audit viewer**: admin page listing audit_logs (logins, tool calls,
+   uploads) with filters; scripted attack prompts (other student's data, prompt injection,
+   "ignore rules") showing refusals and the audit trail.
+3. Then: .ics calendar export, benchmark (Hinglish questions; retrieval modes; local vs
    hosted model; text-to-SQL security baseline), answer verifier and intent router.
-4. Small debts: login rate limiting (NFR-S5) still missing; SRS/slides may still mention
-   sentence-transformers (design doc and slides fixed).
+4. Small debts: login rate limiting (NFR-S5) still missing.
+
+### 2026-10-27 — end-term eligibility check done
+- `campusgpt/term.py`: the academic calendar (terms, holidays, mid-term week, teaching
+  days), now shared by the seed generator and the forecast; a test checks that classes held
+  plus classes left equals the generated timetable for every offering.
+- `calc.attendance_outlook`: exact (Fraction) forecast per course -- safe / on_track
+  (attend at least n of the classes left) / condonation_needed (65-75% reachable) /
+  debarred. `student.eligibility()` adds unpaid exam/tuition fees that block the admit card
+  (Examination Regulations §2) and the two-condonations-per-term limit.
+- Chat tool `check_end_term_eligibility` returns the forecast, a deterministic `summary`
+  and per-course `verdict` in words, and the policy passages it applies (Examination
+  Regulations §2, plus Attendance Policy §3-4 when a course needs condonation), so its
+  citations are verified. `check_citations` now accepts passages from any tool.
+- Dashboard: "End-term eligibility" card (admit card + per-course outlook, Ask button).
+- **Observed with the local qwen3 4B model** (evidence for the answer verifier): before the
+  verdict/summary fields it answered "No, you cannot sit" for a student who was on track,
+  invented "no condonation available" and wrapped citations in made-up URLs. With them,
+  English answers were correct and cited; a Hinglish question still got an English answer
+  that invented a shortage in a course at 84% (first run) or dropped the "attend all 12
+  classes" detail (second run).
 
 ### 2026-10-27 — admin upload and ingestion worker done (IPC component)
 - `POST /api/admin/documents` (admin only, multipart): checks type (.md/.txt/.pdf), size
