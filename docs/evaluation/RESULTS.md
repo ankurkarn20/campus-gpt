@@ -20,90 +20,83 @@ Run 2026-10-27T19:23. Rank of the first passage from an expected section among t
 
 ## Chat, end to end
 
-Correct = every expected fact is in the answer. Tools = the expected tools were called. Cited = an expected section was cited. Latency excludes time spent waiting out the hosted model's rate limits.
+Correct = every expected fact is in the answer. Tools = the expected tools were called. Cited = an expected section was cited. Revised = the verifier found figures or citations with no source and had the answer rewritten; Unsupported = answers still stating such figures. Latency excludes time spent waiting out the hosted model's rate limits.
 
-| Model | Configuration | n | Correct | Policy | Records | Combined | English | Hinglish | Regressions | Tools | Cited | Unverified citations | Errors | Median latency |
-|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
-| openai/gpt-oss-120b | Full CampusGPT | 47 | 96% | 96% | 94% | 100% | 94% | 100% | 75% | 100% | 20% | 1 | 0 | 3.2 s |
-| qwen3:4b-instruct-2507-q4_K_M | Plain LLM | 50 | 20% | 31% | 6% | 14% | 21% | 17% | 0% | – | 0% | 0 | 0 | 1.1 s |
-| qwen3:4b-instruct-2507-q4_K_M | RAG only | 50 | 56% | 92% | 6% | 43% | 58% | 50% | 0% | 51% | 72% | 1 | 0 | 1.8 s |
-| qwen3:4b-instruct-2507-q4_K_M | DB tools only | 50 | 42% | 8% | 88% | 57% | 42% | 42% | 100% | 43% | 3% | 8 | 0 | 1.9 s |
-| qwen3:4b-instruct-2507-q4_K_M | Full CampusGPT | 50 | 86% | 96% | 82% | 57% | 90% | 75% | 75% | 94% | 81% | 1 | 0 | 4.8 s |
+| Model | Configuration | n | Correct | Policy | Records | Combined | English | Hinglish | Regressions | Tools | Cited | Unverified citations | Revised | Unsupported | Errors | Median latency |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| openai/gpt-oss-120b | Full, no verifier | 47 | 96% | 96% | 94% | 100% | 94% | 100% | 75% | 100% | 20% | 1 | – | – | 0 | 3.2 s |
+| qwen3:4b-instruct-2507-q4_K_M | Plain LLM | 50 | 20% | 31% | 6% | 14% | 21% | 17% | 0% | – | 0% | 0 | – | – | 0 | 1.1 s |
+| qwen3:4b-instruct-2507-q4_K_M | RAG only | 50 | 56% | 92% | 6% | 43% | 58% | 50% | 0% | 51% | 72% | 1 | – | – | 0 | 1.8 s |
+| qwen3:4b-instruct-2507-q4_K_M | DB tools only | 50 | 42% | 8% | 88% | 57% | 42% | 42% | 100% | 43% | 3% | 8 | – | – | 0 | 1.9 s |
+| qwen3:4b-instruct-2507-q4_K_M | Full, no verifier | 50 | 86% | 96% | 82% | 57% | 90% | 75% | 75% | 94% | 81% | 1 | – | – | 0 | 4.8 s |
+| qwen3:4b-instruct-2507-q4_K_M | Full CampusGPT | 50 | 90% | 92% | 88% | 86% | 95% | 75% | 100% | 98% | 81% | 0 | 2 | 1 | 0 | 3.8 s |
 
 ### Per question
 
 ✓ correct, ✗ wrong, blank not run.
 
-| Id | Question | gpt-oss-120b full | qwen3 plain | qwen3 rag | qwen3 db | qwen3 full |
-|---|---|---|---|---|---|---|
-| p01 | What is the minimum attendance I need in each course? | ✓ | ✓ | ✓ | ✓ | ✓ |
-| p02 | What is the lowest attendance that can be condoned? | ✓ | ✗ | ✓ | ✗ | ✓ |
-| p03 | How soon after returning to classes must I apply for condonation? | ✓ | ✓ | ✓ | ✗ | ✓ |
-| p04 | For how many courses can attendance be condoned in one term? | ✗ | ✓ | ✗ | ✗ | ✓ |
-| p05 | Within how many days must I report attendance that was recorded wrongly? | ✓ | ✗ | ✓ | ✗ | ✓ |
-| p06 | How much does re-evaluation of an answer script cost? | ✓ | ✗ | ✓ | ✗ | ✓ |
-| p07 | How many days do I have to apply for re-evaluation? | ✓ | ✗ | ✓ | ✗ | ✓ |
-| p08 | What is the fee for a supplementary exam? | ✓ | ✓ | ✓ | ✗ | ✓ |
-| p09 | What is the minimum pass mark in a course? | ✓ | ✓ | ✓ | ✗ | ✓ |
-| p10 | How late can I enter the exam hall after the exam starts? | ✓ | ✗ | ✓ | ✗ | ✓ |
-| p11 | What happens if I am caught with my phone in the exam hall? | ✓ | ✗ | ✓ | ✗ | ✓ |
-| p12 | How do I get my answer sheet rechecked after the results? | ✓ | ✗ | ✓ | ✗ | ✓ |
-| p13 | What is the late fee for paying tuition after the due date? | ✓ | ✗ | ✓ | ✗ | ✓ |
-| p14 | How much is the end-term examination fee? | ✓ | ✗ | ✓ | ✗ | ✓ |
-| p15 | If I withdraw within 15 days of the term starting, how much of the tuition fee is refunded? | ✓ | ✗ | ✓ | ✗ | ✓ |
-| p16 | Can I pay my tuition fee in instalments? | ✓ | ✗ | ✓ | ✗ | ✓ |
-| p17 | What time do the hostel gates close? | ✓ | ✗ | ✓ | ✗ | ✓ |
-| p18 | How far in advance do I need to apply for hostel leave? | ✓ | ✗ | ✓ | ✗ | ✓ |
-| p19 | What CGPA do I need for the merit-cum-means scholarship? | ✓ | ✓ | ✓ | ✗ | ✓ |
-| p20 | What is the penalty for submitting an assignment late? | ✓ | ✗ | ✓ | ✗ | ✓ |
-| h01 | Exam dene ke liye kitni attendance chahiye? | ✓ | ✓ | ✓ | ✓ | ✓ |
-| h02 | Re-evaluation ki fees kitni hai? | ✓ | ✗ | ✓ | ✗ | ✓ |
-| h03 | Hostel ka gate kitne baje band hota hai? | ✓ | ✓ | ✗ | ✗ | ✗ |
-| h04 | Tuition fees late bharne pe kitna fine lagta hai? | ✓ | ✗ | ✓ | ✗ | ✓ |
-| h05 | Supplementary exam ki fees kya hai? | ✓ | ✗ | ✓ | ✗ | ✓ |
-| h06 | Agar exam hall mein phone pakda gaya toh kya hoga? | ✓ | ✗ | ✓ | ✗ | ✓ |
-| r01 | What is my attendance in Machine Learning? | ✓ | ✗ | ✗ | ✓ | ✓ |
-| r02 | Which of my courses are below 75% attendance? | ✓ | ✗ | ✗ | ✓ | ✓ |
-| r03 | How many classes in a row do I need to attend in Database Management Systems to get back to 75%? | ✓ | ✗ | ✗ | ✓ | ✓ |
-| r04 | how many holidays can i take in computer network | ✓ | ✗ | ✗ | ✓ | ✗ |
-| r05 | If I miss the next 2 classes of Object-Oriented Programming with Java, what will my attendance be? | ✓ | ✗ | ✗ | ✓ | ✓ |
-| r06 | When is my next exam? | ✓ | ✗ | ✗ | ✗ | ✗ |
-| r07 | How much fee do I still owe? | ✓ | ✗ | ✗ | ✓ | ✓ |
-| r08 | Which assignments are due this week? | ✓ | ✗ | ✗ | ✓ | ✓ |
-| r09 | next class when | ✓ | ✗ | ✗ | ✓ | ✓ |
-| r10 | where is my compiler design class | ✗ | ✗ | ✗ | ✓ | ✓ |
-| r11 | Are any of my fees overdue? | ✓ | ✗ | ✗ | ✓ | ✓ |
-| r12 | What is my roll number? | ✓ | ✓ | ✓ | ✓ | ✓ |
-| k01 | DBMS mein meri attendance kitni hai? | ✓ | ✗ | ✗ | ✓ | ✓ |
-| k02 | kal kaunsi classes hain? | ✓ | ✗ | ✗ | ✓ | ✓ |
-| k03 | mera kitna fees baaki hai? | ✓ | ✗ | ✗ | ✓ | ✓ |
-| k04 | Computer Networks mein kitni chutti le sakta hoon? | ✓ | ✗ | ✗ | ✓ | ✓ |
-| k05 | agla exam kab hai? | ✓ | ✗ | ✗ | ✗ | ✗ |
-| c01 | Can I sit all my end-term exams? | ✓ | ✗ | ✗ | ✓ | ✓ |
-| c02 | Will I get my admit card? | ✓ | ✗ | ✗ | ✓ | ✓ |
-| c03 | Am I eligible for my end-term exams? | ✓ | ✓ | ✓ | ✓ | ✓ |
-| c04 | My DBMS attendance is low. Can it be condoned, and down to what minimum? | ✓ | ✗ | ✗ | ✗ | ✗ |
-| c05 | How much late fee will I be charged on my overdue tuition? |  | ✗ | ✓ | ✗ | ✓ |
-| c06 | Agar main DBMS ki ek aur class miss karun toh kya main end-term de paunga? |  | ✗ | ✓ | ✗ | ✗ |
-| c07 | If I miss 3 Machine Learning classes for a hostel leave, will I still be above 75%? |  | ✗ | ✗ | ✓ | ✗ |
+| Id | Question | gpt-oss-120b noverify | qwen3 plain | qwen3 rag | qwen3 db | qwen3 noverify | qwen3 full |
+|---|---|---|---|---|---|---|---|
+| p01 | What is the minimum attendance I need in each course? | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
+| p02 | What is the lowest attendance that can be condoned? | ✓ | ✗ | ✓ | ✗ | ✓ | ✓ |
+| p03 | How soon after returning to classes must I apply for condonation? | ✓ | ✓ | ✓ | ✗ | ✓ | ✓ |
+| p04 | For how many courses can attendance be condoned in one term? | ✗ | ✓ | ✗ | ✗ | ✓ | ✗ |
+| p05 | Within how many days must I report attendance that was recorded wrongly? | ✓ | ✗ | ✓ | ✗ | ✓ | ✓ |
+| p06 | How much does re-evaluation of an answer script cost? | ✓ | ✗ | ✓ | ✗ | ✓ | ✓ |
+| p07 | How many days do I have to apply for re-evaluation? | ✓ | ✗ | ✓ | ✗ | ✓ | ✓ |
+| p08 | What is the fee for a supplementary exam? | ✓ | ✓ | ✓ | ✗ | ✓ | ✓ |
+| p09 | What is the minimum pass mark in a course? | ✓ | ✓ | ✓ | ✗ | ✓ | ✓ |
+| p10 | How late can I enter the exam hall after the exam starts? | ✓ | ✗ | ✓ | ✗ | ✓ | ✓ |
+| p11 | What happens if I am caught with my phone in the exam hall? | ✓ | ✗ | ✓ | ✗ | ✓ | ✓ |
+| p12 | How do I get my answer sheet rechecked after the results? | ✓ | ✗ | ✓ | ✗ | ✓ | ✓ |
+| p13 | What is the late fee for paying tuition after the due date? | ✓ | ✗ | ✓ | ✗ | ✓ | ✓ |
+| p14 | How much is the end-term examination fee? | ✓ | ✗ | ✓ | ✗ | ✓ | ✓ |
+| p15 | If I withdraw within 15 days of the term starting, how much of the tuition fee is refunded? | ✓ | ✗ | ✓ | ✗ | ✓ | ✓ |
+| p16 | Can I pay my tuition fee in instalments? | ✓ | ✗ | ✓ | ✗ | ✓ | ✓ |
+| p17 | What time do the hostel gates close? | ✓ | ✗ | ✓ | ✗ | ✓ | ✓ |
+| p18 | How far in advance do I need to apply for hostel leave? | ✓ | ✗ | ✓ | ✗ | ✓ | ✓ |
+| p19 | What CGPA do I need for the merit-cum-means scholarship? | ✓ | ✓ | ✓ | ✗ | ✓ | ✓ |
+| p20 | What is the penalty for submitting an assignment late? | ✓ | ✗ | ✓ | ✗ | ✓ | ✓ |
+| h01 | Exam dene ke liye kitni attendance chahiye? | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
+| h02 | Re-evaluation ki fees kitni hai? | ✓ | ✗ | ✓ | ✗ | ✓ | ✓ |
+| h03 | Hostel ka gate kitne baje band hota hai? | ✓ | ✓ | ✗ | ✗ | ✗ | ✗ |
+| h04 | Tuition fees late bharne pe kitna fine lagta hai? | ✓ | ✗ | ✓ | ✗ | ✓ | ✓ |
+| h05 | Supplementary exam ki fees kya hai? | ✓ | ✗ | ✓ | ✗ | ✓ | ✓ |
+| h06 | Agar exam hall mein phone pakda gaya toh kya hoga? | ✓ | ✗ | ✓ | ✗ | ✓ | ✓ |
+| r01 | What is my attendance in Machine Learning? | ✓ | ✗ | ✗ | ✓ | ✓ | ✓ |
+| r02 | Which of my courses are below 75% attendance? | ✓ | ✗ | ✗ | ✓ | ✓ | ✓ |
+| r03 | How many classes in a row do I need to attend in Database Management Systems to get back to 75%? | ✓ | ✗ | ✗ | ✓ | ✓ | ✓ |
+| r04 | how many holidays can i take in computer network | ✓ | ✗ | ✗ | ✓ | ✗ | ✓ |
+| r05 | If I miss the next 2 classes of Object-Oriented Programming with Java, what will my attendance be? | ✓ | ✗ | ✗ | ✓ | ✓ | ✓ |
+| r06 | When is my next exam? | ✓ | ✗ | ✗ | ✗ | ✗ | ✗ |
+| r07 | How much fee do I still owe? | ✓ | ✗ | ✗ | ✓ | ✓ | ✓ |
+| r08 | Which assignments are due this week? | ✓ | ✗ | ✗ | ✓ | ✓ | ✓ |
+| r09 | next class when | ✓ | ✗ | ✗ | ✓ | ✓ | ✓ |
+| r10 | where is my compiler design class | ✗ | ✗ | ✗ | ✓ | ✓ | ✓ |
+| r11 | Are any of my fees overdue? | ✓ | ✗ | ✗ | ✓ | ✓ | ✓ |
+| r12 | What is my roll number? | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
+| k01 | DBMS mein meri attendance kitni hai? | ✓ | ✗ | ✗ | ✓ | ✓ | ✓ |
+| k02 | kal kaunsi classes hain? | ✓ | ✗ | ✗ | ✓ | ✓ | ✓ |
+| k03 | mera kitna fees baaki hai? | ✓ | ✗ | ✗ | ✓ | ✓ | ✓ |
+| k04 | Computer Networks mein kitni chutti le sakta hoon? | ✓ | ✗ | ✗ | ✓ | ✓ | ✓ |
+| k05 | agla exam kab hai? | ✓ | ✗ | ✗ | ✗ | ✗ | ✗ |
+| c01 | Can I sit all my end-term exams? | ✓ | ✗ | ✗ | ✓ | ✓ | ✓ |
+| c02 | Will I get my admit card? | ✓ | ✗ | ✗ | ✓ | ✓ | ✓ |
+| c03 | Am I eligible for my end-term exams? | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
+| c04 | My DBMS attendance is low. Can it be condoned, and down to what minimum? | ✓ | ✗ | ✗ | ✗ | ✗ | ✓ |
+| c05 | How much late fee will I be charged on my overdue tuition? |  | ✗ | ✓ | ✗ | ✓ | ✓ |
+| c06 | Agar main DBMS ki ek aur class miss karun toh kya main end-term de paunga? |  | ✗ | ✓ | ✗ | ✗ | ✗ |
+| c07 | If I miss 3 Machine Learning classes for a hostel leave, will I still be above 75%? |  | ✗ | ✗ | ✓ | ✗ | ✓ |
 
 ### Full CampusGPT: wrong answers
 
-- **p04** (openai/gpt-oss-120b) For how many courses can attendance be condoned in one term?  
-  tools: search_university_documents, search_university_documents; missing: 2  
-  > The university’s policies do not set a specific limit on the number of courses for which attendance can be **condoned** in a term. - The **Examination Regulations** state that a student may sit the end‑term exam of a course if “attendance in that course is at least 75%, **or has been condoned under the Attendance Policy (minimum 65%)**”【14】. - The **Attendance Policy** itself only defines the 75 %
-
-- **r10** (openai/gpt-oss-120b) where is my compiler design class  
-  tools: get_my_classes, get_my_classes; missing: D-308, A-101, C-210  
-  > **Compiler Design (CSE504)** - **Next class:** Thursday, 29 Oct 2026 – 15:00 to 15:50, **Room A‑101**, Dr. Pahal Balay - **Weekly schedule:** - Monday – 15:00‑15:50 – **Room D‑308** - Thursday – 15:00‑15:50 – **Room A‑101** - Friday – 15:00‑15:50 – **Room C‑210** So today’s class isn’t scheduled; the upcoming session is on Thursday in **Room A‑101**.
-
-- **r04** (qwen3:4b-instruct-2507-q4_K_M) how many holidays can i take in computer network  
-  tools: search_university_documents, get_my_attendance; missing: 11  
-  > Hostel leave does not count as attendance, and holidays are not covered under the attendance policy as per the university rules. For **Computer Networks (CSE501)**, your current attendance is **97.5%** (39/40 classes attended), which is well above the 75% requirement. Thus, you can take **holidays** (or leave) without affecting your attendance, as long as you do not miss classes. However, **classe
+- **p04** (qwen3:4b-instruct-2507-q4_K_M) For how many courses can attendance be condoned in one term?  
+  tools: search_university_documents; missing: 2; revised by the verifier  
+  > The university policy does not specify how many courses can have attendance condoned in one term. No passage in the retrieved documents mentions a limit on the number of courses for which attendance condonation is allowed. Thus, based on the available information, **the number of courses for which attendance can be condoned is not stated in the policy**.
 
 - **h03** (qwen3:4b-instruct-2507-q4_K_M) Hostel ka gate kitne baje band hota hai?  
   tools: none; missing: 22:30  
-  > I cannot provide information about the hostel gate timings as it is not covered in the university records or documents I have access to. Please check with the hostel administration or the university's official notice board for accurate details.
+  > I cannot provide information about the hostel gate closing time as it is not covered in any of the university records or policies I have access to. Please check with the hostel administration or the university's official notice board for this information.
 
 - **r06** (qwen3:4b-instruct-2507-q4_K_M) When is my next exam?  
   tools: search_university_documents, get_my_exams; missing: 2026-10-30, Information Security | CSE505  
@@ -113,17 +106,9 @@ Correct = every expected fact is in the answer. Tools = the expected tools were 
   tools: get_my_exams; missing: 2026-10-29  
   > Your next end-term exam is on **25 November 2026** for **Design and Analysis of Algorithms (CSE305)** at 10:00 AM in Room C-302. Other exams: - **26 November**: Computer Organization and Architecture (CSE304) – 2:00 PM, Room B-310 - **28 November**: Discrete Mathematics (CSE303) – 2:00 PM, Room B-110 - **30 November**: Database Management Systems (CSE301) – 10:00 AM, Room B-301 - **3 December**: O
 
-- **c04** (qwen3:4b-instruct-2507-q4_K_M) My DBMS attendance is low. Can it be condoned, and down to what minimum?  
-  tools: search_university_documents, search_university_documents; missing: 68.42  
-  > I cannot provide information about condonation or minimum attendance for your course without checking the official university policy and your specific attendance record. Let me first check the relevant policy and your attendance record for CSE301 (Database Management Systems). Condonation is possible under specific circumstances, but only down to a minimum of **65%** attendance in a course [Attend
-
 - **c06** (qwen3:4b-instruct-2507-q4_K_M) Agar main DBMS ki ek aur class miss karun toh kya main end-term de paunga?  
   tools: get_my_attendance, get_my_attendance, check_end_term_eligibility; missing: condonation | condone | condoned  
-  > No, you cannot sit the end-term exam for CSE301 if you miss another class. Here’s why: - Your current attendance is **68.42%** (26/38). - You **can miss 0 more classes** and still stay at 75% — missing even one class will drop your attendance below 75%. - To be eligible, you must attend **all 12 remaining classes** to reach at least 75%. - Even if you attend all 12, you will only reach **76.0%**, 
-
-- **c07** (qwen3:4b-instruct-2507-q4_K_M) If I miss 3 Machine Learning classes for a hostel leave, will I still be above 75%?  
-  tools: search_university_documents, get_my_attendance, get_my_attendance; missing: 78.57  
-  > Yes, you will still be above 75% if you miss 3 Machine Learning classes for a hostel leave. Here’s why: - Your current attendance is **84.62%** (33 out of 39 classes). - You can still miss **5 classes** and remain above 75%. - Missing 3 classes is well within this limit. ✅ You are safe — no need to worry about debarred status or missing end-term exams for this course. Note: Hostel leave does not c
+  > No, you cannot sit the end-term exam for CSE301 if you miss another class. Here’s why: - Your current attendance is **68.42%** (26/38). - You **need to attend all 12 remaining classes** to reach at least 75% attendance. - Missing even one more class will bring your attendance below 75%. - **Verdict**: "Eligible only by attending all 12 classes left (then at least 75%); missing more means falling b
 
 ## Security: text-to-SQL baseline vs CampusGPT
 

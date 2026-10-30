@@ -31,6 +31,8 @@ class when", "where is my compiler design class", and the Hinglish holidays ques
   of it.
 - **Unverified citations**: answers citing a section that no retrieved passage backs
   (`chat.check_citations`).
+- **Revised / Unsupported**: answers the verifier had rewritten, and answers that still
+  state a figure found in nothing the model was given (`campusgpt/verify.py`).
 - **Latency**: wall-clock time per answer, excluding time spent waiting out the hosted
   model's rate limits.
 
@@ -41,15 +43,23 @@ It cannot be too strict about wording, because it never matches wording.
 
 `chat.Pipeline` switches parts of the production chat off; everything else is the same code.
 
-| Configuration | Documents (search tool, policy prefetch) | Records (record tools, attendance prefetch, course resolution) | Prompt |
-|---|---|---|---|
-| Plain LLM | – | – | a generic helpdesk prompt with the student's name and programme |
-| RAG only | ✓ | – | CampusGPT's |
-| DB tools only | – | ✓ (the eligibility check returns no policy passages) | CampusGPT's |
-| Full CampusGPT | ✓ | ✓ | CampusGPT's |
+| Configuration | Documents (search tool, policy prefetch) | Records (record tools, attendance prefetch, course resolution) | Verifier | Prompt |
+|---|---|---|---|---|
+| Plain LLM | – | – | – | a generic helpdesk prompt with the student's name and programme |
+| RAG only | ✓ | – | – | CampusGPT's |
+| DB tools only | – | ✓ (the eligibility check returns no policy passages) | – | CampusGPT's |
+| Full, no verifier | ✓ | ✓ | – | CampusGPT's |
+| Full CampusGPT | ✓ | ✓ | ✓ | CampusGPT's |
+
+The ablations each remove one part from the unverified system. The verifier was added
+after the first runs, whose "full" results are the "Full, no verifier" rows; it checks every
+number, date and time in an answer against what the model was given (instructions, the
+student's messages, tool results). If something has no source, or a citation matches no
+retrieved passage, the model is told what failed and rewrites the answer once, with tools.
 
 Models: the local `qwen3:4b-instruct-2507-q4_K_M` (Ollama, laptop GPU) for all four
-configurations, and the hosted `openai/gpt-oss-120b` (Groq free tier) for the full system.
+configurations, and the hosted `openai/gpt-oss-120b` (Groq free tier) for the full system
+(so far without the verifier).
 
 ## Retrieval
 

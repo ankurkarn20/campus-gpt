@@ -13,6 +13,8 @@ type Turn = {
   steps: string[];          // live status lines while tools run
   sources: ToolSource[];
   citations?: Citation[];
+  unsupported?: string[];   // figures the verifier found no source for, after the rewrite
+  revised?: boolean;        // the first draft was replaced
   pending?: boolean;
   error?: string;
 };
@@ -55,7 +57,8 @@ export function ChatProvider({ suggestions, children }: {
           case "status": update((t) => ({ ...t, steps: [...t.steps, e.data.text] })); break;
           case "tool": update((t) => ({ ...t, sources: [...t.sources, e.data] })); break;
           case "token": update((t) => ({ ...t, text: t.text + e.data.text })); break;
-          case "done": update((t) => ({ ...t, citations: e.data.citations })); break;
+          case "revision": update((t) => ({ ...t, text: "", revised: true })); break;
+          case "done": update((t) => ({ ...t, citations: e.data.citations, unsupported: e.data.unsupported })); break;
           case "error": update((t) => ({ ...t, error: e.data.message })); break;
         }
       });
@@ -152,7 +155,14 @@ function ChatWindow({ turns, busy, suggestions, onSend, onClose, onReset }: {
           <div key={i} className="ml-8 rounded-lg bg-accent px-3 py-2 text-sm text-white">{t.text}</div>
         ) : (
           <div key={i} className="text-sm">
-            {t.pending && !t.text && (
+            {t.revised && (
+              <p className="mb-2 rounded-md border border-border px-2 py-1 text-xs text-muted">
+                <span aria-hidden className="text-good-text">✓</span> Checked against your
+                records: the first draft stated something they don&apos;t support, so it was
+                rewritten.
+              </p>
+            )}
+            {t.pending && !t.text && !t.revised && (
               <ul className="space-y-1 text-xs text-muted" aria-live="polite">
                 {(t.steps.length ? t.steps : ["Thinking"]).map((s, j, all) => (
                   <li key={j} className="flex items-center gap-2">
@@ -171,6 +181,7 @@ function ChatWindow({ turns, busy, suggestions, onSend, onClose, onReset }: {
             )}
             {t.error && <p role="alert" className="mt-1 text-critical">{t.error}</p>}
             <UnverifiedCitations citations={t.citations} />
+            <UnsupportedFigures figures={t.unsupported} />
             {!t.pending && <DataUsed sources={t.sources} />}
           </div>
         ))}
@@ -196,12 +207,16 @@ function ChatWindow({ turns, busy, suggestions, onSend, onClose, onReset }: {
 // length moves it through the rest. It fills when the answer is done, then fades out.
 function progress(t: Turn): number {
   if (!t.pending) return 1;
-  if (t.text) return 0.6 + 0.35 * (1 - Math.exp(-t.text.length / 600));
+  // A rewrite starts further along: the tools have already run.
+  const [from, span] = t.revised ? [0.75, 0.2] : [0.6, 0.35];
+  if (t.text) return from + span * (1 - Math.exp(-t.text.length / 600));
+  if (t.revised) return 0.7;
   return 0.1 + 0.45 * (1 - 0.6 ** t.steps.length);
 }
 
 function stage(t: Turn): string {
   if (!t.pending) return "Done";
+  if (t.revised) return t.text ? "Rewriting the answer" : "Checking the answer";
   if (t.text) return "Writing the answer";
   return t.steps[t.steps.length - 1] ?? "Thinking";
 }
@@ -228,6 +243,18 @@ function ChatProgress({ turn }: { turn?: Turn }) {
         style={{ width: `${value * 100}%` }}
       />
     </div>
+  );
+}
+
+// Figures the answer states that no record or passage given to the model contains.
+function UnsupportedFigures({ figures }: { figures?: string[] }) {
+  if (!figures?.length) return null;
+  return (
+    <p className="mt-2 rounded-md border border-critical px-2 py-1 text-xs text-critical">
+      Could not find {figures.join(", ")} in your records or the university documents.
+      Check {figures.length === 1 ? "this figure" : "these figures"} before relying on{" "}
+      {figures.length === 1 ? "it" : "them"}.
+    </p>
   );
 }
 

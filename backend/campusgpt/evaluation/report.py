@@ -13,7 +13,7 @@ from campusgpt.evaluation.run import (
 )
 
 CONFIG_NAMES = {"plain": "Plain LLM", "rag": "RAG only", "db": "DB tools only",
-                "full": "Full CampusGPT"}
+                "noverify": "Full, no verifier", "full": "Full CampusGPT"}
 
 
 def pct(x) -> str:
@@ -51,18 +51,22 @@ def write(results_dir: Path, out: Path) -> None:
     if results:
         lines += ["## Chat, end to end", "",
                   ("Correct = every expected fact is in the answer. Tools = the expected "
-                   "tools were called. Cited = an expected section was cited. Latency "
+                   "tools were called. Cited = an expected section was cited. Revised = the "
+                   "verifier found figures or citations with no source and had the answer "
+                   "rewritten; Unsupported = answers still stating such figures. Latency "
                    "excludes time spent waiting out the hosted model's rate limits."), ""]
         rows = chat_summary(results)
         lines += table(
             ["Model", "Configuration", "n", "Correct", "Policy", "Records", "Combined",
              "English", "Hinglish", "Regressions", "Tools", "Cited", "Unverified citations",
-             "Errors", "Median latency"],
+             "Revised", "Unsupported", "Errors", "Median latency"],
             [[r["model"], CONFIG_NAMES[r["config"]], r["n"], pct(r["correct"]),
               pct(r["correct_policy"]), pct(r["correct_records"]), pct(r["correct_combined"]),
               pct(r["correct_en"]), pct(r["correct_hinglish"]), pct(r["regressions"]),
               pct(r["tools_ok"]), pct(r["cites_expected"]),
-              r["answers_with_unverified_citations"], r["errors"],
+              r["answers_with_unverified_citations"],
+              r["revised"] if r["config"] == "full" else "–",
+              r["still_unsupported"] if r["config"] == "full" else "–", r["errors"],
               "–" if r["median_s"] is None else f"{r['median_s']:.1f} s"] for r in rows])
 
         runs = list(dict.fromkeys((r.model, r.config) for r in results))
@@ -84,6 +88,9 @@ def write(results_dir: Path, out: Path) -> None:
                 lines += [f"- **{r.id}** ({r.model}) {r.question}  ",
                           f"  tools: {', '.join(r.tools) or 'none'}; missing: "
                           f"{', '.join(missing) or '-'}"
+                          + (f"; unsupported: {', '.join(r.unsupported)}"
+                             if r.unsupported else "")
+                          + ("; revised by the verifier" if r.revised else "")
                           + (f"; error: {r.error}" if r.error else "") + "  ",
                           f"  > {answer}", ""]
 

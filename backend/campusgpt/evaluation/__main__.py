@@ -2,7 +2,7 @@
 report, docs/evaluation/RESULTS.md, is rebuilt from them after every run.
 
     python -m campusgpt.evaluation retrieval                 # no model needed
-    python -m campusgpt.evaluation chat --model local --configs full,rag,db,plain
+    python -m campusgpt.evaluation chat --model local --configs full,noverify,rag,db,plain
     python -m campusgpt.evaluation chat --model groq --configs full --only r04,r09
     python -m campusgpt.evaluation security --model local    # text-to-SQL vs CampusGPT
     python -m campusgpt.evaluation report
@@ -113,7 +113,7 @@ def cli(argv=None) -> int:
     sub.add_parser("retrieval", help="search quality per mode (no model needed)")
     c = sub.add_parser("chat", help="the question set through the chat")
     c.add_argument("--model", choices=("local", "groq"), default="local")
-    c.add_argument("--configs", default="full,rag,db,plain")
+    c.add_argument("--configs", default="full,noverify,rag,db,plain")
     c.add_argument("--only", help="comma-separated question ids")
     c.add_argument("--redo-errors", action="store_true",
                    help="only the questions whose saved result is an error")

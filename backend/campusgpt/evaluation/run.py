@@ -23,9 +23,11 @@ from campusgpt.llm import Provider, ProviderUnavailable
 from campusgpt.models import Conversation
 from campusgpt.security import account
 
-CONFIGS = {"plain": chat.Pipeline(documents=False, records=False),
-           "rag": chat.Pipeline(records=False),
-           "db": chat.Pipeline(documents=False),
+# Each ablation removes one part from the unverified system; "full" adds the verifier.
+CONFIGS = {"plain": chat.Pipeline(documents=False, records=False, verify=False),
+           "rag": chat.Pipeline(records=False, verify=False),
+           "db": chat.Pipeline(documents=False, verify=False),
+           "noverify": chat.Pipeline(verify=False),
            "full": chat.FULL}
 TITLE = "[benchmark]"
 
@@ -138,42 +140,48 @@ class ChatResult:
     seconds: float                       # excluding time spent waiting out rate limits
     error: str | None = None
     tags: list[str] = field(default_factory=list)
+    revised: bool = False                # the verifier had the draft rewritten
+    unsupported: list[str] = field(default_factory=list)   # figures still unsupported
 
 
 async def ask(db: AsyncSession, provider: Provider, user: CurrentUser, question: str,
               now: datetime, pipeline: chat.Pipeline,
-              created: list[int]) -> tuple[str, list[dict], list[dict], str | None]:
+              created: list[int]) -> tuple[str, list[dict], dict, str | None]:
     conv = Conversation(user_id=user.id, title=f"{TITLE} {question[:150]}")
     db.add(conv)
     await db.commit()
     created.append(conv.id)
-    answer, sources, citations, error = "", [], [], None
+    answer, sources, done, error, revised = "", [], {}, None, False
     async for event in chat.run(db, provider, user, question, conv.id, now, pipeline=pipeline):
         if event.kind == "token":
             answer += event.data["text"]
         elif event.kind == "tool":
             sources.append(event.data)
+        elif event.kind == "revision":
+            answer, revised = "", True      # the student sees only the rewritten answer
         elif event.kind == "done":
-            citations = event.data["citations"]
+            done = event.data
         elif event.kind == "error":
             error = event.data["message"]
-    return answer.strip(), sources, citations, error
+    return answer.strip(), sources, {**done, "revised": revised}, error
 
 
 def score(q: Question, r: Records, config: str, model: str, question: str, answer: str,
-          sources: list[dict], citations: list[dict], seconds: float,
+          sources: list[dict], done: dict, seconds: float,
           error: str | None) -> ChatResult:
     facts = q.expected(r)
     found = check(answer, facts)
     called = [s["tool"] for s in sources]
     tools_ok = (all(any(t in group for t in called) for group in q.tools)
                 if q.tools and config != "plain" else None)
+    citations = done.get("citations", [])
     cited = [c["cite"] for c in citations]
     return ChatResult(
         q.id, q.category, q.lang, config, model, question, answer, [f.label for f in facts],
         found, bool(facts) and all(found) and not error, called, tools_ok, citations,
         cites_expected(cited, q.cites) if q.cites else None,
-        all(c["verified"] for c in citations), round(seconds, 2), error, list(q.tags))
+        all(c["verified"] for c in citations), round(seconds, 2), error, list(q.tags),
+        done.get("revised", False), done.get("unsupported", []))
 
 
 async def chat_eval(db: AsyncSession, provider: Provider, model: str, configs: list[str],
@@ -193,10 +201,10 @@ async def chat_eval(db: AsyncSession, provider: Provider, model: str, configs: l
                 text = q.text(truth[q.who])
                 started, waited = time.monotonic(), patient.waited
                 # A model error (e.g. a request too large) comes back as `error`.
-                answer, sources, citations, error = await ask(
+                answer, sources, done, error = await ask(
                     db, patient, users[q.who], text, now, CONFIGS[config], created)
                 seconds = time.monotonic() - started - (patient.waited - waited)
-                yield score(q, truth[q.who], config, model, text, answer, sources, citations,
+                yield score(q, truth[q.who], config, model, text, answer, sources, done,
                             seconds, error)
     finally:
         await db.rollback()
@@ -225,6 +233,8 @@ def chat_summary(results: list[ChatResult]) -> list[dict]:
             "tools_ok": share(r.tools_ok for r in with_tools) if with_tools else None,
             "cites_expected": share(r.cite_expected for r in with_cites),
             "answers_with_unverified_citations": sum(not r.citations_verified for r in cited),
+            "revised": sum(r.revised for r in rs),
+            "still_unsupported": sum(bool(r.unsupported) for r in rs),
             "errors": sum(bool(r.error) for r in rs),
             "median_s": secs[len(secs) // 2] if secs else None,
         })

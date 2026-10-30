@@ -248,3 +248,34 @@ def test_a_named_course_is_resolved_to_its_code(app, client):
     login(client, REGULAR)
     ask(client, "where is my compiler design class")
     assert "names this enrolled course: CSE504 Compiler Design" in llm.seen[0][0]["content"]
+
+
+def test_an_answer_with_invented_figures_is_rewritten_once(app, client, conn):
+    llm = use(app, ScriptedProvider([
+        [TextChunk("Your next exam is on 30 November in room Z-999.")],      # no tool called
+        [ToolCall("c1", "get_my_exams", "{}")],
+        [TextChunk("I checked your exam schedule.")],
+    ]))
+    login(client, SHORTAGE)
+    events = ask(client, "When is my next exam?")
+    kinds = [k for k, _ in events]
+    assert of(events, "revision") == [{"unsupported": ["30", "999"], "citations": []}]
+    assert kinds.index("revision") < kinds.index("tool")
+    # The model was told what failed, and the rewrite is what is saved.
+    assert "30, 999" in llm.seen[1][-1]["content"]
+    assert llm.seen[1][-2] == {"role": "assistant",
+                               "content": "Your next exam is on 30 November in room Z-999. "}
+    done = of(events, "done")[0]
+    assert done["unsupported"] == []
+    saved = conn.execute("SELECT content, sources FROM messages WHERE id = %s",
+                         (done["message_id"],)).fetchone()
+    assert saved[0] == "I checked your exam schedule."
+    assert saved[1]["verification"]["revised"]["unsupported"] == ["30", "999"]
+
+
+def test_figures_still_unsupported_after_the_rewrite_are_reported(app, client):
+    llm = use(app, ScriptedProvider([[TextChunk("Your CGPA is 9.87.")]]))
+    login(client, SHORTAGE)
+    events = ask(client, "What is my CGPA?")
+    assert len(of(events, "revision")) == 1 and len(llm.seen) == 2     # one rewrite only
+    assert of(events, "done")[0]["unsupported"] == ["9.87"]

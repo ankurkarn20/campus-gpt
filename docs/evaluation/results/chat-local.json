@@ -1,12 +1,12 @@
 {
  "model": "qwen3:4b-instruct-2507-q4_K_M",
- "run_at": "2026-10-27T21:13:34.539922+05:30",
+ "run_at": "2026-10-27T23:33:33.620139+05:30",
  "results": [
   {
    "id": "p01",
    "category": "policy",
    "lang": "en",
-   "config": "full",
+   "config": "noverify",
    "model": "qwen3:4b-instruct-2507-q4_K_M",
    "question": "What is the minimum attendance I need in each course?",
    "answer": "The minimum attendance you need in each course is **75%** of the classes held during the term. This applies to each course separately, and it is calculated as classes attended divided by classes held, from the first day of the term to the date of calculation [Attendance Policy §2].",
@@ -37,7 +37,7 @@
    "id": "r04",
    "category": "records",
    "lang": "en",
-   "config": "full",
+   "config": "noverify",
    "model": "qwen3:4b-instruct-2507-q4_K_M",
    "question": "how many holidays can i take in computer network",
    "answer": "Hostel leave does not count as attendance, and holidays are not covered under the attendance policy as per the university rules.  \n\nFor **Computer Networks (CSE501)**, your current attendance is **97.5%** (39/40 classes attended), which is well above the 75% requirement.  \n\nThus, you can take **holidays** (or leave) without affecting your attendance, as long as you do not miss classes.  \n\nHowever, **classes missed during holidays are recorded as absent** unless condoned under the Attendance Policy.  \n\n> ✅ You are **not restricted** by attendance for holidays.  \n> ❌ Holidays do not count as attendance, and missing classes during holidays will be recorded as absences.  \n\nFor official leave procedures, refer to:  \n[Hostel Rules §4](#) – applies to hostel leave, not holidays.  \n\nIf you plan to take a holiday, ensure you do not miss any classes. If you miss classes, you will be recorded as absent.  \n\nLet me know if you'd like help with class schedule or upcoming exams.",
@@ -71,7 +71,7 @@
    "id": "r09",
    "category": "records",
    "lang": "en",
-   "config": "full",
+   "config": "noverify",
    "model": "qwen3:4b-instruct-2507-q4_K_M",
    "question": "next class when",
    "answer": "Your next class is:\n\n- **Machine Learning (CSE503)**  \n  Date: Wednesday, 28 October 2026  \n  Time: 09:00 – 09:50  \n  Room: C-402  \n  Faculty: Dr. Veer Balay  \n\nFollowed by:  \n- **Software Engineering (CSE502)**  \n  Time: 10:00 – 10:50  \n  Room: C-406  \n  Faculty: Dr. Arunima Setty  \n\n- **Computer Networks (CSE501)**  \n  Time: 16:00 – 16:50  \n  Room: A-205  \n  Faculty: Dr. Hemangini Lalla",
@@ -102,7 +102,7 @@
    "id": "k02",
    "category": "records",
    "lang": "hinglish",
-   "config": "full",
+   "config": "noverify",
    "model": "qwen3:4b-instruct-2507-q4_K_M",
    "question": "kal kaunsi classes hain?",
    "answer": "- **Wednesday, 28 October 2026**  \n  - 09:00 – 09:50: **Machine Learning (CSE503)** – Room: C-402, Faculty: Dr. Veer Balay  \n  - 10:00 – 10:50: **Software Engineering (CSE502)** – Room: C-406, Faculty: Dr. Arunima Setty  \n  - 16:00 – 16:50: **Computer Networks (CSE501)** – Room: A-205, Faculty: Dr. Hemangini Lalla  \n\nNo classes today (Tuesday).",
@@ -132,7 +132,7 @@
    "id": "c01",
    "category": "combined",
    "lang": "en",
-   "config": "full",
+   "config": "noverify",
    "model": "qwen3:4b-instruct-2507-q4_K_M",
    "question": "Can I sit all my end-term exams?",
    "answer": "No, you cannot sit all your end-term exams yet. Here's why:\n\n- **End-term examination fee** is pending (₹3,500.00 due by 14 November 2026).  \n  ❌ Admit cards are **not issued** until this fee is paid.  \n  [Examination Regulations §2]\n\n- **Course-wise eligibility**:\n  - **CSE301 (DBMS)**: Must attend **all 12 remaining classes** to reach 75% attendance. Missing any means falling below 75%.  \n  - **CSE302 (OOP)**: Must attend **at least 2 of the 11 remaining classes**.  \n  - **CSE303 (Discrete Math)**: Must attend **at least 5 of the 12 remaining classes**.  \n  - **CSE304 (COA)**: Must attend **at least 6 of the 12 remaining classes**.  \n  - **CSE305 (DAAL)**: Must attend **at least 3 of the 11 remaining classes**.  \n\n⚠️ Missing more classes than required will drop your attendance below 75%, and you will **not** be eligible.\n\n✅ To proceed:  \n1. Pay the end-term examination fee (₹3,500).  \n2. Attend the required classes in each course to meet the 75% attendance requirement.  \n\nAfter that, you can sit all end-term exams.",
@@ -304,7 +304,7 @@
    "id": "p02",
    "category": "policy",
    "lang": "en",
-   "config": "full",
+   "config": "noverify",
    "model": "qwen3:4b-instruct-2507-q4_K_M",
    "question": "What is the lowest attendance that can be condoned?",
    "answer": "The lowest attendance that can be condoned is 65%, as per the Attendance Policy §4.1. This applies only for medical, family, or event-related reasons and is limited to a maximum of two courses per term [Attendance Policy §4]. Attendance below 65% in any course will result in debarment from the end-term examination [Attendance Policy §4.3].",
@@ -339,7 +339,7 @@
    "id": "p03",
    "category": "policy",
    "lang": "en",
-   "config": "full",
+   "config": "noverify",
    "model": "qwen3:4b-instruct-2507-q4_K_M",
    "question": "How soon after returning to classes must I apply for condonation?",
    "answer": "According to the Attendance Policy §4.2, an application for condonation must be submitted to the department office within **seven days** of returning to classes. Applications submitted later are not considered.",
@@ -365,7 +365,7 @@
    "id": "p04",
    "category": "policy",
    "lang": "en",
-   "config": "full",
+   "config": "noverify",
    "model": "qwen3:4b-instruct-2507-q4_K_M",
    "question": "For how many courses can attendance be condoned in one term?",
    "answer": "The university's attendance policy does not specify how many courses can have attendance condoned in one term. \n\nAccording to the policy, condonation is allowed only if the student has at least 65% attendance, as per [Attendance Policy §2], but no limit is mentioned on the number of such courses. \n\nFor a definitive answer, you should refer to the official policy document or consult the academic office.",
@@ -396,7 +396,7 @@
    "id": "p05",
    "category": "policy",
    "lang": "en",
-   "config": "full",
+   "config": "noverify",
    "model": "qwen3:4b-instruct-2507-q4_K_M",
    "question": "Within how many days must I report attendance that was recorded wrongly?",
    "answer": "Within seven days of the class, a student must report a belief that their attendance has been recorded incorrectly. [Attendance Policy §5.2]",
@@ -427,7 +427,7 @@
    "id": "p06",
    "category": "policy",
    "lang": "en",
-   "config": "full",
+   "config": "noverify",
    "model": "qwen3:4b-instruct-2507-q4_K_M",
    "question": "How much does re-evaluation of an answer script cost?",
    "answer": "Re-evaluation of an end-term answer script costs ₹1,000 per course [Examination Regulations §6].",
@@ -458,7 +458,7 @@
    "id": "p07",
    "category": "policy",
    "lang": "en",
-   "config": "full",
+   "config": "noverify",
    "model": "qwen3:4b-instruct-2507-q4_K_M",
    "question": "How many days do I have to apply for re-evaluation?",
    "answer": "You have **7 days** to apply for re-evaluation of an end-term answer script after the results are declared [Examination Regulations §6].",
@@ -489,7 +489,7 @@
    "id": "p08",
    "category": "policy",
    "lang": "en",
-   "config": "full",
+   "config": "noverify",
    "model": "qwen3:4b-instruct-2507-q4_K_M",
    "question": "What is the fee for a supplementary exam?",
    "answer": "The fee for a supplementary examination is Rs 1,500 per course [Examination Regulations §5.3].",
@@ -520,7 +520,7 @@
    "id": "p09",
    "category": "policy",
    "lang": "en",
-   "config": "full",
+   "config": "noverify",
    "model": "qwen3:4b-instruct-2507-q4_K_M",
    "question": "What is the minimum pass mark in a course?",
    "answer": "The minimum pass mark in a course is 40 out of 100 overall, with at least 30% of the marks in the end-term examination. [Examination Regulations §1]",
@@ -551,7 +551,7 @@
    "id": "p10",
    "category": "policy",
    "lang": "en",
-   "config": "full",
+   "config": "noverify",
    "model": "qwen3:4b-instruct-2507-q4_K_M",
    "question": "How late can I enter the exam hall after the exam starts?",
    "answer": "You cannot enter the exam hall after 30 minutes past the start time. [Examination Regulations §3]",
@@ -582,7 +582,7 @@
    "id": "p11",
    "category": "policy",
    "lang": "en",
-   "config": "full",
+   "config": "noverify",
    "model": "qwen3:4b-instruct-2507-q4_K_M",
    "question": "What happens if I am caught with my phone in the exam hall?",
    "answer": "If you are caught with a phone in the exam hall, it is considered **unfair means** under the Academic Integrity Policy [Academic Integrity Policy §3]. This is treated as academic misconduct, and you may face disciplinary action as per the policy [Examination Regulations §3].",
@@ -617,7 +617,7 @@
    "id": "p12",
    "category": "policy",
    "lang": "en",
-   "config": "full",
+   "config": "noverify",
    "model": "qwen3:4b-instruct-2507-q4_K_M",
    "question": "How do I get my answer sheet rechecked after the results?",
    "answer": "To get your answer sheet rechecked after the results, you must apply within seven days of the results declaration and pay Rs 1,000 per course [Examination Regulations §6]. The re-evaluated marks are final, whether they go up or down.",
@@ -652,7 +652,7 @@
    "id": "p13",
    "category": "policy",
    "lang": "en",
-   "config": "full",
+   "config": "noverify",
    "model": "qwen3:4b-instruct-2507-q4_K_M",
    "question": "What is the late fee for paying tuition after the due date?",
    "answer": "According to the Fee Payment and Refund Policy §2.1, a late fee of Rs 100 per day is charged on tuition fees paid after the due date, up to a maximum of Rs 5,000.",
@@ -680,7 +680,7 @@
    "id": "p14",
    "category": "policy",
    "lang": "en",
-   "config": "full",
+   "config": "noverify",
    "model": "qwen3:4b-instruct-2507-q4_K_M",
    "question": "How much is the end-term examination fee?",
    "answer": "The end-term examination fee is ₹3,500 per course. [Fee Payment and Refund Policy §1]",
@@ -711,7 +711,7 @@
    "id": "p15",
    "category": "policy",
    "lang": "en",
-   "config": "full",
+   "config": "noverify",
    "model": "qwen3:4b-instruct-2507-q4_K_M",
    "question": "If I withdraw within 15 days of the term starting, how much of the tuition fee is refunded?",
    "answer": "If you withdraw within 15 days of the term starting, you receive an 80% refund of the tuition fee [Fee Payment and Refund Policy §5].",
@@ -742,7 +742,7 @@
    "id": "p16",
    "category": "policy",
    "lang": "en",
-   "config": "full",
+   "config": "noverify",
    "model": "qwen3:4b-instruct-2507-q4_K_M",
    "question": "Can I pay my tuition fee in instalments?",
    "answer": "Yes, you can pay your tuition fee in instalments if you face financial difficulty.\n\nAccording to the **Fee Payment and Refund Policy §3.1**, a student may apply to the Finance Office for the tuition fee to be paid in two instalments: 50% by the due date and 50% within 60 days.  \n\n**Important notes**:\n- The application must be made **before the due date**.\n- There is **no late fee** on an approved instalment paid on time.\n- The **examination fee cannot be paid in instalments**.\n\nYou should apply to the Finance Office before the tuition fee due date to avail this option.  \n\n[Fee Payment and Refund Policy §3.1]",
@@ -775,7 +775,7 @@
    "id": "p17",
    "category": "policy",
    "lang": "en",
-   "config": "full",
+   "config": "noverify",
    "model": "qwen3:4b-instruct-2507-q4_K_M",
    "question": "What time do the hostel gates close?",
    "answer": "The hostel gates close at 10:30 pm [Hostel Rules §3].",
@@ -806,7 +806,7 @@
    "id": "p18",
    "category": "policy",
    "lang": "en",
-   "config": "full",
+   "config": "noverify",
    "model": "qwen3:4b-instruct-2507-q4_K_M",
    "question": "How far in advance do I need to apply for hostel leave?",
    "answer": "You need to apply for hostel leave at least 24 hours in advance on the student portal [Hostel Rules §4].",
@@ -837,7 +837,7 @@
    "id": "p19",
    "category": "policy",
    "lang": "en",
-   "config": "full",
+   "config": "noverify",
    "model": "qwen3:4b-instruct-2507-q4_K_M",
    "question": "What CGPA do I need for the merit-cum-means scholarship?",
    "answer": "A CGPA of at least 8.0 is required for the merit-cum-means scholarship [Scholarship Scheme §2].",
@@ -868,7 +868,7 @@
    "id": "p20",
    "category": "policy",
    "lang": "en",
-   "config": "full",
+   "config": "noverify",
    "model": "qwen3:4b-instruct-2507-q4_K_M",
    "question": "What is the penalty for submitting an assignment late?",
    "answer": "According to the Academic Integrity Policy §2.2, the penalty for late submission of an assignment is 10% of the maximum marks for each 24 hours (or part of 24 hours) of delay. Work submitted more than 48 hours late receives zero marks. [Academic Integrity Policy §2.2]",
@@ -901,7 +901,7 @@
    "id": "h01",
    "category": "policy",
    "lang": "hinglish",
-   "config": "full",
+   "config": "noverify",
    "model": "qwen3:4b-instruct-2507-q4_K_M",
    "question": "Exam dene ke liye kitni attendance chahiye?",
    "answer": "75% attendance chahiye exam dene ke liye. Agar aapko kisi course ke liye attendance ka exact requirement pata hai, toh main us course ke baare mein details de sakta hoon. Aap course code ya title bata sakte hain.",
@@ -927,7 +927,7 @@
    "id": "h02",
    "category": "policy",
    "lang": "hinglish",
-   "config": "full",
+   "config": "noverify",
    "model": "qwen3:4b-instruct-2507-q4_K_M",
    "question": "Re-evaluation ki fees kitni hai?",
    "answer": "₹1,000 per course for re-evaluation of an end-term answer script [Examination Regulations §6].",
@@ -958,7 +958,7 @@
    "id": "h03",
    "category": "policy",
    "lang": "hinglish",
-   "config": "full",
+   "config": "noverify",
    "model": "qwen3:4b-instruct-2507-q4_K_M",
    "question": "Hostel ka gate kitne baje band hota hai?",
    "answer": "I cannot provide information about the hostel gate timings as it is not covered in the university records or documents I have access to. Please check with the hostel administration or the university's official notice board for accurate details.",
@@ -982,7 +982,7 @@
    "id": "h04",
    "category": "policy",
    "lang": "hinglish",
-   "config": "full",
+   "config": "noverify",
    "model": "qwen3:4b-instruct-2507-q4_K_M",
    "question": "Tuition fees late bharne pe kitna fine lagta hai?",
    "answer": "A late fee of ₹100 per day is charged on tuition fees paid after the due date, up to a maximum of ₹5,000 [Fee Payment and Refund Policy §2.1].",
@@ -1015,7 +1015,7 @@
    "id": "h05",
    "category": "policy",
    "lang": "hinglish",
-   "config": "full",
+   "config": "noverify",
    "model": "qwen3:4b-instruct-2507-q4_K_M",
    "question": "Supplementary exam ki fees kya hai?",
    "answer": "Supplementary exam ki fees ₹1,500 per course hai [Examination Regulations §5.3].",
@@ -1046,7 +1046,7 @@
    "id": "h06",
    "category": "policy",
    "lang": "hinglish",
-   "config": "full",
+   "config": "noverify",
    "model": "qwen3:4b-instruct-2507-q4_K_M",
    "question": "Agar exam hall mein phone pakda gaya toh kya hoga?",
    "answer": "Agar exam hall mein phone pakda gaya toh usse **unfair means** ke taur par treat kiya jayega aur iska result **academic misconduct** hoga [Academic Integrity Policy §3].  \n\nIs case mein student ko **exam debar** kar diya jayega aur uski exam eligibility khatam ho jayegi.  \n\nAgar student ne exam mein phone use kiya hai toh uska exam result **invalid** ho jayega aur uski **supplementary exam** ke liye eligibility nahi hoga [Examination Regulations §5].  \n\n⚠️ Note: Phone ko exam hall mein carry karne se **unfair means** ke taur par consider kiya jata hai, chahe wo use kiya ho ya nahi.  \n\nAgar aapne exam mein phone use kiya hai, toh aapko **Academic Integrity Office** se contact karna chahiye.",
@@ -1081,7 +1081,7 @@
    "id": "r01",
    "category": "records",
    "lang": "en",
-   "config": "full",
+   "config": "noverify",
    "model": "qwen3:4b-instruct-2507-q4_K_M",
    "question": "What is my attendance in Machine Learning?",
    "answer": "Your attendance in **CSE503 Machine Learning** is:\n\n- **Classes held**: 39  \n- **Classes attended**: 33  \n- **Attendance percentage**: 84.62%  \n- **Status**: OK (above 75% requirement)  \n- **Classes you can still miss**: 5  \n- **Classes left this term**: 11  \n\nYou are well above the 75% requirement and do not need to attend any more classes to meet the minimum.",
@@ -1108,7 +1108,7 @@
    "id": "r02",
    "category": "records",
    "lang": "en",
-   "config": "full",
+   "config": "noverify",
    "model": "qwen3:4b-instruct-2507-q4_K_M",
    "question": "Which of my courses are below 75% attendance?",
    "answer": "The course below 75% attendance is:\n\n- **CSE301: Database Management Systems**  \n  - Attendance: 68.42% (out of 38 classes)  \n  - Status: Below requirement  \n  - Needs to attend 10 more classes to reach 75%  \n\nAll other courses are above 75% attendance.",
@@ -1135,7 +1135,7 @@
    "id": "r03",
    "category": "records",
    "lang": "en",
-   "config": "full",
+   "config": "noverify",
    "model": "qwen3:4b-instruct-2507-q4_K_M",
    "question": "How many classes in a row do I need to attend in Database Management Systems to get back to 75%?",
    "answer": "You need to attend **10 classes in a row** to get back to 75% in Database Management Systems (CSE301). After that, you will have 0 classes you can miss without falling below the requirement. \n\nCurrently, you have attended 26 out of 38 classes (68.42%), and you are below the 75% threshold. You must attend the next 10 classes consecutively to meet the requirement. After that, you will have 12 classes left in the term.",
@@ -1162,7 +1162,7 @@
    "id": "r05",
    "category": "records",
    "lang": "en",
-   "config": "full",
+   "config": "noverify",
    "model": "qwen3:4b-instruct-2507-q4_K_M",
    "question": "If I miss the next 2 classes of Object-Oriented Programming with Java, what will my attendance be?",
    "answer": "If you miss the next 2 classes of **CSE302 Object-Oriented Programming with Java**, your attendance will be:\n\n- **Classes attended**: 37  \n- **Classes held**: 42  \n- **Attendance percentage**: **88.1%**  \n\nThis is **above** the 75% requirement, so you will still meet the minimum.  \n\nYou can still miss **7 more classes** and stay at or above 75%.  \n\n✅ No action needed — you are safe.",
@@ -1190,7 +1190,7 @@
    "id": "r06",
    "category": "records",
    "lang": "en",
-   "config": "full",
+   "config": "noverify",
    "model": "qwen3:4b-instruct-2507-q4_K_M",
    "question": "When is my next exam?",
    "answer": "Your next end-term exam is:\n\n- **Computer Networks (CSE501)** on **23 November 2026** at **14:00** in **Room A-110**.",
@@ -1219,7 +1219,7 @@
    "id": "r07",
    "category": "records",
    "lang": "en",
-   "config": "full",
+   "config": "noverify",
    "model": "qwen3:4b-instruct-2507-q4_K_M",
    "question": "How much fee do I still owe?",
    "answer": "You still owe:  \n- **Tuition fee**: ₹160,000 (due on 2026-07-31, overdue)  \n- **End-term examination fee**: ₹3,500 (due on 2026-11-14, pending)  \n\nTotal balance: ₹163,500.  \n\nNote: Late fee of ₹100 per day applies to the tuition fee until paid. If unpaid for 30 days, your registration will be put on hold.",
@@ -1246,7 +1246,7 @@
    "id": "r08",
    "category": "records",
    "lang": "en",
-   "config": "full",
+   "config": "noverify",
    "model": "qwen3:4b-instruct-2507-q4_K_M",
    "question": "Which assignments are due this week?",
    "answer": "- **CSE501 - Computer Networks**: Assignment 4, due 30 October 2026 (23:59), 25 marks, not submitted  \n- **CSE502 - Software Engineering**: Assignment 4, due 30 October 2026 (23:59), 25 marks, not submitted  \n- **CSE503 - Machine Learning**: Assignment 4, due 3 November 2026 (23:59), 25 marks, not submitted  \n- **CSE504 - Compiler Design**: Assignment 4, due 5 November 2026 (23:59), 25 marks, not submitted  \n- **CSE505 - Information Security**: Assignment 4, due 5 November 2026 (23:59), 10 marks, not submitted",
@@ -1275,7 +1275,7 @@
    "id": "r10",
    "category": "records",
    "lang": "en",
-   "config": "full",
+   "config": "noverify",
    "model": "qwen3:4b-instruct-2507-q4_K_M",
    "question": "where is my compiler design class",
    "answer": "Your **Compiler Design (CSE504)** class is:\n\n- **Thursday, 29 October 2026**: 15:00 – 15:50 in **A-101**\n- **Friday, 30 October 2026**: 15:00 – 15:50 in **C-210**\n- **Monday, 2 November 2026**: 15:00 – 15:50 in **D-308**\n\nNext class is on **Thursday, 29 October 2026** in **A-101**.",
@@ -1307,7 +1307,7 @@
    "id": "r11",
    "category": "records",
    "lang": "en",
-   "config": "full",
+   "config": "noverify",
    "model": "qwen3:4b-instruct-2507-q4_K_M",
    "question": "Are any of my fees overdue?",
    "answer": "Yes, your fees are overdue:\n\n- **Tuition fee (2026-ODD)**: ₹160,000 balance, due on 2026-07-31 (overdue).\n- **End-term examination fee**: ₹3,500 balance, due on 2026-11-14 (pending).\n\nLate fee of ₹100 per day applies to the tuition fee until paid, up to a maximum of ₹5,000 [Fee Payment and Refund Policy §2]. You must pay both fees to avoid registration hold or no admit card.",
@@ -1339,7 +1339,7 @@
    "id": "r12",
    "category": "records",
    "lang": "en",
-   "config": "full",
+   "config": "noverify",
    "model": "qwen3:4b-instruct-2507-q4_K_M",
    "question": "What is my roll number?",
    "answer": "Your roll number is **2024CYS0001**.",
@@ -1363,7 +1363,7 @@
    "id": "k01",
    "category": "records",
    "lang": "hinglish",
-   "config": "full",
+   "config": "noverify",
    "model": "qwen3:4b-instruct-2507-q4_K_M",
    "question": "DBMS mein meri attendance kitni hai?",
    "answer": "In **Database Management Systems (CSE301)**, your attendance is **68.42%** (26 out of 38 classes).  \n\n- You are **below the 75% requirement**.  \n- You need to attend **10 more classes** to reach 75%.  \n- You **cannot miss any more classes** in this course (can_miss = 0).  \n- You have **12 classes left** in the term.  \n\n⚠️ If you don’t attend the remaining classes, you will be **debarred from the end-term exam** for this course ([Attendance Policy §3.1](https://university-docs.edu/attendance-policy#§3.1)).  \n\nLet me know if you need help with your next class or recovery plan.",
@@ -1395,7 +1395,7 @@
    "id": "k03",
    "category": "records",
    "lang": "hinglish",
-   "config": "full",
+   "config": "noverify",
    "model": "qwen3:4b-instruct-2507-q4_K_M",
    "question": "mera kitna fees baaki hai?",
    "answer": "Your fee status:\n\n- **Tuition fee (2026-ODD)**: ₹160,000 balance, due on 2026-07-31 (overdue).  \n- **End-term examination fee**: ₹3,500 balance, due on 2026-11-14 (pending).\n\nYou must pay both to avoid academic consequences. Late fee applies to the tuition fee (up to ₹5,000) if not paid by the due date.",
@@ -1422,7 +1422,7 @@
    "id": "k04",
    "category": "records",
    "lang": "hinglish",
-   "config": "full",
+   "config": "noverify",
    "model": "qwen3:4b-instruct-2507-q4_K_M",
    "question": "Computer Networks mein kitni chutti le sakta hoon?",
    "answer": "Computer Networks (CSE501) mein aap 11 classes chutti le sakte hain aur 97.5% ki attendance ke saath bhi rakh sakte hain.  \n\nAgar aap kisi bhi class ko chhodte hain, toh aapko 11 classes ke baad bhi 75% ki attendance ke saath rakhne ki zaroorat nahi hai.  \n\n✅ **Chutti le sakte hain:** 11  \n✅ **Current attendance:** 97.5% (already above 75%)  \n\nAapki attendance condition khali hai – koi bhi chutti le sakte hain, lekin university ke rules ke hisab se medical leave ya official condonation ke liye koi proof chahiye. Agar aapko kisi specific type ke leave (jaise medical) ke liye pata chahiye, toh main aise bhi puch sakte hain.  \n\n[Attendance Policy §4]",
@@ -1455,7 +1455,7 @@
    "id": "k05",
    "category": "records",
    "lang": "hinglish",
-   "config": "full",
+   "config": "noverify",
    "model": "qwen3:4b-instruct-2507-q4_K_M",
    "question": "agla exam kab hai?",
    "answer": "Your next end-term exam is on **25 November 2026** for **Design and Analysis of Algorithms (CSE305)** at 10:00 AM in Room C-302.  \n\nOther exams:  \n- **26 November**: Computer Organization and Architecture (CSE304) – 2:00 PM, Room B-310  \n- **28 November**: Discrete Mathematics (CSE303) – 2:00 PM, Room B-110  \n- **30 November**: Database Management Systems (CSE301) – 10:00 AM, Room B-301  \n- **3 December**: Object-Oriented Programming with Java (CSE302) – 2:00 PM, Room A-207",
@@ -1483,7 +1483,7 @@
    "id": "c02",
    "category": "combined",
    "lang": "en",
-   "config": "full",
+   "config": "noverify",
    "model": "qwen3:4b-instruct-2507-q4_K_M",
    "question": "Will I get my admit card?",
    "answer": "To determine if you will get your admit card, I need to check your end-term exam eligibility and fee status. Let me verify that for you.\n\nNo, you will not get your admit card yet.  \n\n**Reasons:**  \n- You have an **overdue tuition fee** of ₹1,60,000.00 (due 31 July 2026).  \n- You have an **unpaid end-term examination fee** of ₹3,500.00 (due 14 November 2026).  \n\n**Policy Reference:**  \n[Examination Regulations §2]  \n\nYou must pay both fees to receive your admit card. Once paid, admit cards will be issued five days before the first end-term exam (starting 23 November 2026).",
@@ -1517,7 +1517,7 @@
    "id": "c03",
    "category": "combined",
    "lang": "en",
-   "config": "full",
+   "config": "noverify",
    "model": "qwen3:4b-instruct-2507-q4_K_M",
    "question": "Am I eligible for my end-term exams?",
    "answer": "Yes, you are eligible for all end-term exams.  \n\nHere’s the breakdown:  \n- **Attendance**: In every course, you are at or above 75% (or can stay above it even if you miss all remaining classes).  \n- **Fees**: All examination and tuition fees are paid in full.  \n- **Admit cards**: Will be issued on the student portal starting 18 November 2026.  \n\n✅ **All courses**: Eligible to sit end-term exams.  \n📌 **No action needed** — you are clear to take the exams.  \n\n*Source: Examination Regulations §2 [Examination Regulations §2]*",
@@ -1551,7 +1551,7 @@
    "id": "c04",
    "category": "combined",
    "lang": "en",
-   "config": "full",
+   "config": "noverify",
    "model": "qwen3:4b-instruct-2507-q4_K_M",
    "question": "My DBMS attendance is low. Can it be condoned, and down to what minimum?",
    "answer": "I cannot provide information about condonation or minimum attendance for your course without checking the official university policy and your specific attendance record.\n\nLet me first check the relevant policy and your attendance record for CSE301 (Database Management Systems).\n\nCondonation is possible under specific circumstances, but only down to a minimum of **65%** attendance in a course [Attendance Policy §4].\n\nConditions for condonation:\n- Illness/hospitalisation (with medical certificate)\n- University representation (with faculty letter)\n- Death or serious illness of an immediate family member\n\nThe application must be submitted to the department office within **7 days** of returning to classes, with supporting documents.  \nCondonation is limited to **two courses per term**.\n\nNote: If attendance falls below 65%, the student will be debarred from the end-term exam for that course [Attendance Policy §4].\n\nTo proceed, you must:\n1. Confirm your current attendance in CSE301.\n2. Determine if you meet one of the above conditions.\n3. Submit a formal application with supporting documents.\n\nLet me check your current attendance in CSE301.",
@@ -1585,7 +1585,7 @@
    "id": "c05",
    "category": "combined",
    "lang": "en",
-   "config": "full",
+   "config": "noverify",
    "model": "qwen3:4b-instruct-2507-q4_K_M",
    "question": "How much late fee will I be charged on my overdue tuition?",
    "answer": "Your tuition fee of ₹160,000 is overdue, with a due date of 31 July 2026.  \n\nAccording to the **Fee Payment and Refund Policy §2.1**, a late fee of **₹100 per day** is charged on tuition fees paid after the due date, up to a maximum of ₹5,000.  \n\nSince the fee is overdue, the late fee will be calculated daily from 1 August 2026 (the day after the due date) until the fee is paid. The total late fee will not exceed ₹5,000.  \n\nYou must pay the balance of ₹160,000 by the due date to avoid late fees. If you pay after the due date, the late fee will start accruing.  \n\nFor the end-term examination fee (₹3,500), no late fee is charged, but it must be paid before admit cards are issued.  \n\n👉 **Action**: Pay the tuition fee by 31 July 2026 to avoid late fees. If you miss the due date, the late fee will start from 1 August 2026.",
@@ -1614,7 +1614,7 @@
    "id": "c06",
    "category": "combined",
    "lang": "hinglish",
-   "config": "full",
+   "config": "noverify",
    "model": "qwen3:4b-instruct-2507-q4_K_M",
    "question": "Agar main DBMS ki ek aur class miss karun toh kya main end-term de paunga?",
    "answer": "No, you cannot sit the end-term exam for CSE301 if you miss another class.  \n\nHere’s why:  \n- Your current attendance is **68.42%** (26/38).  \n- You **can miss 0 more classes** and still stay at 75% — missing even one class will drop your attendance below 75%.  \n- To be eligible, you must attend **all 12 remaining classes** to reach at least 75%.  \n- Even if you attend all 12, you will only reach **76.0%**, which is sufficient.  \n- **Missing any more classes** will make your attendance fall below 75%, and you will **not** be eligible.  \n\nAdditionally:  \n- You have an **unpaid end-term examination fee** of ₹3,500 (due 14 Nov).  \n- Admit cards are **not issued** until all fees are paid.  \n\n✅ Action:  \n1. Pay the ₹3,500 end-term fee.  \n2. Attend **all 12 remaining classes** in CSE301.  \n\nOnly then will you be eligible to sit the end-term exam. [Examination Regulations §2]",
@@ -1647,7 +1647,7 @@
    "id": "c07",
    "category": "combined",
    "lang": "en",
-   "config": "full",
+   "config": "noverify",
    "model": "qwen3:4b-instruct-2507-q4_K_M",
    "question": "If I miss 3 Machine Learning classes for a hostel leave, will I still be above 75%?",
    "answer": "Yes, you will still be above 75% if you miss 3 Machine Learning classes for a hostel leave.\n\nHere’s why:\n- Your current attendance is **84.62%** (33 out of 39 classes).\n- You can still miss **5 classes** and remain above 75%.\n- Missing 3 classes is well within this limit.\n\n✅ You are safe — no need to worry about debarred status or missing end-term exams for this course.\n\nNote: Hostel leave does not count as attendance, but since you are already above 75%, it won’t affect your eligibility. [Hostel Rules §4]",
@@ -5658,6 +5658,1643 @@
    "seconds": 1.9,
    "error": null,
    "tags": []
+  },
+  {
+   "id": "p01",
+   "category": "policy",
+   "lang": "en",
+   "config": "full",
+   "model": "qwen3:4b-instruct-2507-q4_K_M",
+   "question": "What is the minimum attendance I need in each course?",
+   "answer": "The minimum attendance you need in each course is **75%** of the classes held during the term. This requirement applies to each course separately, and it is not rounded up [Attendance Policy §2].",
+   "facts": [
+    "75"
+   ],
+   "found": [
+    true
+   ],
+   "correct": true,
+   "tools": [
+    "search_university_documents"
+   ],
+   "tools_ok": true,
+   "citations": [
+    {
+     "cite": "Attendance Policy §2",
+     "verified": true
+    }
+   ],
+   "cite_expected": true,
+   "citations_verified": true,
+   "seconds": 2.64,
+   "error": null,
+   "tags": [],
+   "revised": false,
+   "unsupported": []
+  },
+  {
+   "id": "p02",
+   "category": "policy",
+   "lang": "en",
+   "config": "full",
+   "model": "qwen3:4b-instruct-2507-q4_K_M",
+   "question": "What is the lowest attendance that can be condoned?",
+   "answer": "The lowest attendance that can be condoned is 65%, as per Attendance Policy §4.1. This applies only for medical reasons, family emergencies, or representing the university in events, with supporting documents. Below 65%, a student is debarred from the end-term exam [Attendance Policy §4.3].",
+   "facts": [
+    "65"
+   ],
+   "found": [
+    true
+   ],
+   "correct": true,
+   "tools": [
+    "search_university_documents"
+   ],
+   "tools_ok": true,
+   "citations": [
+    {
+     "cite": "Attendance Policy §4.3",
+     "verified": true
+    }
+   ],
+   "cite_expected": true,
+   "citations_verified": true,
+   "seconds": 2.87,
+   "error": null,
+   "tags": [],
+   "revised": false,
+   "unsupported": []
+  },
+  {
+   "id": "p03",
+   "category": "policy",
+   "lang": "en",
+   "config": "full",
+   "model": "qwen3:4b-instruct-2507-q4_K_M",
+   "question": "How soon after returning to classes must I apply for condonation?",
+   "answer": "According to the Attendance Policy §4.2, an application for condonation must be submitted to the department office within **seven days** of the student returning to classes. Applications submitted later are not considered.",
+   "facts": [
+    "7"
+   ],
+   "found": [
+    true
+   ],
+   "correct": true,
+   "tools": [
+    "search_university_documents"
+   ],
+   "tools_ok": true,
+   "citations": [],
+   "cite_expected": false,
+   "citations_verified": true,
+   "seconds": 2.12,
+   "error": null,
+   "tags": [],
+   "revised": false,
+   "unsupported": []
+  },
+  {
+   "id": "p04",
+   "category": "policy",
+   "lang": "en",
+   "config": "full",
+   "model": "qwen3:4b-instruct-2507-q4_K_M",
+   "question": "For how many courses can attendance be condoned in one term?",
+   "answer": "The university policy does not specify how many courses can have attendance condoned in one term.  \n\nNo passage in the retrieved documents mentions a limit on the number of courses for which attendance condonation is allowed.  \n\nThus, based on the available information, **the number of courses for which attendance can be condoned is not stated in the policy**.",
+   "facts": [
+    "2"
+   ],
+   "found": [
+    false
+   ],
+   "correct": false,
+   "tools": [
+    "search_university_documents"
+   ],
+   "tools_ok": true,
+   "citations": [],
+   "cite_expected": false,
+   "citations_verified": true,
+   "seconds": 5.5,
+   "error": null,
+   "tags": [],
+   "revised": true,
+   "unsupported": []
+  },
+  {
+   "id": "p05",
+   "category": "policy",
+   "lang": "en",
+   "config": "full",
+   "model": "qwen3:4b-instruct-2507-q4_K_M",
+   "question": "Within how many days must I report attendance that was recorded wrongly?",
+   "answer": "Within seven days of the class, a student must report a belief that their attendance has been recorded incorrectly. [Attendance Policy §5.2]",
+   "facts": [
+    "7"
+   ],
+   "found": [
+    true
+   ],
+   "correct": true,
+   "tools": [
+    "search_university_documents"
+   ],
+   "tools_ok": true,
+   "citations": [
+    {
+     "cite": "Attendance Policy §5.2",
+     "verified": true
+    }
+   ],
+   "cite_expected": true,
+   "citations_verified": true,
+   "seconds": 1.99,
+   "error": null,
+   "tags": [],
+   "revised": false,
+   "unsupported": []
+  },
+  {
+   "id": "p06",
+   "category": "policy",
+   "lang": "en",
+   "config": "full",
+   "model": "qwen3:4b-instruct-2507-q4_K_M",
+   "question": "How much does re-evaluation of an answer script cost?",
+   "answer": "Re-evaluation of an end-term answer script costs ₹1,000 per course [Examination Regulations §6].",
+   "facts": [
+    "1000"
+   ],
+   "found": [
+    true
+   ],
+   "correct": true,
+   "tools": [
+    "search_university_documents"
+   ],
+   "tools_ok": true,
+   "citations": [
+    {
+     "cite": "Examination Regulations §6",
+     "verified": true
+    }
+   ],
+   "cite_expected": true,
+   "citations_verified": true,
+   "seconds": 2.04,
+   "error": null,
+   "tags": [],
+   "revised": false,
+   "unsupported": []
+  },
+  {
+   "id": "p07",
+   "category": "policy",
+   "lang": "en",
+   "config": "full",
+   "model": "qwen3:4b-instruct-2507-q4_K_M",
+   "question": "How many days do I have to apply for re-evaluation?",
+   "answer": "According to the Examination Regulations §6.2, a student may apply for re-evaluation of an end-term answer script within **seven days** of the declaration of results.\n\n[Examination Regulations §6]",
+   "facts": [
+    "7"
+   ],
+   "found": [
+    true
+   ],
+   "correct": true,
+   "tools": [
+    "search_university_documents"
+   ],
+   "tools_ok": true,
+   "citations": [
+    {
+     "cite": "Examination Regulations §6",
+     "verified": true
+    }
+   ],
+   "cite_expected": true,
+   "citations_verified": true,
+   "seconds": 2.21,
+   "error": null,
+   "tags": [],
+   "revised": false,
+   "unsupported": []
+  },
+  {
+   "id": "p08",
+   "category": "policy",
+   "lang": "en",
+   "config": "full",
+   "model": "qwen3:4b-instruct-2507-q4_K_M",
+   "question": "What is the fee for a supplementary exam?",
+   "answer": "The fee for a supplementary examination is ₹1,500 per course [Examination Regulations §5.3].",
+   "facts": [
+    "1500"
+   ],
+   "found": [
+    true
+   ],
+   "correct": true,
+   "tools": [
+    "search_university_documents"
+   ],
+   "tools_ok": true,
+   "citations": [
+    {
+     "cite": "Examination Regulations §5.3",
+     "verified": true
+    }
+   ],
+   "cite_expected": true,
+   "citations_verified": true,
+   "seconds": 1.87,
+   "error": null,
+   "tags": [],
+   "revised": false,
+   "unsupported": []
+  },
+  {
+   "id": "p09",
+   "category": "policy",
+   "lang": "en",
+   "config": "full",
+   "model": "qwen3:4b-instruct-2507-q4_K_M",
+   "question": "What is the minimum pass mark in a course?",
+   "answer": "The minimum pass mark in a course is 40 out of 100 overall, with at least 30% of the marks in the end-term examination. [Examination Regulations §1]",
+   "facts": [
+    "40"
+   ],
+   "found": [
+    true
+   ],
+   "correct": true,
+   "tools": [
+    "search_university_documents"
+   ],
+   "tools_ok": true,
+   "citations": [
+    {
+     "cite": "Examination Regulations §1",
+     "verified": true
+    }
+   ],
+   "cite_expected": true,
+   "citations_verified": true,
+   "seconds": 2.3,
+   "error": null,
+   "tags": [],
+   "revised": false,
+   "unsupported": []
+  },
+  {
+   "id": "p10",
+   "category": "policy",
+   "lang": "en",
+   "config": "full",
+   "model": "qwen3:4b-instruct-2507-q4_K_M",
+   "question": "How late can I enter the exam hall after the exam starts?",
+   "answer": "You cannot enter the exam hall after 30 minutes past the start time. [Examination Regulations §3]",
+   "facts": [
+    "30"
+   ],
+   "found": [
+    true
+   ],
+   "correct": true,
+   "tools": [
+    "search_university_documents"
+   ],
+   "tools_ok": true,
+   "citations": [
+    {
+     "cite": "Examination Regulations §3",
+     "verified": true
+    }
+   ],
+   "cite_expected": true,
+   "citations_verified": true,
+   "seconds": 1.89,
+   "error": null,
+   "tags": [],
+   "revised": false,
+   "unsupported": []
+  },
+  {
+   "id": "p11",
+   "category": "policy",
+   "lang": "en",
+   "config": "full",
+   "model": "qwen3:4b-instruct-2507-q4_K_M",
+   "question": "What happens if I am caught with my phone in the exam hall?",
+   "answer": "If you are caught with a phone in the exam hall, it is considered **unfair means** under the Academic Integrity Policy [Academic Integrity Policy §3]. This is treated as academic misconduct, and you may face disciplinary action as per the university's Academic Integrity Policy [Academic Integrity Policy §3]. \n\nAdditionally, possession of a mobile phone in the examination hall is explicitly prohibited under the Examination Regulations [Examination Regulations §3.3], and such cases are dealt with under the Academic Integrity Policy [Academic Integrity Policy §3].",
+   "facts": [
+    "unfair means"
+   ],
+   "found": [
+    true
+   ],
+   "correct": true,
+   "tools": [
+    "search_university_documents"
+   ],
+   "tools_ok": true,
+   "citations": [
+    {
+     "cite": "Academic Integrity Policy §3",
+     "verified": true
+    },
+    {
+     "cite": "Examination Regulations §3.3",
+     "verified": true
+    }
+   ],
+   "cite_expected": true,
+   "citations_verified": true,
+   "seconds": 3.75,
+   "error": null,
+   "tags": [],
+   "revised": false,
+   "unsupported": []
+  },
+  {
+   "id": "p12",
+   "category": "policy",
+   "lang": "en",
+   "config": "full",
+   "model": "qwen3:4b-instruct-2507-q4_K_M",
+   "question": "How do I get my answer sheet rechecked after the results?",
+   "answer": "To get your answer sheet rechecked after the results, you must apply within seven days of the results declaration and pay Rs 1,000 per course [Examination Regulations §6]. The re-evaluated marks are final, whether they go up or down.",
+   "facts": [
+    "1000",
+    "7"
+   ],
+   "found": [
+    true,
+    true
+   ],
+   "correct": true,
+   "tools": [
+    "search_university_documents"
+   ],
+   "tools_ok": true,
+   "citations": [
+    {
+     "cite": "Examination Regulations §6",
+     "verified": true
+    }
+   ],
+   "cite_expected": true,
+   "citations_verified": true,
+   "seconds": 3.11,
+   "error": null,
+   "tags": [
+    "paraphrase"
+   ],
+   "revised": false,
+   "unsupported": []
+  },
+  {
+   "id": "p13",
+   "category": "policy",
+   "lang": "en",
+   "config": "full",
+   "model": "qwen3:4b-instruct-2507-q4_K_M",
+   "question": "What is the late fee for paying tuition after the due date?",
+   "answer": "According to the Fee Payment and Refund Policy §2.1, a late fee of Rs 100 per day is charged on tuition fees paid after the due date, up to a maximum of Rs 5,000.",
+   "facts": [
+    "100",
+    "5000"
+   ],
+   "found": [
+    true,
+    true
+   ],
+   "correct": true,
+   "tools": [
+    "search_university_documents"
+   ],
+   "tools_ok": true,
+   "citations": [],
+   "cite_expected": false,
+   "citations_verified": true,
+   "seconds": 8.97,
+   "error": null,
+   "tags": [],
+   "revised": false,
+   "unsupported": []
+  },
+  {
+   "id": "p14",
+   "category": "policy",
+   "lang": "en",
+   "config": "full",
+   "model": "qwen3:4b-instruct-2507-q4_K_M",
+   "question": "How much is the end-term examination fee?",
+   "answer": "The end-term examination fee is ₹3,500 per course. [Fee Payment and Refund Policy §1]",
+   "facts": [
+    "3500"
+   ],
+   "found": [
+    true
+   ],
+   "correct": true,
+   "tools": [
+    "search_university_documents"
+   ],
+   "tools_ok": true,
+   "citations": [
+    {
+     "cite": "Fee Payment and Refund Policy §1",
+     "verified": true
+    }
+   ],
+   "cite_expected": true,
+   "citations_verified": true,
+   "seconds": 2.0,
+   "error": null,
+   "tags": [],
+   "revised": false,
+   "unsupported": []
+  },
+  {
+   "id": "p15",
+   "category": "policy",
+   "lang": "en",
+   "config": "full",
+   "model": "qwen3:4b-instruct-2507-q4_K_M",
+   "question": "If I withdraw within 15 days of the term starting, how much of the tuition fee is refunded?",
+   "answer": "According to the Fee Payment and Refund Policy §5.1, if a student withdraws within 15 days of the term start, they receive a refund of 80% of the tuition fee. \n\nThis is the amount, minus a Rs 1,000 processing fee, as per the policy. [Fee Payment and Refund Policy §5.1]",
+   "facts": [
+    "80"
+   ],
+   "found": [
+    true
+   ],
+   "correct": true,
+   "tools": [
+    "search_university_documents"
+   ],
+   "tools_ok": true,
+   "citations": [
+    {
+     "cite": "Fee Payment and Refund Policy §5.1",
+     "verified": true
+    }
+   ],
+   "cite_expected": true,
+   "citations_verified": true,
+   "seconds": 3.11,
+   "error": null,
+   "tags": [],
+   "revised": false,
+   "unsupported": []
+  },
+  {
+   "id": "p16",
+   "category": "policy",
+   "lang": "en",
+   "config": "full",
+   "model": "qwen3:4b-instruct-2507-q4_K_M",
+   "question": "Can I pay my tuition fee in instalments?",
+   "answer": "Yes, you can pay your tuition fee in instalments.  \n\nAccording to the university policy:  \n- A student facing financial difficulty can apply to the Finance Office for the tuition fee to be paid in two instalments:  \n  - 50% by the due date, and  \n  - 50% within 60 days.  \n- The application must be made **before the due date**.  \n- No late fee is charged on an approved instalment paid on time.  \n- The examination fee cannot be paid in instalments.  \n\n[Fee Payment and Refund Policy §3]",
+   "facts": [
+    "50",
+    "60"
+   ],
+   "found": [
+    true,
+    true
+   ],
+   "correct": true,
+   "tools": [
+    "search_university_documents",
+    "search_university_documents"
+   ],
+   "tools_ok": true,
+   "citations": [
+    {
+     "cite": "Fee Payment and Refund Policy §3",
+     "verified": true
+    }
+   ],
+   "cite_expected": true,
+   "citations_verified": true,
+   "seconds": 5.12,
+   "error": null,
+   "tags": [],
+   "revised": false,
+   "unsupported": []
+  },
+  {
+   "id": "p17",
+   "category": "policy",
+   "lang": "en",
+   "config": "full",
+   "model": "qwen3:4b-instruct-2507-q4_K_M",
+   "question": "What time do the hostel gates close?",
+   "answer": "The hostel gates close at 10:30 pm [Hostel Rules §3].",
+   "facts": [
+    "22:30"
+   ],
+   "found": [
+    true
+   ],
+   "correct": true,
+   "tools": [
+    "search_university_documents"
+   ],
+   "tools_ok": true,
+   "citations": [
+    {
+     "cite": "Hostel Rules §3",
+     "verified": true
+    }
+   ],
+   "cite_expected": true,
+   "citations_verified": true,
+   "seconds": 1.84,
+   "error": null,
+   "tags": [],
+   "revised": false,
+   "unsupported": []
+  },
+  {
+   "id": "p18",
+   "category": "policy",
+   "lang": "en",
+   "config": "full",
+   "model": "qwen3:4b-instruct-2507-q4_K_M",
+   "question": "How far in advance do I need to apply for hostel leave?",
+   "answer": "You need to apply for hostel leave at least 24 hours in advance on the student portal [Hostel Rules §4].",
+   "facts": [
+    "24"
+   ],
+   "found": [
+    true
+   ],
+   "correct": true,
+   "tools": [
+    "search_university_documents"
+   ],
+   "tools_ok": true,
+   "citations": [
+    {
+     "cite": "Hostel Rules §4",
+     "verified": true
+    }
+   ],
+   "cite_expected": true,
+   "citations_verified": true,
+   "seconds": 1.85,
+   "error": null,
+   "tags": [],
+   "revised": false,
+   "unsupported": []
+  },
+  {
+   "id": "p19",
+   "category": "policy",
+   "lang": "en",
+   "config": "full",
+   "model": "qwen3:4b-instruct-2507-q4_K_M",
+   "question": "What CGPA do I need for the merit-cum-means scholarship?",
+   "answer": "A CGPA of at least 8.0 is required for the merit-cum-means scholarship [Scholarship Scheme §2].",
+   "facts": [
+    "8"
+   ],
+   "found": [
+    true
+   ],
+   "correct": true,
+   "tools": [
+    "search_university_documents"
+   ],
+   "tools_ok": true,
+   "citations": [
+    {
+     "cite": "Scholarship Scheme §2",
+     "verified": true
+    }
+   ],
+   "cite_expected": true,
+   "citations_verified": true,
+   "seconds": 1.99,
+   "error": null,
+   "tags": [],
+   "revised": false,
+   "unsupported": []
+  },
+  {
+   "id": "p20",
+   "category": "policy",
+   "lang": "en",
+   "config": "full",
+   "model": "qwen3:4b-instruct-2507-q4_K_M",
+   "question": "What is the penalty for submitting an assignment late?",
+   "answer": "According to the Academic Integrity Policy §2.2, the penalty for late submission of an assignment is 10% of the maximum marks for each 24 hours (or part of 24 hours) of delay. Work submitted more than 48 hours late receives zero marks. [Academic Integrity Policy §2.2]",
+   "facts": [
+    "10",
+    "48"
+   ],
+   "found": [
+    true,
+    true
+   ],
+   "correct": true,
+   "tools": [
+    "search_university_documents"
+   ],
+   "tools_ok": true,
+   "citations": [
+    {
+     "cite": "Academic Integrity Policy §2.2",
+     "verified": true
+    }
+   ],
+   "cite_expected": true,
+   "citations_verified": true,
+   "seconds": 2.83,
+   "error": null,
+   "tags": [],
+   "revised": false,
+   "unsupported": []
+  },
+  {
+   "id": "h01",
+   "category": "policy",
+   "lang": "hinglish",
+   "config": "full",
+   "model": "qwen3:4b-instruct-2507-q4_K_M",
+   "question": "Exam dene ke liye kitni attendance chahiye?",
+   "answer": "75% attendance chahiye exam dene ke liye. Agar aapki attendance 75% se kam hai, toh aapko attendance condonation chahiye, jisme minimum 65% hoga [Attendance Policy §1]. \n\nAgar aapko pata hai kisi course ke baare mein, toh main uski attendance ke baare mein bhi jaane ke liye help kar sakta hoon.",
+   "facts": [
+    "75"
+   ],
+   "found": [
+    true
+   ],
+   "correct": true,
+   "tools": [
+    "search_university_documents"
+   ],
+   "tools_ok": true,
+   "citations": [
+    {
+     "cite": "Attendance Policy §1",
+     "verified": true
+    }
+   ],
+   "cite_expected": false,
+   "citations_verified": true,
+   "seconds": 3.3,
+   "error": null,
+   "tags": [],
+   "revised": false,
+   "unsupported": []
+  },
+  {
+   "id": "h02",
+   "category": "policy",
+   "lang": "hinglish",
+   "config": "full",
+   "model": "qwen3:4b-instruct-2507-q4_K_M",
+   "question": "Re-evaluation ki fees kitni hai?",
+   "answer": "₹1,000 per course for re-evaluation [Examination Regulations §6].",
+   "facts": [
+    "1000"
+   ],
+   "found": [
+    true
+   ],
+   "correct": true,
+   "tools": [
+    "search_university_documents"
+   ],
+   "tools_ok": true,
+   "citations": [
+    {
+     "cite": "Examination Regulations §6",
+     "verified": true
+    }
+   ],
+   "cite_expected": true,
+   "citations_verified": true,
+   "seconds": 1.9,
+   "error": null,
+   "tags": [],
+   "revised": false,
+   "unsupported": []
+  },
+  {
+   "id": "h03",
+   "category": "policy",
+   "lang": "hinglish",
+   "config": "full",
+   "model": "qwen3:4b-instruct-2507-q4_K_M",
+   "question": "Hostel ka gate kitne baje band hota hai?",
+   "answer": "I cannot provide information about the hostel gate closing time as it is not covered in any of the university records or policies I have access to. Please check with the hostel administration or the university's official notice board for this information.",
+   "facts": [
+    "22:30"
+   ],
+   "found": [
+    false
+   ],
+   "correct": false,
+   "tools": [],
+   "tools_ok": false,
+   "citations": [],
+   "cite_expected": false,
+   "citations_verified": true,
+   "seconds": 1.94,
+   "error": null,
+   "tags": [],
+   "revised": false,
+   "unsupported": []
+  },
+  {
+   "id": "h04",
+   "category": "policy",
+   "lang": "hinglish",
+   "config": "full",
+   "model": "qwen3:4b-instruct-2507-q4_K_M",
+   "question": "Tuition fees late bharne pe kitna fine lagta hai?",
+   "answer": "A late fee of ₹100 per day is charged on tuition fees paid after the due date, up to a maximum of ₹5,000 [Fee Payment and Refund Policy §2.1].",
+   "facts": [
+    "100",
+    "5000"
+   ],
+   "found": [
+    true,
+    true
+   ],
+   "correct": true,
+   "tools": [
+    "search_university_documents"
+   ],
+   "tools_ok": true,
+   "citations": [
+    {
+     "cite": "Fee Payment and Refund Policy §2.1",
+     "verified": true
+    }
+   ],
+   "cite_expected": true,
+   "citations_verified": true,
+   "seconds": 2.21,
+   "error": null,
+   "tags": [],
+   "revised": false,
+   "unsupported": []
+  },
+  {
+   "id": "h05",
+   "category": "policy",
+   "lang": "hinglish",
+   "config": "full",
+   "model": "qwen3:4b-instruct-2507-q4_K_M",
+   "question": "Supplementary exam ki fees kya hai?",
+   "answer": "Supplementary exam ki fees ₹1,500 per course hai [Examination Regulations §5.3].",
+   "facts": [
+    "1500"
+   ],
+   "found": [
+    true
+   ],
+   "correct": true,
+   "tools": [
+    "search_university_documents"
+   ],
+   "tools_ok": true,
+   "citations": [
+    {
+     "cite": "Examination Regulations §5.3",
+     "verified": true
+    }
+   ],
+   "cite_expected": true,
+   "citations_verified": true,
+   "seconds": 1.9,
+   "error": null,
+   "tags": [],
+   "revised": false,
+   "unsupported": []
+  },
+  {
+   "id": "h06",
+   "category": "policy",
+   "lang": "hinglish",
+   "config": "full",
+   "model": "qwen3:4b-instruct-2507-q4_K_M",
+   "question": "Agar exam hall mein phone pakda gaya toh kya hoga?",
+   "answer": "Agar exam hall mein phone pakda gaya toh uska use karna unfair means hai, aur isse student ko academic misconduct ke liye debar kar diya jata hai [Academic Integrity Policy §3]. Isse baad, uska exam result cancel ho sakta hai aur uski exam eligibility bhi nahi hoga.",
+   "facts": [
+    "unfair means"
+   ],
+   "found": [
+    true
+   ],
+   "correct": true,
+   "tools": [
+    "search_university_documents"
+   ],
+   "tools_ok": true,
+   "citations": [
+    {
+     "cite": "Academic Integrity Policy §3",
+     "verified": true
+    }
+   ],
+   "cite_expected": true,
+   "citations_verified": true,
+   "seconds": 2.98,
+   "error": null,
+   "tags": [],
+   "revised": false,
+   "unsupported": []
+  },
+  {
+   "id": "r01",
+   "category": "records",
+   "lang": "en",
+   "config": "full",
+   "model": "qwen3:4b-instruct-2507-q4_K_M",
+   "question": "What is my attendance in Machine Learning?",
+   "answer": "Your attendance in **CSE503 Machine Learning** is:\n\n- **Classes held**: 39  \n- **Classes attended**: 33  \n- **Attendance percentage**: 84.62%  \n- **Status**: OK (above 75% requirement)  \n- **Classes you can still miss**: 5  \n- **Classes left this term**: 11  \n\nYou are well above the 75% requirement and do not need to attend any more classes to meet the minimum.",
+   "facts": [
+    "84.62"
+   ],
+   "found": [
+    true
+   ],
+   "correct": true,
+   "tools": [
+    "search_university_documents",
+    "get_my_attendance"
+   ],
+   "tools_ok": true,
+   "citations": [],
+   "cite_expected": null,
+   "citations_verified": true,
+   "seconds": 4.26,
+   "error": null,
+   "tags": [],
+   "revised": false,
+   "unsupported": []
+  },
+  {
+   "id": "r02",
+   "category": "records",
+   "lang": "en",
+   "config": "full",
+   "model": "qwen3:4b-instruct-2507-q4_K_M",
+   "question": "Which of my courses are below 75% attendance?",
+   "answer": "The course below 75% attendance is:\n\n- **CSE301: Database Management Systems**  \n  - Attendance: 68.42% (out of 38 classes)  \n  - Status: Below requirement  \n  - Needs to attend 10 more classes to reach 75%  \n\nAll other courses are at or above 75% attendance.",
+   "facts": [
+    "Database Management Systems | CSE301"
+   ],
+   "found": [
+    true
+   ],
+   "correct": true,
+   "tools": [
+    "search_university_documents",
+    "get_my_attendance"
+   ],
+   "tools_ok": true,
+   "citations": [],
+   "cite_expected": null,
+   "citations_verified": true,
+   "seconds": 4.22,
+   "error": null,
+   "tags": [],
+   "revised": false,
+   "unsupported": []
+  },
+  {
+   "id": "r03",
+   "category": "records",
+   "lang": "en",
+   "config": "full",
+   "model": "qwen3:4b-instruct-2507-q4_K_M",
+   "question": "How many classes in a row do I need to attend in Database Management Systems to get back to 75%?",
+   "answer": "You need to attend **10 classes in a row** to get back to 75% in Database Management Systems (CSE301).  \n\nCurrently, you have attended 26 out of 38 classes (68.42%), and you are below the 75% requirement. You must attend the next 10 classes consecutively to reach the required attendance. After that, you cannot miss any more classes in this course, as your \"can_miss\" is 0.  \n\nIf you miss any class after that, your attendance will fall below 75%, and you may be debarred from the end-term exam [Attendance Policy §3.1].",
+   "facts": [
+    "10"
+   ],
+   "found": [
+    true
+   ],
+   "correct": true,
+   "tools": [
+    "search_university_documents",
+    "get_my_attendance"
+   ],
+   "tools_ok": true,
+   "citations": [
+    {
+     "cite": "Attendance Policy §3.1",
+     "verified": true
+    }
+   ],
+   "cite_expected": null,
+   "citations_verified": true,
+   "seconds": 5.5,
+   "error": null,
+   "tags": [],
+   "revised": false,
+   "unsupported": []
+  },
+  {
+   "id": "r04",
+   "category": "records",
+   "lang": "en",
+   "config": "full",
+   "model": "qwen3:4b-instruct-2507-q4_K_M",
+   "question": "how many holidays can i take in computer network",
+   "answer": "I cannot determine how many holidays you can take in CSE501 Computer Networks because:\n\n- **Hostel leave** and **holidays** are separate from attendance.\n- The university's rules on holidays or leave (e.g., \"how many holidays can I take\") are not covered in the policy documents I have access to.\n- The attendance policy only specifies that **classes missed during holidays are not counted as held**, but does not state how many holidays a student can take.\n\nFor hostel leave, refer to [Hostel Rules §4](#), which says:\n> A student who will spend a night away from the hostel must apply for leave on the student portal at least 24 hours in advance.\n\nBut this is about **hostel leave**, not holidays.\n\n👉 **Conclusion**: I do not have information on how many holidays a student can take in a course. That detail is not available in the university's policies or records.\n\nIf you meant **how many classes can I miss in Computer Networks and still stay at 75%**, then:\n- You can miss **11 more classes** and still be at 75% (as per your current attendance: 39/40 attended, 97.5% attendance).\n\nLet me know if you meant something else.",
+   "facts": [
+    "11"
+   ],
+   "found": [
+    true
+   ],
+   "correct": true,
+   "tools": [
+    "search_university_documents",
+    "get_my_attendance"
+   ],
+   "tools_ok": true,
+   "citations": [
+    {
+     "cite": "Hostel Rules §4",
+     "verified": true
+    }
+   ],
+   "cite_expected": null,
+   "citations_verified": true,
+   "seconds": 13.02,
+   "error": null,
+   "tags": [
+    "regression"
+   ],
+   "revised": false,
+   "unsupported": []
+  },
+  {
+   "id": "r05",
+   "category": "records",
+   "lang": "en",
+   "config": "full",
+   "model": "qwen3:4b-instruct-2507-q4_K_M",
+   "question": "If I miss the next 2 classes of Object-Oriented Programming with Java, what will my attendance be?",
+   "answer": "If you miss the next 2 classes of **CSE302 Object-Oriented Programming with Java**, your attendance will be:\n\n- **Classes attended**: 37  \n- **Classes held**: 42  \n- **Attendance percentage**: **88.1%**  \n\nThis is **above** the 75% requirement. You will still be able to miss **7 more classes** and remain at or above 75%.  \n\n✅ No action needed — you are safe.",
+   "facts": [
+    "88.1"
+   ],
+   "found": [
+    true
+   ],
+   "correct": true,
+   "tools": [
+    "search_university_documents",
+    "get_my_attendance",
+    "calculate_attendance_requirement"
+   ],
+   "tools_ok": true,
+   "citations": [],
+   "cite_expected": null,
+   "citations_verified": true,
+   "seconds": 4.97,
+   "error": null,
+   "tags": [],
+   "revised": false,
+   "unsupported": []
+  },
+  {
+   "id": "r06",
+   "category": "records",
+   "lang": "en",
+   "config": "full",
+   "model": "qwen3:4b-instruct-2507-q4_K_M",
+   "question": "When is my next exam?",
+   "answer": "Your next end-term exam is:\n\n- **Computer Networks (CSE501)** on **23 November 2026** at **14:00** in **Room A-110**.",
+   "facts": [
+    "2026-10-30",
+    "Information Security | CSE505"
+   ],
+   "found": [
+    false,
+    false
+   ],
+   "correct": false,
+   "tools": [
+    "search_university_documents",
+    "get_my_exams"
+   ],
+   "tools_ok": true,
+   "citations": [],
+   "cite_expected": null,
+   "citations_verified": true,
+   "seconds": 3.52,
+   "error": null,
+   "tags": [],
+   "revised": false,
+   "unsupported": []
+  },
+  {
+   "id": "r07",
+   "category": "records",
+   "lang": "en",
+   "config": "full",
+   "model": "qwen3:4b-instruct-2507-q4_K_M",
+   "question": "How much fee do I still owe?",
+   "answer": "You still owe:  \n- **Tuition fee**: ₹160,000 (due on 2026-07-31, overdue)  \n- **End-term examination fee**: ₹3,500 (due on 2026-11-14, pending)  \n\nTotal balance: ₹163,500.  \n\n⚠️ Late fee applies to the tuition fee (up to ₹5,000) as it is overdue.  \n✅ You must pay both fees to receive your admit card for end-term exams.  \n\nFor payment options, visit the student portal.",
+   "facts": [
+    "163500 or 160000 + 3500"
+   ],
+   "found": [
+    true
+   ],
+   "correct": true,
+   "tools": [
+    "search_university_documents",
+    "get_my_fee_status"
+   ],
+   "tools_ok": true,
+   "citations": [],
+   "cite_expected": null,
+   "citations_verified": true,
+   "seconds": 5.01,
+   "error": null,
+   "tags": [],
+   "revised": false,
+   "unsupported": []
+  },
+  {
+   "id": "r08",
+   "category": "records",
+   "lang": "en",
+   "config": "full",
+   "model": "qwen3:4b-instruct-2507-q4_K_M",
+   "question": "Which assignments are due this week?",
+   "answer": "- **CSE501 - Computer Networks**: Assignment 4, due 30 October 2026 (23:59), 25 marks, not submitted  \n- **CSE502 - Software Engineering**: Assignment 4, due 30 October 2026 (23:59), 25 marks, not submitted  \n- **CSE503 - Machine Learning**: Assignment 4, due 3 November 2026 (23:59), 25 marks, not submitted  \n- **CSE504 - Compiler Design**: Assignment 4, due 5 November 2026 (23:59), 25 marks, not submitted  \n- **CSE505 - Information Security**: Assignment 4, due 5 November 2026 (23:59), 10 marks, not submitted",
+   "facts": [
+    "Computer Networks | CSE501",
+    "Software Engineering | CSE502"
+   ],
+   "found": [
+    true,
+    true
+   ],
+   "correct": true,
+   "tools": [
+    "search_university_documents",
+    "get_my_assignments"
+   ],
+   "tools_ok": true,
+   "citations": [],
+   "cite_expected": null,
+   "citations_verified": true,
+   "seconds": 6.55,
+   "error": null,
+   "tags": [],
+   "revised": false,
+   "unsupported": []
+  },
+  {
+   "id": "r09",
+   "category": "records",
+   "lang": "en",
+   "config": "full",
+   "model": "qwen3:4b-instruct-2507-q4_K_M",
+   "question": "next class when",
+   "answer": "Your next class is:\n\n- **Machine Learning (CSE503)**  \n  📍 Room: C-402  \n  🕒 Time: 09:00 – 09:50  \n  👤 Faculty: Dr. Veer Balay  \n\nFollowed by:  \n- **Software Engineering (CSE502)**  \n  📍 Room: C-406  \n  🕒 Time: 10:00 – 10:50  \n  👤 Faculty: Dr. Arunima Setty  \n\nThen:  \n- **Computer Networks (CSE501)**  \n  📍 Room: A-205  \n  🕒 Time: 16:00 – 16:50  \n  👤 Faculty: Dr. Hemangini Lalla  \n\nAll on **Wednesday, 28 October 2026**.",
+   "facts": [
+    "Machine Learning | CSE503",
+    "09:00"
+   ],
+   "found": [
+    true,
+    true
+   ],
+   "correct": true,
+   "tools": [
+    "search_university_documents",
+    "get_my_classes"
+   ],
+   "tools_ok": true,
+   "citations": [],
+   "cite_expected": null,
+   "citations_verified": true,
+   "seconds": 7.28,
+   "error": null,
+   "tags": [
+    "regression"
+   ],
+   "revised": false,
+   "unsupported": []
+  },
+  {
+   "id": "r10",
+   "category": "records",
+   "lang": "en",
+   "config": "full",
+   "model": "qwen3:4b-instruct-2507-q4_K_M",
+   "question": "where is my compiler design class",
+   "answer": "Your **Compiler Design (CSE504)** class is:\n\n- **Thursday, 29 October 2026**: 15:00 – 15:50 in **A-101**\n- **Friday, 30 October 2026**: 15:00 – 15:50 in **C-210**\n- **Monday, 2 November 2026**: 15:00 – 15:50 in **D-308**\n\nAll classes are taught by **Dr. Pahal Balay**.",
+   "facts": [
+    "D-308",
+    "A-101",
+    "C-210"
+   ],
+   "found": [
+    true,
+    true,
+    true
+   ],
+   "correct": true,
+   "tools": [
+    "get_my_classes"
+   ],
+   "tools_ok": true,
+   "citations": [],
+   "cite_expected": null,
+   "citations_verified": true,
+   "seconds": 4.82,
+   "error": null,
+   "tags": [
+    "regression"
+   ],
+   "revised": false,
+   "unsupported": []
+  },
+  {
+   "id": "r11",
+   "category": "records",
+   "lang": "en",
+   "config": "full",
+   "model": "qwen3:4b-instruct-2507-q4_K_M",
+   "question": "Are any of my fees overdue?",
+   "answer": "Yes, your fees are overdue:\n\n- **Tuition fee (2026-ODD)**: ₹160,000 balance, due on 2026-07-31 (overdue).\n- **End-term examination fee**: ₹3,500 balance, due on 2026-11-14 (pending).\n\nLate fee of ₹100 per day applies to the tuition fee until paid, and no admit card will be issued for end-term exams until the examination fee is paid.",
+   "facts": [
+    "160000"
+   ],
+   "found": [
+    true
+   ],
+   "correct": true,
+   "tools": [
+    "search_university_documents",
+    "get_my_fee_status"
+   ],
+   "tools_ok": true,
+   "citations": [],
+   "cite_expected": null,
+   "citations_verified": true,
+   "seconds": 3.35,
+   "error": null,
+   "tags": [],
+   "revised": false,
+   "unsupported": []
+  },
+  {
+   "id": "r12",
+   "category": "records",
+   "lang": "en",
+   "config": "full",
+   "model": "qwen3:4b-instruct-2507-q4_K_M",
+   "question": "What is my roll number?",
+   "answer": "Your roll number is **2024CYS0001**.",
+   "facts": [
+    "2024CYS0001"
+   ],
+   "found": [
+    true
+   ],
+   "correct": true,
+   "tools": [],
+   "tools_ok": null,
+   "citations": [],
+   "cite_expected": null,
+   "citations_verified": true,
+   "seconds": 1.62,
+   "error": null,
+   "tags": [],
+   "revised": false,
+   "unsupported": []
+  },
+  {
+   "id": "k01",
+   "category": "records",
+   "lang": "hinglish",
+   "config": "full",
+   "model": "qwen3:4b-instruct-2507-q4_K_M",
+   "question": "DBMS mein meri attendance kitni hai?",
+   "answer": "In **Database Management Systems (CSE301)**, your attendance is **68.42%** (26 out of 38 classes).  \n\n- You are **below the 75% requirement**.  \n- You need to attend **10 more classes** to meet the requirement.  \n- You **cannot miss any more classes** (can_miss = 0).  \n- You have **12 classes left** in the term.  \n\n⚠️ If you don’t attend the remaining classes, you will be **debarred from the end-term exam** for this course [Attendance Policy §3.1].  \n\nLet me know if you need help with your next class or recovery plan.",
+   "facts": [
+    "68.42"
+   ],
+   "found": [
+    true
+   ],
+   "correct": true,
+   "tools": [
+    "search_university_documents",
+    "get_my_attendance"
+   ],
+   "tools_ok": true,
+   "citations": [
+    {
+     "cite": "Attendance Policy §3.1",
+     "verified": true
+    }
+   ],
+   "cite_expected": null,
+   "citations_verified": true,
+   "seconds": 5.47,
+   "error": null,
+   "tags": [],
+   "revised": false,
+   "unsupported": []
+  },
+  {
+   "id": "k02",
+   "category": "records",
+   "lang": "hinglish",
+   "config": "full",
+   "model": "qwen3:4b-instruct-2507-q4_K_M",
+   "question": "kal kaunsi classes hain?",
+   "answer": "- **Wednesday, 28 October 2026**  \n  - 09:00 – 09:50: **Machine Learning (CSE503)** – Room: C-402, Faculty: Dr. Veer Balay  \n  - 10:00 – 10:50: **Software Engineering (CSE502)** – Room: C-406, Faculty: Dr. Arunima Setty  \n  - 16:00 – 16:50: **Computer Networks (CSE501)** – Room: A-205, Faculty: Dr. Hemangini Lalla  \n\nNo classes today (Tuesday).",
+   "facts": [
+    "Machine Learning | CSE503",
+    "Software Engineering | CSE502",
+    "Computer Networks | CSE501"
+   ],
+   "found": [
+    true,
+    true,
+    true
+   ],
+   "correct": true,
+   "tools": [
+    "get_my_classes"
+   ],
+   "tools_ok": true,
+   "citations": [],
+   "cite_expected": null,
+   "citations_verified": true,
+   "seconds": 5.04,
+   "error": null,
+   "tags": [],
+   "revised": false,
+   "unsupported": []
+  },
+  {
+   "id": "k03",
+   "category": "records",
+   "lang": "hinglish",
+   "config": "full",
+   "model": "qwen3:4b-instruct-2507-q4_K_M",
+   "question": "mera kitna fees baaki hai?",
+   "answer": "Your fee status:\n\n- **Tuition fee (2026-ODD):** ₹160,000 balance (due on 2026-07-31) – overdue.  \n- **End-term examination fee:** ₹3,500 balance (due on 2026-11-14) – pending.\n\nYou must pay both to avoid registration hold or no admit card.",
+   "facts": [
+    "163500 or 160000 + 3500"
+   ],
+   "found": [
+    true
+   ],
+   "correct": true,
+   "tools": [
+    "search_university_documents",
+    "get_my_fee_status"
+   ],
+   "tools_ok": true,
+   "citations": [],
+   "cite_expected": null,
+   "citations_verified": true,
+   "seconds": 4.24,
+   "error": null,
+   "tags": [],
+   "revised": false,
+   "unsupported": []
+  },
+  {
+   "id": "k04",
+   "category": "records",
+   "lang": "hinglish",
+   "config": "full",
+   "model": "qwen3:4b-instruct-2507-q4_K_M",
+   "question": "Computer Networks mein kitni chutti le sakta hoon?",
+   "answer": "Computer Networks (CSE501) mein aap 11 classes chutti le sakte hain aur 75% attendance ke saath reh sakte hain.  \n\nAgar aap kisi bhi class ko chhodte hain, toh aapke attendance percentage 75% ke saath rehne ke liye aapko 11 classes chhodne ke baad bhi ek class ke baad ek class ke liye attendance maintain karna hoga.  \n\n**Note:** Ye \"chutti\" ka matlab hai class chhodna, jisme aapke attendance percentage 75% ke saath rehne ke liye kafi hai.  \n\nAgar aapko kisi specific condition (jaise medical leave ya hostel leave) ke baare mein pata chahiye, toh bataiye.",
+   "facts": [
+    "11"
+   ],
+   "found": [
+    true
+   ],
+   "correct": true,
+   "tools": [
+    "get_my_attendance"
+   ],
+   "tools_ok": true,
+   "citations": [],
+   "cite_expected": null,
+   "citations_verified": true,
+   "seconds": 5.35,
+   "error": null,
+   "tags": [
+    "regression"
+   ],
+   "revised": false,
+   "unsupported": []
+  },
+  {
+   "id": "k05",
+   "category": "records",
+   "lang": "hinglish",
+   "config": "full",
+   "model": "qwen3:4b-instruct-2507-q4_K_M",
+   "question": "agla exam kab hai?",
+   "answer": "Your next end-term exam is on **25 November 2026** for **Design and Analysis of Algorithms (CSE305)** at 10:00 AM in Room C-302.  \n\nOther exams:  \n- **26 November**: Computer Organization and Architecture (CSE304) – 2:00 PM, Room B-310  \n- **28 November**: Discrete Mathematics (CSE303) – 2:00 PM, Room B-110  \n- **30 November**: Database Management Systems (CSE301) – 10:00 AM, Room B-301  \n- **3 December**: Object-Oriented Programming with Java (CSE302) – 2:00 PM, Room A-207",
+   "facts": [
+    "2026-10-29",
+    "Object-Oriented Programming with Java | CSE302"
+   ],
+   "found": [
+    false,
+    true
+   ],
+   "correct": false,
+   "tools": [
+    "get_my_exams"
+   ],
+   "tools_ok": true,
+   "citations": [],
+   "cite_expected": null,
+   "citations_verified": true,
+   "seconds": 5.67,
+   "error": null,
+   "tags": [],
+   "revised": false,
+   "unsupported": []
+  },
+  {
+   "id": "c01",
+   "category": "combined",
+   "lang": "en",
+   "config": "full",
+   "model": "qwen3:4b-instruct-2507-q4_K_M",
+   "question": "Can I sit all my end-term exams?",
+   "answer": "No, you cannot sit all your end-term exams yet. Here's why:\n\n- **End-term examination fee** is pending (₹3,500.00 due by 14 November 2026). Admit cards are withheld until this fee is paid. [Examination Regulations §2]\n- **Course-wise eligibility**:\n  - **CSE301 (DBMS)**: Must attend all 12 remaining classes to reach 75% attendance. Missing any more will fall below 75%.\n  - **CSE302 (OOP)**: Must attend at least 2 of the 11 remaining classes.\n  - **CSE303 (Discrete Math)**: Must attend at least 5 of the 12 remaining classes.\n  - **CSE304 (COA)**: Must attend at least 6 of the 12 remaining classes.\n  - **CSE305 (DAAL)**: Must attend at least 3 of the 11 remaining classes.\n\n✅ To sit all exams:  \n(1) Pay the end-term examination fee (₹3,500).  \n(2) Attend the required classes in each course as per above.  \n\nAdmit cards will be issued from 18 November 2026, but only after the fee is paid.",
+   "facts": [
+    "Database Management Systems | CSE301",
+    "12",
+    "3500"
+   ],
+   "found": [
+    true,
+    true,
+    true
+   ],
+   "correct": true,
+   "tools": [
+    "search_university_documents",
+    "get_my_attendance",
+    "get_my_fee_status",
+    "check_end_term_eligibility"
+   ],
+   "tools_ok": true,
+   "citations": [
+    {
+     "cite": "Examination Regulations §2",
+     "verified": true
+    }
+   ],
+   "cite_expected": true,
+   "citations_verified": true,
+   "seconds": 16.1,
+   "error": null,
+   "tags": [],
+   "revised": false,
+   "unsupported": []
+  },
+  {
+   "id": "c02",
+   "category": "combined",
+   "lang": "en",
+   "config": "full",
+   "model": "qwen3:4b-instruct-2507-q4_K_M",
+   "question": "Will I get my admit card?",
+   "answer": "To determine if you will get your admit card, I need to check your eligibility based on attendance, fee payments, and any other requirements. Let me verify this for you.\n\nNo, you will not get your admit card.\n\nHere’s why:\n\n- Your attendance in all courses is above 75%, so attendance is not a barrier.  \n- However, your **tuition fee** is overdue (₹160,000 unpaid) and your **end-term examination fee** (₹3,500) is still pending.  \n- According to the **Fee Payment and Refund Policy §2.2**, if tuition fees remain unpaid 30 days after the due date, your registration is put on hold.  \n- Also, **Examination Regulations §2.2** states that admit cards are not issued to students with unpaid examination fees.  \n\nThus, due to unpaid fees, you are not eligible for an admit card.  \n\n✅ Action: Pay both tuition and examination fees to regain eligibility.",
+   "facts": [
+    "160000",
+    "3500"
+   ],
+   "found": [
+    true,
+    true
+   ],
+   "correct": true,
+   "tools": [
+    "search_university_documents",
+    "get_my_attendance",
+    "get_my_fee_status"
+   ],
+   "tools_ok": true,
+   "citations": [],
+   "cite_expected": false,
+   "citations_verified": true,
+   "seconds": 8.08,
+   "error": null,
+   "tags": [],
+   "revised": false,
+   "unsupported": []
+  },
+  {
+   "id": "c03",
+   "category": "combined",
+   "lang": "en",
+   "config": "full",
+   "model": "qwen3:4b-instruct-2507-q4_K_M",
+   "question": "Am I eligible for my end-term exams?",
+   "answer": "Yes, you are eligible for all end-term exams.  \n\nHere’s the breakdown:  \n- **Attendance**: In every course, you are at or above 75% (or can stay above it even if you miss all remaining classes).  \n- **Fees**: All examination and tuition fees are paid in full.  \n- **Admit cards**: Will be issued on the student portal starting 18 November 2026.  \n\n✅ **All courses are eligible** for end-term exams.  \n📌 No action needed—just attend your remaining classes or miss them safely as per your attendance status.  \n\n*Source: Examination Regulations §2 [Examination Regulations §2]*",
+   "facts": [
+    "yes | eligible for all | you are eligible | you're eligible | you can sit"
+   ],
+   "found": [
+    true
+   ],
+   "correct": true,
+   "tools": [
+    "search_university_documents",
+    "get_my_attendance",
+    "get_my_fee_status",
+    "check_end_term_eligibility"
+   ],
+   "tools_ok": true,
+   "citations": [
+    {
+     "cite": "Examination Regulations §2",
+     "verified": true
+    }
+   ],
+   "cite_expected": true,
+   "citations_verified": true,
+   "seconds": 6.88,
+   "error": null,
+   "tags": [],
+   "revised": false,
+   "unsupported": []
+  },
+  {
+   "id": "c04",
+   "category": "combined",
+   "lang": "en",
+   "config": "full",
+   "model": "qwen3:4b-instruct-2507-q4_K_M",
+   "question": "My DBMS attendance is low. Can it be condoned, and down to what minimum?",
+   "answer": "I cannot provide information about condonation or minimum attendance for your course without checking the official university policy and your specific attendance record.\n\nLet me first check your attendance record for CSE301 (Database Management Systems).\n\n\nYour current attendance in CSE301 (Database Management Systems) is **68.42%** (26 of 38 classes attended), which is below the 75% requirement.\n\n- You need to attend **10 more classes** to reach 75%.\n- You **cannot miss any more classes** (can_miss = 0) without falling below the 75% threshold.\n\nThere is **no condonation** available for this course based on the policy, as:\n- The policy does not allow condonation below 65% [Attendance Policy §4].\n- Your current attendance (68.42%) is above 65%, but still below 75%.\n- Condonation requires a valid reason (e.g., illness, family emergency) and supporting documents, and must be applied for within 7 days of returning to classes [Attendance Policy §4].\n\nYou must attend the remaining classes to meet the 75% requirement. Failure to do so will result in being debarred from the end-term exam for this course [Attendance Policy §3.1].",
+   "facts": [
+    "65",
+    "68.42"
+   ],
+   "found": [
+    true,
+    true
+   ],
+   "correct": true,
+   "tools": [
+    "search_university_documents",
+    "search_university_documents",
+    "get_my_attendance"
+   ],
+   "tools_ok": true,
+   "citations": [
+    {
+     "cite": "Attendance Policy §4",
+     "verified": true
+    },
+    {
+     "cite": "Attendance Policy §3.1",
+     "verified": true
+    }
+   ],
+   "cite_expected": true,
+   "citations_verified": true,
+   "seconds": 14.99,
+   "error": null,
+   "tags": [],
+   "revised": true,
+   "unsupported": [
+    "7"
+   ]
+  },
+  {
+   "id": "c05",
+   "category": "combined",
+   "lang": "en",
+   "config": "full",
+   "model": "qwen3:4b-instruct-2507-q4_K_M",
+   "question": "How much late fee will I be charged on my overdue tuition?",
+   "answer": "Your tuition fee of ₹160,000 is overdue, with a due date of 31 July 2026.  \n\nAccording to the **Fee Payment and Refund Policy §2.1**, a late fee of **₹100 per day** is charged on tuition fees paid after the due date, up to a maximum of ₹5,000.  \n\nSince the fee is overdue, the late fee will be calculated daily from 1 August 2026 (the day after the due date) until the fee is paid. The total late fee will not exceed ₹5,000.  \n\nYou must pay the balance of ₹160,000 by the due date to avoid late fees. If you pay after the due date, the late fee will start accruing.  \n\nFor the examination fee, ₹3,500 is pending and must be paid before admit cards are issued.  \n\n👉 **Action**: Pay the tuition fee by 31 July 2026 to avoid late fees. If you miss the deadline, late fees will start accruing.  \n\n*Source: [Fee Payment and Refund Policy §2.1]*",
+   "facts": [
+    "100",
+    "5000"
+   ],
+   "found": [
+    true,
+    true
+   ],
+   "correct": true,
+   "tools": [
+    "search_university_documents",
+    "get_my_fee_status"
+   ],
+   "tools_ok": true,
+   "citations": [
+    {
+     "cite": "Fee Payment and Refund Policy §2.1",
+     "verified": true
+    }
+   ],
+   "cite_expected": true,
+   "citations_verified": true,
+   "seconds": 7.61,
+   "error": null,
+   "tags": [],
+   "revised": false,
+   "unsupported": []
+  },
+  {
+   "id": "c06",
+   "category": "combined",
+   "lang": "hinglish",
+   "config": "full",
+   "model": "qwen3:4b-instruct-2507-q4_K_M",
+   "question": "Agar main DBMS ki ek aur class miss karun toh kya main end-term de paunga?",
+   "answer": "No, you cannot sit the end-term exam for CSE301 if you miss another class.  \n\nHere’s why:  \n- Your current attendance is **68.42%** (26/38).  \n- You **need to attend all 12 remaining classes** to reach at least 75% attendance.  \n- Missing even one more class will bring your attendance below 75%.  \n- **Verdict**: \"Eligible only by attending all 12 classes left (then at least 75%); missing more means falling below 75%.\" [Examination Regulations §2]  \n\nAlso, you have an unpaid end-term exam fee (₹3,500), which blocks admit card issuance.  \n\n✅ Action:  \n1. Pay the ₹3,500 exam fee by 14 Nov.  \n2. Attend all 12 remaining classes in CSE301.  \n\nOnly after both steps will you be eligible.",
+   "facts": [
+    "condonation | condone | condoned"
+   ],
+   "found": [
+    false
+   ],
+   "correct": false,
+   "tools": [
+    "get_my_attendance",
+    "get_my_attendance",
+    "check_end_term_eligibility"
+   ],
+   "tools_ok": true,
+   "citations": [
+    {
+     "cite": "Examination Regulations §2",
+     "verified": true
+    }
+   ],
+   "cite_expected": true,
+   "citations_verified": true,
+   "seconds": 7.27,
+   "error": null,
+   "tags": [],
+   "revised": false,
+   "unsupported": []
+  },
+  {
+   "id": "c07",
+   "category": "combined",
+   "lang": "en",
+   "config": "full",
+   "model": "qwen3:4b-instruct-2507-q4_K_M",
+   "question": "If I miss 3 Machine Learning classes for a hostel leave, will I still be above 75%?",
+   "answer": "Yes, missing 3 classes for a hostel leave will still keep your attendance above 75%.  \n\n- Current attendance: 33/39 (84.62%)  \n- After missing 3 classes: 33/42 (78.57%)  \n- This is above the 75% requirement.  \n\nYou can still miss up to **2 more classes** and remain above 75%.  \n\n> ✅ You are safe. No debarred status.  \n> 📌 Hostel leave does not count as attendance, but your attendance is still above 75%.  \n\n*Note: Attendance is calculated as classes attended divided by classes held (including those missed). Classes cancelled or on holidays are not counted as held.* [Attendance Policy §2]",
+   "facts": [
+    "78.57"
+   ],
+   "found": [
+    true
+   ],
+   "correct": true,
+   "tools": [
+    "search_university_documents",
+    "get_my_attendance",
+    "get_my_attendance",
+    "calculate_attendance_requirement"
+   ],
+   "tools_ok": true,
+   "citations": [
+    {
+     "cite": "Attendance Policy §2",
+     "verified": true
+    }
+   ],
+   "cite_expected": null,
+   "citations_verified": true,
+   "seconds": 6.97,
+   "error": null,
+   "tags": [],
+   "revised": false,
+   "unsupported": []
   }
  ]
 }

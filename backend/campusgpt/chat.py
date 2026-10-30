@@ -21,18 +21,18 @@ from typing import Any
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from campusgpt import retrieval, student, tools
+from campusgpt import retrieval, student, tools, verify
 from campusgpt.auth import CurrentUser
 from campusgpt.config import get_settings
 from campusgpt.llm import Provider, ProviderUnavailable, TextChunk, ToolCall
 from campusgpt.models import Conversation, Message
+from campusgpt.verify import CITATION
 
 log = logging.getLogger(__name__)
 
 MAX_TOOL_ROUNDS = 4
 HISTORY_MESSAGES = 10
 SEARCH_TOOL = "search_university_documents"
-CITATION = re.compile(r"\[([^\[\]]+?§\s*\d+(?:\.\d+)*)\]")
 
 SYSTEM_PROMPT = """You are CampusGPT, the helpdesk assistant of a university. You are talking \
 to a logged-in student.
@@ -123,6 +123,7 @@ class Pipeline:
     documents: bool = True
     records: bool = True
     retrieval_mode: retrieval.Mode = "hybrid"
+    verify: bool = True            # check the answer's figures and citations (verify.py)
 
     def offers(self, name: str) -> bool:
         return self.documents if name == SEARCH_TOOL else self.records
@@ -133,7 +134,7 @@ FULL = Pipeline()
 
 @dataclass
 class ChatEvent:
-    kind: str                      # conversation | status | tool | token | done | error
+    kind: str                      # conversation | status | tool | token | revision | done | error
     data: dict[str, Any]
 
 
@@ -209,42 +210,58 @@ async def run(db: AsyncSession, provider: Provider, user: CurrentUser, question:
         yield ChatEvent("tool", source)
         messages[0]["content"] += PREFETCHED_RECORDS.format(
             records=json.dumps(source["result"], ensure_ascii=False))
+    given = list(messages)         # what the answer's figures may come from, with the tools
+    check = pipeline.verify and (pipeline.documents or pipeline.records)
+    revision = None
     try:
-        for round_no in range(MAX_TOOL_ROUNDS + 1):
-            # Last round: no tools offered, so the model has to answer.
-            offered = definitions if round_no < MAX_TOOL_ROUNDS else []
-            text, calls = "", []
-            async for event in provider.stream(messages, offered):
-                if isinstance(event, TextChunk):
-                    text += event.text
-                    yield ChatEvent("token", {"text": event.text})
-                elif isinstance(event, ToolCall):
-                    calls.append(event)
-            answer += text
-            if not calls:
+        for attempt in range(2 if check else 1):
+            answer = ""
+            for round_no in range(MAX_TOOL_ROUNDS + 1):
+                # Last round: no tools offered, so the model has to answer.
+                offered = definitions if round_no < MAX_TOOL_ROUNDS else []
+                text, calls = "", []
+                async for event in provider.stream(messages, offered):
+                    if isinstance(event, TextChunk):
+                        text += event.text
+                        yield ChatEvent("token", {"text": event.text})
+                    elif isinstance(event, ToolCall):
+                        calls.append(event)
+                answer += text
+                if not calls:
+                    break
+                results = []
+                for call in calls:
+                    spec = tools.TOOLS.get(call.name)
+                    yield ChatEvent("status", {"text": spec.status if spec else "Working"})
+                    results.append(await _execute(ctx, call))
+                    yield ChatEvent("tool", results[-1])
+                sources += results
+                messages += _tool_messages(text, calls, results)
+                await db.commit()          # audit entries for the tool calls
+            citations = check_citations(answer, sources)
+            figures = verify.unsupported(answer, given, sources) if check else []
+            cites = [c["cite"] for c in citations if not c["verified"]]
+            if attempt or not (figures or cites):
                 break
-            results = []
-            for call in calls:
-                spec = tools.TOOLS.get(call.name)
-                yield ChatEvent("status", {"text": spec.status if spec else "Working"})
-                results.append(await _execute(ctx, call))
-                yield ChatEvent("tool", results[-1])
-            sources += results
-            messages += _tool_messages(text, calls, results)
-            await db.commit()          # audit entries for the tool calls
+            # One correction: the draft is replaced, and the student is told why.
+            revision = {"unsupported": figures, "citations": cites}
+            yield ChatEvent("revision", revision)
+            messages += [{"role": "assistant", "content": answer},
+                         {"role": "user", "content": verify.feedback(figures, cites)}]
     except ProviderUnavailable as e:
         log.warning("chat model unavailable: %s", e)
         yield ChatEvent("error", {"message": "The assistant is unavailable right now. "
                                              "Please try again in a minute."})
         return
 
-    citations = check_citations(answer, sources)
+    verification = {"revised": revision, "unsupported": figures} if check else None
     msg = Message(conversation_id=conversation_id, role="assistant", content=answer.strip(),
-                  sources={"tools": sources, "citations": citations} if sources else None)
+                  sources={"tools": sources, "citations": citations,
+                           "verification": verification} if sources or revision else None)
     db.add(msg)
     await db.commit()
     yield ChatEvent("done", {"message_id": msg.id, "conversation_id": conversation_id,
-                             "citations": citations})
+                             "citations": citations, "unsupported": figures})
 
 
 async def _execute(ctx: tools.ToolContext, call: ToolCall) -> dict[str, Any]:

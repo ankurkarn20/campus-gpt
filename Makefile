@@ -80,7 +80,7 @@ bench-retrieval:
 	$(EVAL) retrieval
 
 bench:
-	$(EVAL) chat --model local --configs full,rag,db,plain
+	$(EVAL) chat --model local --configs full,noverify,rag,db,plain
 
 bench-groq:
 	$(EVAL) chat --model groq --configs full

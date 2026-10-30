@@ -16,7 +16,11 @@ export type ChatEvent =
   | { kind: "status"; data: { text: string } }
   | { kind: "tool"; data: ToolSource }
   | { kind: "token"; data: { text: string } }
-  | { kind: "done"; data: { message_id: number; conversation_id: number; citations: Citation[] } }
+  // The answer so far had figures or citations with no source and is being rewritten.
+  | { kind: "revision"; data: { unsupported: string[]; citations: string[] } }
+  | { kind: "done"; data: {
+      message_id: number; conversation_id: number; citations: Citation[]; unsupported: string[];
+    } }
   | { kind: "error"; data: { message: string } };
 
 export function streamChat(
