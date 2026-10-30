@@ -326,7 +326,8 @@ def course_verdict(c: CourseEligibility) -> str:
     if c.status == "on_track":
         which = f"all {left}" if need == left else f"at least {need} of the {left}"
         return (f"Eligible only by attending {which} classes left (then at least 75%); "
-                f"missing more means falling below 75%.")
+                "missing more means falling below 75%, and then the exam needs condonation "
+                "(medical or other approved reason; never below 65%).")
     if c.status == "condonation_needed":
         return (f"Cannot reach 75%: at most {best}% even attending all {left} classes left. "
                 "Can sit the exam only if the shortage is condoned (medical or other approved "

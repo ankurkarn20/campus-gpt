@@ -67,7 +67,7 @@ def retrieval_summary(results: list[RetrievalResult]) -> list[dict]:
             ms = sorted(r.ms for r in rs)
             rows.append({"mode": mode, "lang": lang, "n": len(rs),
                          "hit@1": share(r.rank == 1 for r in rs),
-                         "hit@4": share(r.rank is not None and r.rank <= 4 for r in rs),
+                         "hit@k": share(r.rank is not None and r.rank <= retrieval.PASSAGES for r in rs),
                          "mrr@10": round(sum(1 / r.rank for r in rs if r.rank) / len(rs), 3),
                          "p95_ms": ms[int(0.95 * (len(ms) - 1))]})
     return rows

@@ -152,7 +152,9 @@ class AttendanceRequirementArgs(ToolArgs):
 
 
 class ExamArgs(CourseFilter):
-    exam_type: Literal["quiz", "mid_term", "end_term"] | None = None
+    exam_type: Literal["quiz", "mid_term", "end_term"] | None = Field(
+        None, description="Only if the student names a type; \"exam\" alone means every type, "
+                          "quizzes included")
 
 
 class AssignmentArgs(CourseFilter):

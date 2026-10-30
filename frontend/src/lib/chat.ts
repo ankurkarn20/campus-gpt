@@ -17,7 +17,7 @@ export type ChatEvent =
   | { kind: "tool"; data: ToolSource }
   | { kind: "token"; data: { text: string } }
   // The answer so far had figures or citations with no source and is being rewritten.
-  | { kind: "revision"; data: { unsupported: string[]; citations: string[] } }
+  | { kind: "revision"; data: { unsupported: string[]; citations: string[]; searched?: boolean } }
   | { kind: "done"; data: {
       message_id: number; conversation_id: number; citations: Citation[]; unsupported: string[];
     } }

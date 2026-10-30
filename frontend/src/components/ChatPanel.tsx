@@ -15,6 +15,7 @@ type Turn = {
   citations?: Citation[];
   unsupported?: string[];   // figures the verifier found no source for, after the rewrite
   revised?: boolean;        // the first draft was replaced
+  searched?: boolean;       // ...because it used no source, so the documents were searched
   pending?: boolean;
   error?: string;
 };
@@ -57,7 +58,7 @@ export function ChatProvider({ suggestions, children }: {
           case "status": update((t) => ({ ...t, steps: [...t.steps, e.data.text] })); break;
           case "tool": update((t) => ({ ...t, sources: [...t.sources, e.data] })); break;
           case "token": update((t) => ({ ...t, text: t.text + e.data.text })); break;
-          case "revision": update((t) => ({ ...t, text: "", revised: true })); break;
+          case "revision": update((t) => ({ ...t, text: "", revised: true, searched: !!e.data.searched })); break;
           case "done": update((t) => ({ ...t, citations: e.data.citations, unsupported: e.data.unsupported })); break;
           case "error": update((t) => ({ ...t, error: e.data.message })); break;
         }
@@ -157,9 +158,10 @@ function ChatWindow({ turns, busy, suggestions, onSend, onClose, onReset }: {
           <div key={i} className="text-sm">
             {t.revised && (
               <p className="mb-2 rounded-md border border-border px-2 py-1 text-xs text-muted">
-                <span aria-hidden className="text-good-text">✓</span> Checked against your
-                records: the first draft stated something they don&apos;t support, so it was
-                rewritten.
+                <span aria-hidden className="text-good-text">✓</span>{" "}
+                {t.searched
+                  ? "Checked: the first draft did not look anything up, so the university's documents were searched and the answer rewritten."
+                  : "Checked against your records: the first draft stated something they don't support, so it was rewritten."}
               </p>
             )}
             {t.pending && !t.text && !t.revised && (

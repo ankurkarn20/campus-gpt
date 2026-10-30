@@ -130,7 +130,7 @@ def test_retrieval_metrics(indexed, test_url):
     results = asyncio.run(in_session(test_url, lambda db: run.retrieval_eval(db, ("hybrid",))))
     assert len(results) == sum(q.category == "policy" for q in QUESTIONS)
     [all_, *_] = run.retrieval_summary(results)
-    assert all_["n"] == len(results) and all_["hit@4"] > 0.8
+    assert all_["n"] == len(results) and all_["hit@k"] > 0.8
 
 
 def test_read_only_sql_cannot_change_the_database(seeded, test_url):

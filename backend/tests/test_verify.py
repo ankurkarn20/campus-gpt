@@ -59,3 +59,10 @@ def test_the_assistants_own_earlier_answers_are_not_a_source():
 def test_feedback_names_what_failed():
     text = feedback(["9"], ["Exam Rules §12"])
     assert "9" in text and "Exam Rules §12" in text and "student" in text
+
+
+def test_numbers_spelled_out_in_passages_are_supported():
+    passages = [{"tool": "search_university_documents", "result": [
+        {"text": "Apply within seven days; hostel leave needs Forty-eight hours' notice."}]}]
+    assert unsupported("Apply within 7 days, 48 hours ahead.", [], passages) == []
+    assert unsupported("Apply within 8 days.", [], passages) == ["8"]

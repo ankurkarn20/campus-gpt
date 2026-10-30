@@ -21,6 +21,14 @@ NUMBER = re.compile(r"(?<![\w§.,])(\d+(?:,\d+)*(?:\.\d+)?)(?:st|nd|rd|th)?(?![\
 LIST_MARKER = re.compile(r"^\s*\d+[.)]\s", re.MULTILINE)
 SCALE = re.compile(r"\s*(lakh|lac|crore)", re.IGNORECASE)
 MULTIPLIER = {"lakh": 1e5, "lac": 1e5, "crore": 1e7}
+# Policies spell small numbers out ("within seven days"); answers usually write digits.
+UNITS = ["zero", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten",
+         "eleven", "twelve", "thirteen", "fourteen", "fifteen", "sixteen", "seventeen",
+         "eighteen", "nineteen"]
+TENS = ["twenty", "thirty", "forty", "fifty", "sixty", "seventy", "eighty", "ninety"]
+WORD_VALUES = {w: i for i, w in enumerate(UNITS)} | {w: 20 + 10 * i for i, w in enumerate(TENS)}
+NUMBER_WORD = re.compile(rf"\b({'|'.join(TENS + UNITS[::-1])})(?:[\s-]({'|'.join(UNITS[1:10])}))?\b",
+                         re.IGNORECASE)
 
 
 @dataclass(frozen=True)
@@ -50,6 +58,9 @@ def _numbers(text: str) -> set[float]:
     found = set()
     for m in re.finditer(r"\d+(?:,\d+)*(?:\.\d+)?", text):
         found.add(float(m.group().replace(",", "")))
+    for m in NUMBER_WORD.finditer(text):
+        tens, unit = m.group(1).lower(), (m.group(2) or "").lower()
+        found.add(float(WORD_VALUES[tens] + (WORD_VALUES[unit] if unit and tens in TENS else 0)))
     # Times: 14:00 is also 2 (PM).
     for m in re.finditer(r"(?<!\d)([01]?\d|2[0-3]):[0-5]\d", text):   # also 2026-11-06T14:00
         hour = int(m.group(1))
@@ -123,6 +134,16 @@ def unsupported(answer: str, messages: list[dict], sources: list[dict]) -> list[
         if c.text not in out and not _supported(c, known):
             out.append(c.text)
     return out
+
+
+def ungrounded(passages: str) -> str:
+    """The message that asks the model to answer again from passages it did not search for."""
+    return ("(Automatic check by CampusGPT, not written by the student.) You answered without "
+            "searching the university's documents or fetching any records. The search found "
+            "these passages (they may not all be relevant):\n" + passages + "\nWrite the whole "
+            "answer again: state a rule only if a passage says it, cite it as instructed, and "
+            "call the record tools for anything about the student's own records. Answer in the "
+            "language the student used. Do not mention this check.")
 
 
 def feedback(figures: list[str], citations: list[str]) -> str:

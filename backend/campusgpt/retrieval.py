@@ -23,6 +23,9 @@ from campusgpt.models.documents import EMBEDDING_DIM
 RRF_K = 60            # the constant from the RRF paper; dampens the weight of the top ranks
 CANDIDATES = 20       # taken from each ranking before fusion
 Mode = Literal["hybrid", "semantic", "lexical"]
+# Passages the chat gives the model. 5, not 4: the evaluation found a rule (Attendance Policy
+# §4.4) ranked 5th, and a passage is only about 120 tokens.
+PASSAGES = 5
 
 
 @dataclass
@@ -70,7 +73,7 @@ LIMIT :k
 """).bindparams(bindparam("embedding", type_=Vector(EMBEDDING_DIM)))
 
 
-async def search(db: AsyncSession, question: str, k: int = 4,
+async def search(db: AsyncSession, question: str, k: int = PASSAGES,
                  mode: Mode = "hybrid") -> list[Passage]:
     """The k passages most relevant to `question`, best first."""
     question = question.strip()

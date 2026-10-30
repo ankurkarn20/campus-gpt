@@ -118,3 +118,13 @@ def test_summary_states_what_to_do_in_words(client):
     assert ".." not in e["summary"]
     assert dashboard(client, REGULAR)["eligibility"]["summary"].startswith(
         "Eligible for all end-term exams")
+
+
+
+def test_on_track_verdict_says_condonation_is_the_fallback():
+    from campusgpt.student import CourseEligibility, course_verdict
+    o = attendance_outlook(26, 38, 12)
+    c = CourseEligibility("CSE301", "DBMS", 38, 26, 68.42, 12, o.status, o.attend_at_least,
+                          o.best_percentage)
+    assert o.status == "on_track"
+    assert "all 12 classes" in course_verdict(c) and "condonation" in course_verdict(c)

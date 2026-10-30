@@ -43,6 +43,8 @@ semester {semester}, section {section}.
 Rules:
 - For anything about this student's own records (attendance, exams, assignments, fees, \
 notices, what to do this week) call the tools. Never guess or invent figures, dates or rooms.
+- "Exam" (or "paper", "test") means any exam: quiz, mid-term or end-term. "My next exam" is \
+the earliest one of any type, unless the student names a type.
 - For attendance arithmetic (classes needed, what if I miss N classes) call \
 calculate_attendance_requirement; do not compute it yourself.
 - For the timetable (next class, classes today or tomorrow, where or when a class is) call \
@@ -241,13 +243,27 @@ async def run(db: AsyncSession, provider: Provider, user: CurrentUser, question:
             citations = check_citations(answer, sources)
             figures = verify.unsupported(answer, given, sources) if check else []
             cites = [c["cite"] for c in citations if not c["verified"]]
-            if attempt or not (figures or cites):
+            ungrounded = (check and pipeline.documents and not sources and not figures
+                          and not cites and best and best[0].similarity
+                          >= get_settings().rag_fallback_min_similarity)
+            if attempt or not (figures or cites or ungrounded):
                 break
             # One correction: the draft is replaced, and the student is told why.
             revision = {"unsupported": figures, "citations": cites}
-            yield ChatEvent("revision", revision)
+            if ungrounded:
+                revision["searched"] = True
+                call = ToolCall("fallback", SEARCH_TOOL, json.dumps({"query": question[:300]}))
+                yield ChatEvent("status", {"text": tools.TOOLS[SEARCH_TOOL].status})
+                source = await _execute(ctx, call)
+                sources.append(source)
+                yield ChatEvent("revision", revision)
+                yield ChatEvent("tool", source)
+                note = verify.ungrounded(json.dumps(source["result"], ensure_ascii=False))
+            else:
+                yield ChatEvent("revision", revision)
+                note = verify.feedback(figures, cites)
             messages += [{"role": "assistant", "content": answer},
-                         {"role": "user", "content": verify.feedback(figures, cites)}]
+                         {"role": "user", "content": note}]
     except ProviderUnavailable as e:
         log.warning("chat model unavailable: %s", e)
         yield ChatEvent("error", {"message": "The assistant is unavailable right now. "

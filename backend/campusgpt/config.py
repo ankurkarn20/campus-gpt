@@ -46,6 +46,11 @@ class Settings(BaseSettings):
     # searches the documents itself first and hands the passages to the model when the best
     # one is at least this similar to the question (cosine, BGE-small). 1.0 turns it off.
     rag_prefetch_min_similarity: float = 0.62
+    # An answer that used no tool and no passage is ungrounded. If the question is at least
+    # this similar to a passage (small talk is 0.46-0.54), the chat searches the documents
+    # itself and has the model answer again ("Hostel ka gate kitne baje band hota hai?" is
+    # 0.616 and was answered "not covered" without a search).
+    rag_fallback_min_similarity: float = 0.55
 
 
 @lru_cache

@@ -3,6 +3,7 @@ the data behind it."""
 import json
 from pathlib import Path
 
+from campusgpt import retrieval
 from campusgpt.evaluation.questions import QUESTIONS
 from campusgpt.evaluation.run import (
     CONFIGS,
@@ -39,9 +40,11 @@ def write(results_dir: Path, out: Path) -> None:
         rows = retrieval_summary([RetrievalResult(**r) for r in data["results"]])
         lines += ["## Retrieval (policy questions)", "",
                   (f"Run {data['run_at'][:16]}. Rank of the first passage from an expected "
-                   "section among the top 10; the chat gives the model the top 4."), ""]
-        lines += table(["Mode", "Questions", "n", "Hit@1", "Hit@4", "MRR@10", "p95 latency"],
-                       [[r["mode"], r["lang"], r["n"], pct(r["hit@1"]), pct(r["hit@4"]),
+                   f"section among the top 10; the chat gives the model the top {retrieval.PASSAGES}."),
+                  ""]
+        lines += table(["Mode", "Questions", "n", "Hit@1", f"Hit@{retrieval.PASSAGES}", "MRR@10",
+                        "p95 latency"],
+                       [[r["mode"], r["lang"], r["n"], pct(r["hit@1"]), pct(r["hit@k"]),
                          r["mrr@10"], f"{r['p95_ms']:.0f} ms"] for r in rows])
 
     chats = [d for p in sorted(results_dir.glob("chat-*.json")) if (d := _load(p))]

@@ -267,6 +267,34 @@ def test_unrelated_questions_are_not_prefetched(app, client, indexed, monkeypatc
     assert of(events, "tool") == [] and of(events, "done")[0]["citations"] == []
 
 
+def test_an_answer_with_no_source_is_rewritten_after_a_search(app, client, indexed, monkeypatch):
+    # Similar enough to the hostel timings to search, not enough to prefetch.
+    monkeypatch.setattr(get_settings(), "rag_prefetch_min_similarity", 0.62)
+    monkeypatch.setattr(get_settings(), "rag_fallback_min_similarity", 0.55)
+    llm = use(app, ScriptedProvider([
+        [TextChunk("I cannot provide the hostel gate timings.")],
+        [TextChunk("Gate raat 10:30 pm baje band hota hai [Hostel Rules §3].")],
+    ]))
+    login(client, SHORTAGE)
+    events = ask(client, "Hostel ka gate kitne baje band hota hai?")
+    assert of(events, "revision") == [{"unsupported": [], "citations": [], "searched": True}]
+    tool = of(events, "tool")[0]
+    assert tool["tool"] == "search_university_documents"
+    assert "Hostel Rules §3" in [p["cite"] for p in tool["result"]]
+    assert "gates close at 10:30 pm" in llm.seen[1][-1]["content"]
+    done = of(events, "done")[0]
+    assert done["unsupported"] == []
+    assert done["citations"] == [{"cite": "Hostel Rules §3", "verified": True}]
+
+
+def test_small_talk_is_not_searched(app, client, indexed, monkeypatch):
+    monkeypatch.setattr(get_settings(), "rag_fallback_min_similarity", 0.55)
+    llm = use(app, ScriptedProvider([[TextChunk("Hello! How can I help?")]]))
+    login(client, SHORTAGE)
+    events = ask(client, "hello")
+    assert of(events, "tool") == [] and of(events, "revision") == [] and len(llm.seen) == 1
+
+
 def search_source(*cites, ok=True):
     return {"tool": "search_university_documents", "ok": ok,
             "result": [{"cite": c} for c in cites]}
