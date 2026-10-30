@@ -8,17 +8,33 @@ Living document. Update it when a decision changes.
 
 ## Progress log
 
-### ▶ START HERE NEXT SESSION (written 2026-10-27, after the benchmark)
-1. `make db-start`, `make llm`, then `make test` -- expect 260 passing. Reseed (`make seed`)
+### ▶ START HERE NEXT SESSION (written 2026-10-30)
+1. `make db-start`, `make llm`, then `make test` -- expect 287 passing. Reseed (`make seed`)
    before any demo: the data is generated relative to today. Never run the test suite while
    the local model is answering (7.6 GB RAM: the kernel kills llama-server).
-2. **Finish the hosted runs** (Groq free tier: 8k tokens/min, 200k/day; the daily quota ran
-   out): `cd backend && ../.venv/bin/python -m campusgpt.evaluation chat --model groq
-   --configs full --only r10,c05,c06,c07` (r10 was mis-scored, see below), then
-   `make bench-security MODEL=groq`. Results merge; RESULTS.md regenerates itself.
-3. **Answer verifier** (evidence below), then the intent router.
-4. Design doc: evaluation chapter (tables from docs/evaluation/RESULTS.md), security
-   demonstration, timetable, routing safeguards.
+2. **Hosted runs on the current code** (Groq free tier: 8k tokens/min, 200k/day):
+   `make bench-groq` (full, now with the verifier), then `make bench-security MODEL=groq`.
+3. **Held-out questions**: the 50 benchmark questions drove the 30 Oct fixes, so ask the
+   teammates for ~20 new questions (same format as `evaluation/questions.py`) and report
+   them separately.
+4. Design doc: evaluation chapter (tables from docs/evaluation/RESULTS.md), verifier and
+   routing safeguards, security demonstration, timetable. Results slide in the deck.
+5. Intent router: only if time remains; the rule-based prefetches now cover the failures.
+
+### 2026-10-30 — verifier committed; benchmark failures fixed at their causes
+- Verifier (`campusgpt/verify.py`) committed: local full system 86% → 90% before the fixes.
+- Fixes, each a general rule with tests: spelled-out numbers count as sources ("seven
+  days"); 5 passages instead of 4 (Hit@5 100% in every mode); the on-track eligibility
+  verdict mentions condonation; "exam" means every type (prompt, schema, and an exam_type
+  filter the question does not name is dropped in code); record prefetch generalised
+  (`chat.record_prefetch`: admit card / eligibility → `check_end_term_eligibility`,
+  "attendance" + a named course → `get_my_attendance`); an answer with no tool and no
+  passage, for a question ≥ 0.55 similar to a passage, is rewritten after a search
+  (`RAG_FALLBACK_MIN_SIMILARITY`; small talk scores 0.46–0.54); citations labelled
+  "[Cite: …]" are recognised.
+- **Local qwen3 4B, full: 50/50 (100%)**, 94% cited, 0 unverified citations, median 4.5 s.
+  Not a held-out score (see docs/evaluation/README.md). Ablation rows are 27 Oct code.
+- Ollama's llama-server crashed twice mid-run ("unexpected EOF"); `--redo-errors` reruns them.
 
 ### 2026-10-27 — evaluation done (`campusgpt/evaluation`, docs/evaluation/)
 - 50 questions (34 English, 16 Hinglish; 26 policy, 17 records, 7 combined), ground truth for

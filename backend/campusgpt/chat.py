@@ -80,17 +80,35 @@ anything about the student's own records):
 {passages}"""
 
 
-PREFETCHED_RECORDS = """
+# Records fetched before the model answers, by the tool that fetched them.
+PREFETCHED_RECORDS = {
+    "get_my_attendance": """
 
 The student's attendance records, fetched with get_my_attendance because the question is \
-about missing classes ("can_miss" = classes they can still miss and stay at 75%, \
+about their attendance ("can_miss" = classes they can still miss and stay at 75%, \
 "classes_needed" = classes to attend in a row to get back to 75%):
-{records}"""
+{records}""",
+    "check_end_term_eligibility": """
+
+The student's end-term eligibility, fetched with check_end_term_eligibility because the \
+question is about sitting the exams or the admit card. Its "summary" and each course's \
+"verdict" are the answer; restate them with the figures and cite its passages:
+{records}""",
+}
 
 # A question about missing classes: one of these words, plus a course or "class" named.
 MISSING_CLASSES = re.compile(r"\b(miss|missed|skip|bunk|leaves?|holidays?|absent|absence|"
                              r"chh?utti|off)\b", re.IGNORECASE)
 CLASS_WORDS = re.compile(r"\b(class|classes|lectures?|how many|kitni|kitne)\b", re.IGNORECASE)
+# A question about sitting the end-term exams or the admit card.
+ELIGIBILITY = re.compile(r"\b(admit[\s-]?cards?|eligib\w*|debar\w*|sit (for )?(my |the |all "
+                         r"(of )?my )?(end[\s-]?term )?(exams?|papers?)|exams? de (paunga|"
+                         r"paungi|sakta|sakti))\b", re.IGNORECASE)
+ATTENDANCE = re.compile(r"\battendance\b", re.IGNORECASE)
+# Words that name a kind of exam. Without one, a filter on exam_type is dropped: "my next
+# exam" means any exam, but small models filter to end-term exams and skip a quiz.
+EXAM_TYPES = re.compile(r"\b(quiz\w*|mid[\s-]?terms?|mid|end[\s-]?terms?|finals?|"
+                        r"sessionals?|semester exams?)\b", re.IGNORECASE)
 
 
 COURSES_NAMED = """
@@ -98,14 +116,30 @@ COURSES_NAMED = """
 The question names this enrolled course: {courses}. Use exactly this code in tool calls."""
 
 
-def attendance_prefetch(question: str, named: list[str]) -> ToolCall | None:
-    """The attendance lookup a question about missing classes needs (for the course it
-    names, if exactly one), or None. Small models answer such questions from policy text
-    ("holidays" matches hostel leave) instead of the student's own records."""
-    if not MISSING_CLASSES.search(question) or not (named or CLASS_WORDS.search(question)):
-        return None
-    args = {"course": named[0]} if len(named) == 1 else {}
-    return ToolCall("prefetch-attendance", "get_my_attendance", json.dumps(args))
+def record_prefetch(question: str, named: list[str]) -> ToolCall | None:
+    """The record lookup a question plainly needs (for the course it names, if exactly
+    one), or None. Small models answer such questions from policy text ("holidays" matches
+    hostel leave) or call too few tools ("Will I get my admit card?" checked only fees)."""
+    args = json.dumps({"course": named[0]} if len(named) == 1 else {})
+    if ELIGIBILITY.search(question):
+        return ToolCall("prefetch-eligibility", "check_end_term_eligibility", args)
+    if ((MISSING_CLASSES.search(question) and (named or CLASS_WORDS.search(question)))
+            or (ATTENDANCE.search(question) and named)):
+        return ToolCall("prefetch-attendance", "get_my_attendance", args)
+    return None
+
+
+def unasked_filters(question: str, call: ToolCall) -> ToolCall:
+    """`call` without an exam-type filter the question did not ask for."""
+    if call.name != "get_my_exams" or EXAM_TYPES.search(question):
+        return call
+    try:
+        args = json.loads(call.arguments or "{}")
+    except ValueError:
+        return call
+    if not isinstance(args, dict) or args.pop("exam_type", None) is None:
+        return call
+    return ToolCall(call.id, call.name, json.dumps(args))
 
 
 PLAIN_PROMPT = """You are the helpdesk assistant of a university, talking to a student.
@@ -119,7 +153,7 @@ Answer briefly and directly, in the language the student used (English, Hindi or
 @dataclass(frozen=True)
 class Pipeline:
     """What the chat may use: the policy documents (search tool and passage prefetch) and
-    the student's records (record tools, attendance prefetch, course-name resolution).
+    the student's records (record tools, record prefetch, course-name resolution).
     Production uses both; the evaluation switches each off to measure what it contributes.
     With neither, the model answers from its own knowledge with a plain prompt."""
     documents: bool = True
@@ -205,13 +239,13 @@ async def run(db: AsyncSession, provider: Provider, user: CurrentUser, question:
     if len(named) == 1:
         messages[0]["content"] += COURSES_NAMED.format(courses=", ".join(
             f"{c.code} {c.title}" for c in courses if c.code in named))
-    if pipeline.records and (call := attendance_prefetch(question, named)):
+    if pipeline.records and (call := record_prefetch(question, named)):
         yield ChatEvent("status", {"text": tools.TOOLS[call.name].status})
         source = await _execute(ctx, call)
         sources.append(source)
         yield ChatEvent("tool", source)
-        messages[0]["content"] += PREFETCHED_RECORDS.format(
-            records=json.dumps(source["result"], ensure_ascii=False))
+        messages[0]["content"] += PREFETCHED_RECORDS[call.name].format(
+            records=json.dumps(source["result"], ensure_ascii=False, default=str))
     given = list(messages)         # what the answer's figures may come from, with the tools
     check = pipeline.verify and (pipeline.documents or pipeline.records)
     revision = None
@@ -227,7 +261,7 @@ async def run(db: AsyncSession, provider: Provider, user: CurrentUser, question:
                         text += event.text
                         yield ChatEvent("token", {"text": event.text})
                     elif isinstance(event, ToolCall):
-                        calls.append(event)
+                        calls.append(unasked_filters(question, event))
                 answer += text
                 if not calls:
                     break
@@ -314,6 +348,9 @@ def _passages(source: dict) -> list[dict]:
     return result.get("passages", []) if isinstance(result, dict) else []
 
 
+CITE_LABEL = re.compile(r"^(cite|citation|source|see|ref(erence)?)\s*:\s*", re.IGNORECASE)
+
+
 def check_citations(answer: str, sources: list[dict]) -> list[dict]:
     """Each distinct [Document §n] cited in the answer, and whether a retrieved passage backs
     it. Citing a clause (§3.1) of a retrieved section (§3) counts as backed. Passages come
@@ -322,6 +359,7 @@ def check_citations(answer: str, sources: list[dict]) -> list[dict]:
     citations, seen = [], set()
     for m in CITATION.finditer(answer):
         cite = re.sub(r"§\s+", "§", " ".join(m.group(1).split()))
+        cite = CITE_LABEL.sub("", cite)        # [Cite: Hostel Rules §3], [Source: ...]
         if cite not in seen:
             seen.add(cite)
             citations.append({"cite": cite, "verified": any(

@@ -50,7 +50,7 @@ ATTENDANCE_SCRIPT = [
 def test_tool_round_trip(app, client, conn):
     llm = use(app, ScriptedProvider(ATTENDANCE_SCRIPT))
     login(client, SHORTAGE)
-    events = ask(client, "What is my attendance in DBMS?")
+    events = ask(client, "How am I doing in DBMS?")
 
     assert [k for k, _ in events][:3] == ["conversation", "status", "tool"]
     assert of(events, "status") == [{"text": "Checking your attendance"}]
@@ -232,6 +232,34 @@ def test_questions_about_missing_classes_get_the_attendance_first(app, client, q
     assert tool["tool"] == "get_my_attendance" and tool["arguments"].get("course") == course
     instructions = llm.seen[0][0]["content"]
     assert '"can_miss"' in instructions and "get_my_attendance because" in instructions
+
+
+@pytest.mark.parametrize("question, tool, course", [
+    ("Will I get my admit card?", "check_end_term_eligibility", None),
+    ("can I sit my end-term exams", "check_end_term_eligibility", None),
+    ("am I eligible for the DBMS exam?", "check_end_term_eligibility", "CSE301"),
+    ("My DBMS attendance is low. Can it be condoned?", "get_my_attendance", "CSE301"),
+])
+def test_questions_that_plainly_need_records_get_them_first(app, client, question, tool,
+                                                            course):
+    llm = use(app, ScriptedProvider([[TextChunk("...")]]))
+    login(client, SHORTAGE)
+    fetched = of(ask(client, question), "tool")[0]
+    assert fetched["tool"] == tool and fetched["arguments"].get("course") == course
+    assert f"fetched with {tool} because" in llm.seen[0][0]["content"]
+
+
+@pytest.mark.parametrize("question, sent, kept", [
+    ("When is my next exam?", {"exam_type": "end_term"}, {}),
+    ("agla exam kab hai?", {"exam_type": "end_term", "course": "CSE301"}, {"course": "CSE301"}),
+    ("When is my next quiz?", {"exam_type": "quiz"}, {"exam_type": "quiz"}),
+    ("When are my end-term exams?", {"exam_type": "end_term"}, {"exam_type": "end_term"}),
+])
+def test_an_exam_type_the_student_did_not_ask_for_is_dropped(app, client, question, sent, kept):
+    use(app, ScriptedProvider([[ToolCall("c1", "get_my_exams", json.dumps(sent))],
+                               [TextChunk("...")]]))
+    login(client, SHORTAGE)
+    assert of(ask(client, question), "tool")[0]["arguments"] == kept
 
 
 @pytest.mark.parametrize("question", ["what time does the hostel gate close",

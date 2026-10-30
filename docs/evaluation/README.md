@@ -26,7 +26,7 @@ class when", "where is my compiler design class", and the Hinglish holidays ques
   so 68.4 matches 68.42; digit grouping ignored, so ₹1,60,000 matches 160000; "seven"
   matches 7), a date or time in any common format, or one of several phrases.
 - **Tools**: the expected tools were called. Each expectation is a set of alternatives, and
-  tools the chat runs itself (the policy and attendance prefetches) count.
+  tools the chat runs itself (the policy and record prefetches) count.
 - **Cited**: the answer cites an expected section, e.g. [Attendance Policy §4] or a clause
   of it.
 - **Unverified citations**: answers citing a section that no retrieved passage backs
@@ -43,7 +43,7 @@ It cannot be too strict about wording, because it never matches wording.
 
 `chat.Pipeline` switches parts of the production chat off; everything else is the same code.
 
-| Configuration | Documents (search tool, policy prefetch) | Records (record tools, attendance prefetch, course resolution) | Verifier | Prompt |
+| Configuration | Documents (search tool, policy prefetch) | Records (record tools, record prefetch, exam-type guard, course resolution) | Verifier | Prompt |
 |---|---|---|---|---|
 | Plain LLM | – | – | – | a generic helpdesk prompt with the student's name and programme |
 | RAG only | ✓ | – | – | CampusGPT's |
@@ -57,6 +57,15 @@ number, date and time in an answer against what the model was given (instruction
 student's messages, tool results). If something has no source, or a citation matches no
 retrieved passage, the model is told what failed and rewrites the answer once, with tools.
 
+**Read the "Full CampusGPT" row with care.** It was run on 30 October, after fixes made in
+response to this benchmark's own failures: 5 passages instead of 4, spelled-out numbers in
+the verifier, condonation in the eligibility verdict, record prefetch for admit-card and
+named-course attendance questions, dropping an exam-type filter the student did not ask
+for, and a document search when an answer used no source at all. Each fix is a general rule
+with its own tests, not a per-question patch, but these 50 questions are no longer unseen.
+A fresh held-out set is needed for an unbiased figure. The other rows were run on
+27 October code.
+
 Models: the local `qwen3:4b-instruct-2507-q4_K_M` (Ollama, laptop GPU) for all four
 configurations, and the hosted `openai/gpt-oss-120b` (Groq free tier) for the full system
 (so far without the verifier).
@@ -65,7 +74,7 @@ configurations, and the hosted `openai/gpt-oss-120b` (Groq free tier) for the fu
 
 The 26 policy questions are searched in each mode (`hybrid`, `semantic`, `lexical`;
 `retrieval.search`). The measure is the rank of the first passage from an expected
-section among the top 10: Hit@1, Hit@4 (the chat gives the model 4 passages) and MRR@10,
+section among the top 10: Hit@1, Hit@5 (the chat gives the model 5 passages) and MRR@10,
 with 95th-percentile latency (NFR-P3: under 500 ms).
 
 ## Security baseline

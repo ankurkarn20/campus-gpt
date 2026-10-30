@@ -313,6 +313,8 @@ def search_source(*cites, ok=True):
     ("[Hostel Rules §3]", [search_source("Hostel Rules §3", ok=False)],
      [("Hostel Rules §3", False)]),
     ("No citations [here] at all.", [search_source("Hostel Rules §3")], []),
+    ("[Cite: Fee Payment and Refund Policy §3]", [search_source("Fee Payment and Refund Policy §3")],
+     [("Fee Payment and Refund Policy §3", True)]),
 ])
 def test_citations_are_checked_against_retrieved_passages(answer, sources, expected):
     assert [(c["cite"], c["verified"]) for c in check_citations(answer, sources)] == expected
