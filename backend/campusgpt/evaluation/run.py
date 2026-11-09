@@ -73,9 +73,10 @@ def retrieval_summary(results: list[RetrievalResult]) -> list[dict]:
     return rows
 
 
-def share(flags) -> float:
+def share(flags) -> float | None:
+    """Fraction of true flags; None when there are none (shown as "–", not 0%)."""
     flags = list(flags)
-    return round(sum(flags) / len(flags), 3) if flags else 0.0
+    return round(sum(flags) / len(flags), 3) if flags else None
 
 
 # -- the chat ------------------------------------------------------------------------------
@@ -185,8 +186,8 @@ def score(q: Question, r: Records, config: str, model: str, question: str, answe
 
 
 async def chat_eval(db: AsyncSession, provider: Provider, model: str, configs: list[str],
-                    now: datetime, only: Callable[[str, str], bool] | None = None
-                    ) -> AsyncIterator[ChatResult]:
+                    now: datetime, only: Callable[[str, str], bool] | None = None,
+                    questions: list[Question] = QUESTIONS) -> AsyncIterator[ChatResult]:
     """Results of the questions (those for which only(config, id) holds, if given)."""
     patient = provider if isinstance(provider, Patient) else Patient(provider)
     users, truth, created = {}, {}, []
@@ -195,7 +196,7 @@ async def chat_eval(db: AsyncSession, provider: Provider, model: str, configs: l
         truth[who] = await records(db, st.id, now)
     try:
         for config in configs:
-            for q in QUESTIONS:
+            for q in questions:
                 if only and not only(config, q.id):
                     continue
                 text = q.text(truth[q.who])

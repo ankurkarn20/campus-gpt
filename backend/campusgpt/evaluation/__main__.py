@@ -4,12 +4,14 @@ report, docs/evaluation/RESULTS.md, is rebuilt from them after every run.
     python -m campusgpt.evaluation retrieval                 # no model needed
     python -m campusgpt.evaluation chat --model local --configs full,noverify,rag,db,plain
     python -m campusgpt.evaluation chat --model groq --configs full --only r04,r09
+    python -m campusgpt.evaluation chat --model local --configs full --set heldout
     python -m campusgpt.evaluation security --model local    # text-to-SQL vs CampusGPT
     python -m campusgpt.evaluation report
 
 Chat results are merged into the model's file by (config, question), so a run cut short
 (e.g. by the hosted model's daily quota) can be continued with --only, and answers lost to
-a model error re-asked with --redo-errors.
+a model error re-asked with --redo-errors. The held-out set (heldout.py) goes to
+heldout-<model>.json and its own section of the report.
 """
 import argparse
 import asyncio
@@ -21,7 +23,7 @@ from datetime import datetime
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from campusgpt.config import REPO_ROOT, get_settings
-from campusgpt.evaluation import report, run, text_to_sql
+from campusgpt.evaluation import heldout, questions, report, run, text_to_sql
 from campusgpt.llm import OpenAICompatible, make_provider
 from campusgpt.student import IST
 
@@ -63,7 +65,9 @@ async def main(args) -> int:
                     print(row)
             elif args.command == "chat":
                 provider, model = provider_for(args.model)
-                path = RESULTS / f"chat-{args.model}.json"
+                held = args.set == "heldout"
+                qs = heldout.HELDOUT if held else questions.QUESTIONS
+                path = RESULTS / f"{'heldout' if held else 'chat'}-{args.model}.json"
                 data = load(path)
                 kept = {(r["config"], r["id"]): r for r in data.get("results", [])}
                 ids = set(args.only.split(",")) if args.only else None
@@ -74,7 +78,7 @@ async def main(args) -> int:
                             and (not args.redo_errors or (config, qid) in failed))
                 try:
                     async for r in run.chat_eval(db, provider, model, args.configs.split(","),
-                                                 now, only):
+                                                 now, only, qs):
                         kept[(r.config, r.id)] = asdict(r)
                         mark = "ok  " if r.correct else "FAIL"
                         print(f"{mark} {r.config:<5} {r.id} {r.seconds:>5}s "
@@ -117,6 +121,8 @@ def cli(argv=None) -> int:
     c.add_argument("--only", help="comma-separated question ids")
     c.add_argument("--redo-errors", action="store_true",
                    help="only the questions whose saved result is an error")
+    c.add_argument("--set", choices=("main", "heldout"), default="main",
+                   help="the 50 benchmark questions, or the 20 held-out ones")
     s = sub.add_parser("security", help="attacks on the text-to-SQL baseline and CampusGPT")
     s.add_argument("--model", choices=("local", "groq"), default="local")
     sub.add_parser("report", help="rebuild RESULTS.md from the saved results")

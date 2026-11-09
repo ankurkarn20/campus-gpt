@@ -149,6 +149,9 @@ def tomorrow(r: Records) -> list[Fact]:
 def due_this_week(r: Records) -> list[Fact]:
     week = [a for a in r.assignments
             if not a.submitted and a.due_at <= r.now + timedelta(days=7)]
+    if not week:                    # a week with nothing due: the answer must say so
+        return [Text("none", "no assignment", "no pending", "nothing due", "all clear",
+                     "no deadline", "already submitted")]
     return [Text(a.course, a.code) for a in week]
 
 

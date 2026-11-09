@@ -1,0 +1,359 @@
+{
+ "model": "openai/gpt-oss-120b",
+ "run_at": "2026-11-09T22:34:23.488552+05:30",
+ "results": [
+  {
+   "id": "x01",
+   "category": "policy",
+   "lang": "en",
+   "config": "full",
+   "model": "openai/gpt-oss-120b",
+   "question": "Can I leave the exam hall 20 minutes after the paper starts?",
+   "answer": "No. According to the Examination Regulations, a student **must not leave the exam hall before one hour has passed** after the start of the paper【Examination Regulations §3】. So leaving 20 minutes after the exam begins is not permitted.",
+   "facts": [
+    "one hour | 1 hour | 60 minutes"
+   ],
+   "found": [
+    true
+   ],
+   "correct": true,
+   "tools": [
+    "search_university_documents"
+   ],
+   "tools_ok": true,
+   "citations": [],
+   "cite_expected": false,
+   "citations_verified": true,
+   "seconds": 2.0,
+   "error": null,
+   "tags": [],
+   "revised": false,
+   "unsupported": []
+  },
+  {
+   "id": "x02",
+   "category": "policy",
+   "lang": "en",
+   "config": "full",
+   "model": "openai/gpt-oss-120b",
+   "question": "What happens if I submit my assignment 3 days late?",
+   "answer": "If you turn in an assignment **more than 48 hours after the deadline**, the university policy states that the work receives **zero marks**【Academic Integrity Policy §2】. Since a submission that is 3 days late exceeds the 48‑hour window, it will be graded as zero.",
+   "facts": [
+    "zero"
+   ],
+   "found": [
+    true
+   ],
+   "correct": true,
+   "tools": [
+    "search_university_documents"
+   ],
+   "tools_ok": true,
+   "citations": [],
+   "cite_expected": false,
+   "citations_verified": true,
+   "seconds": 3.72,
+   "error": null,
+   "tags": [],
+   "revised": true,
+   "unsupported": []
+  },
+  {
+   "id": "x03",
+   "category": "policy",
+   "lang": "en",
+   "config": "full",
+   "model": "openai/gpt-oss-120b",
+   "question": "When are admit cards released for the end-terms?",
+   "answer": "Admit cards for the end‑term exams are issued **five days before the first end‑term examination**.  \n\nFor the current term (2026‑ODD) the first end‑term exam starts on **23 Nov 2026**, so admit cards will be available on the student portal from **18 Nov 2026**.  \n\n*Citation:* Examination Regulations §2 – “Admit cards are issued on the student portal five days before the first end‑term examination.”【Examination Regulations §2】",
+   "facts": [
+    "5"
+   ],
+   "found": [
+    true
+   ],
+   "correct": true,
+   "tools": [
+    "search_university_documents",
+    "check_end_term_eligibility"
+   ],
+   "tools_ok": true,
+   "citations": [],
+   "cite_expected": false,
+   "citations_verified": true,
+   "seconds": 1.82,
+   "error": null,
+   "tags": [],
+   "revised": false,
+   "unsupported": []
+  },
+  {
+   "id": "x04",
+   "category": "policy",
+   "lang": "en",
+   "config": "full",
+   "model": "openai/gpt-oss-120b",
+   "question": "Till what time can visitors meet us in the hostel?",
+   "answer": "Visitors are allowed to meet residents only in the visitors’ lounge **between 4 pm and 7 pm**【Hostel Rules §5】.",
+   "facts": [
+    "19:00"
+   ],
+   "found": [
+    true
+   ],
+   "correct": true,
+   "tools": [
+    "search_university_documents"
+   ],
+   "tools_ok": true,
+   "citations": [],
+   "cite_expected": false,
+   "citations_verified": true,
+   "seconds": 1.08,
+   "error": null,
+   "tags": [],
+   "revised": false,
+   "unsupported": []
+  },
+  {
+   "id": "x05",
+   "category": "policy",
+   "lang": "en",
+   "config": "full",
+   "model": "openai/gpt-oss-120b",
+   "question": "How much is the hostel security deposit?",
+   "answer": "The refundable security deposit for a hostel room is **₹ 10,000** (collected once at allotment and returned after you vacate, minus any damage charges)【Hostel Rules §2】.",
+   "facts": [
+    "10000"
+   ],
+   "found": [
+    true
+   ],
+   "correct": true,
+   "tools": [
+    "search_university_documents"
+   ],
+   "tools_ok": true,
+   "citations": [],
+   "cite_expected": false,
+   "citations_verified": true,
+   "seconds": 1.29,
+   "error": null,
+   "tags": [],
+   "revised": false,
+   "unsupported": []
+  },
+  {
+   "id": "x06",
+   "category": "policy",
+   "lang": "en",
+   "config": "full",
+   "model": "openai/gpt-oss-120b",
+   "question": "Above what similarity score does an assignment get reviewed for plagiarism?",
+   "answer": "Assignments are checked with similarity‑detection software, and **any similarity score above 20 % (excluding references and quoted text) is reviewed by the course faculty**【Academic Integrity Policy §4】.",
+   "facts": [
+    "20"
+   ],
+   "found": [
+    true
+   ],
+   "correct": true,
+   "tools": [
+    "search_university_documents"
+   ],
+   "tools_ok": true,
+   "citations": [],
+   "cite_expected": false,
+   "citations_verified": true,
+   "seconds": 1.74,
+   "error": null,
+   "tags": [],
+   "revised": false,
+   "unsupported": []
+  },
+  {
+   "id": "x07",
+   "category": "policy",
+   "lang": "en",
+   "config": "full",
+   "model": "openai/gpt-oss-120b",
+   "question": "I missed my mid-term because I was sick. How long do I have to ask for a retake?",
+   "answer": "You must apply for a retake **within five working days** of the missed mid‑term, attaching a medical certificate. The faculty will then set a date for the retake.  \n\n*Citation:* Examination Regulations §4.1 – “The application, with a medical certificate, must be made within five working days of the missed examination.”",
+   "facts": [
+    "5"
+   ],
+   "found": [
+    true
+   ],
+   "correct": true,
+   "tools": [
+    "search_university_documents"
+   ],
+   "tools_ok": true,
+   "citations": [],
+   "cite_expected": false,
+   "citations_verified": true,
+   "seconds": 1.23,
+   "error": null,
+   "tags": [],
+   "revised": false,
+   "unsupported": []
+  },
+  {
+   "id": "x08",
+   "category": "policy",
+   "lang": "en",
+   "config": "full",
+   "model": "openai/gpt-oss-120b",
+   "question": "What does a single room in the hostel cost per term?",
+   "answer": "A single‑sharing room in the hostel costs **₹ 60,000 per term**.  \n\n*Source: Hostel Rules §2 – “Rs 60,000 for a single room, payable before the start of the term.”*",
+   "facts": [
+    "60000"
+   ],
+   "found": [
+    true
+   ],
+   "correct": true,
+   "tools": [
+    "search_university_documents"
+   ],
+   "tools_ok": true,
+   "citations": [],
+   "cite_expected": false,
+   "citations_verified": true,
+   "seconds": 0.83,
+   "error": null,
+   "tags": [],
+   "revised": false,
+   "unsupported": []
+  },
+  {
+   "id": "x09",
+   "category": "policy",
+   "lang": "hinglish",
+   "config": "full",
+   "model": "openai/gpt-oss-120b",
+   "question": "Scholarship continue rakhne ke liye kitni attendance chahiye?",
+   "answer": "सकॉलरशिप जारी रखने के लिए **हर कोर्स में कम से कम 75 % उपस्थिति** रखनी होती है【Attendance Policy §6】【Scholarship Scheme §4】. यदि किसी भी विषय में 75 % से कम हो जाता है, तो अगले टर्म में स्कॉलरशिप रद्द हो सकती है।",
+   "facts": [
+    "75"
+   ],
+   "found": [
+    true
+   ],
+   "correct": true,
+   "tools": [
+    "search_university_documents"
+   ],
+   "tools_ok": true,
+   "citations": [],
+   "cite_expected": false,
+   "citations_verified": true,
+   "seconds": 1.27,
+   "error": null,
+   "tags": [],
+   "revised": false,
+   "unsupported": []
+  },
+  {
+   "id": "x10",
+   "category": "policy",
+   "lang": "hinglish",
+   "config": "full",
+   "model": "openai/gpt-oss-120b",
+   "question": "Fees kitne din tak na bharun toh registration hold ho jata hai?",
+   "answer": "ट्यूशन फीस के नियत तिथि के बाद **30 दिन** तक अगर भुगतान नहीं किया गया तो आपका टर्म रजिस्ट्रेशन होल्ड हो जाता है। तब तक आप ग्रेड नहीं देख पाएँगे और एडमिट कार्ड नहीं मिल पाएगा, जब तक बकाया और जुर्माना साफ नहीं हो जाता।  \n\n**Citation:** [Fee Payment and Refund Policy §2]",
+   "facts": [
+    "30"
+   ],
+   "found": [
+    true
+   ],
+   "correct": true,
+   "tools": [
+    "search_university_documents",
+    "search_university_documents"
+   ],
+   "tools_ok": true,
+   "citations": [
+    {
+     "cite": "Fee Payment and Refund Policy §2",
+     "verified": true
+    }
+   ],
+   "cite_expected": true,
+   "citations_verified": true,
+   "seconds": 3.47,
+   "error": null,
+   "tags": [],
+   "revised": false,
+   "unsupported": []
+  },
+  {
+   "id": "x11",
+   "category": "policy",
+   "lang": "hinglish",
+   "config": "full",
+   "model": "openai/gpt-oss-120b",
+   "question": "Ek term ka mess charge kitna hai?",
+   "answer": "Mess charge per term = **₹ 24,000** (compulsory for every hostel resident)【Hostel Rules §2】.",
+   "facts": [
+    "24000"
+   ],
+   "found": [
+    true
+   ],
+   "correct": true,
+   "tools": [
+    "search_university_documents",
+    "search_university_documents"
+   ],
+   "tools_ok": true,
+   "citations": [],
+   "cite_expected": false,
+   "citations_verified": true,
+   "seconds": 3.06,
+   "error": null,
+   "tags": [],
+   "revised": false,
+   "unsupported": []
+  },
+  {
+   "id": "x12",
+   "category": "records",
+   "lang": "en",
+   "config": "full",
+   "model": "openai/gpt-oss-120b",
+   "question": "Show me my attendance in all my courses",
+   "answer": "**Your attendance this term**\n\n| Course | Title                | Classes Held | Attended | % Attendance | Status | Can still miss |\n|--------|----------------------|--------------|----------|--------------|--------|----------------|\n| CSE501 | Computer Networks    | 44 | 43 | 97.73 % | OK | 6 |\n| CSE502 | Software Engineering | 44 | 42 | 95.45 % | OK | 6 |\n| CSE503 | Machine Learning     | 44 | 43 | 97.73 % | OK | 6 |\n| CSE504 | Compiler Design      | 45 | 38 | 84.44 % | OK | 5 |\n| CSE505 | Information Security | 44 | 39 | 88.64 % | OK | 6 |\n\nAll courses are above the required 75 % attendance, so you are eligible to sit the end‑term exams for each of them.",
+   "facts": [
+    "97.73",
+    "95.45",
+    "97.73",
+    "84.44",
+    "88.64"
+   ],
+   "found": [
+    true,
+    true,
+    true,
+    true,
+    true
+   ],
+   "correct": true,
+   "tools": [
+    "search_university_documents",
+    "get_my_attendance"
+   ],
+   "tools_ok": true,
+   "citations": [],
+   "cite_expected": null,
+   "citations_verified": true,
+   "seconds": 3.63,
+   "error": null,
+   "tags": [],
+   "revised": false,
+   "unsupported": []
+  }
+ ]
+}

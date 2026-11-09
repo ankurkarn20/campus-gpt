@@ -1,6 +1,6 @@
 {
  "model": "openai/gpt-oss-120b",
- "run_at": "2026-10-27T21:29:53.357163+05:30",
+ "run_at": "2026-11-09T22:27:10.114798+05:30",
  "results": [
   {
    "id": "p01",
@@ -1354,6 +1354,1526 @@
    "seconds": 5.02,
    "error": null,
    "tags": []
+  },
+  {
+   "id": "p01",
+   "category": "policy",
+   "lang": "en",
+   "config": "full",
+   "model": "openai/gpt-oss-120b",
+   "question": "What is the minimum attendance I need in each course?",
+   "answer": "The university requires **at least 75 % attendance in every course**. Attendance is calculated separately for each course (lectures + tutorials + labs) from the first day of the term up to the date of calculation【Attendance Policy §2】.",
+   "facts": [
+    "75"
+   ],
+   "found": [
+    true
+   ],
+   "correct": true,
+   "tools": [
+    "search_university_documents"
+   ],
+   "tools_ok": true,
+   "citations": [],
+   "cite_expected": false,
+   "citations_verified": true,
+   "seconds": 1.57,
+   "error": null,
+   "tags": [],
+   "revised": false,
+   "unsupported": []
+  },
+  {
+   "id": "p02",
+   "category": "policy",
+   "lang": "en",
+   "config": "full",
+   "model": "openai/gpt-oss-120b",
+   "question": "What is the lowest attendance that can be condoned?",
+   "answer": "The university can condone attendance down to a minimum of **65 %**. If your attendance falls below 65 % you cannot receive condonation and will be debarred from the end‑term exam for that course.  \n\n**Citation:** [Attendance Policy §4]",
+   "facts": [
+    "65"
+   ],
+   "found": [
+    true
+   ],
+   "correct": true,
+   "tools": [
+    "search_university_documents"
+   ],
+   "tools_ok": true,
+   "citations": [
+    {
+     "cite": "Attendance Policy §4",
+     "verified": true
+    }
+   ],
+   "cite_expected": true,
+   "citations_verified": true,
+   "seconds": 1.3,
+   "error": null,
+   "tags": [],
+   "revised": false,
+   "unsupported": []
+  },
+  {
+   "id": "p03",
+   "category": "policy",
+   "lang": "en",
+   "config": "full",
+   "model": "openai/gpt-oss-120b",
+   "question": "How soon after returning to classes must I apply for condonation?",
+   "answer": "You need to submit the condonation application **within 7 days of returning to classes**【Attendance Policy §4】.",
+   "facts": [
+    "7"
+   ],
+   "found": [
+    true
+   ],
+   "correct": true,
+   "tools": [
+    "search_university_documents"
+   ],
+   "tools_ok": true,
+   "citations": [],
+   "cite_expected": false,
+   "citations_verified": true,
+   "seconds": 1.71,
+   "error": null,
+   "tags": [],
+   "revised": false,
+   "unsupported": []
+  },
+  {
+   "id": "p04",
+   "category": "policy",
+   "lang": "en",
+   "config": "full",
+   "model": "openai/gpt-oss-120b",
+   "question": "For how many courses can attendance be condoned in one term?",
+   "answer": "Attendance can be condoned for **up to two courses** in a single term. 【Attendance Policy §4】",
+   "facts": [
+    "2"
+   ],
+   "found": [
+    true
+   ],
+   "correct": true,
+   "tools": [
+    "search_university_documents"
+   ],
+   "tools_ok": true,
+   "citations": [],
+   "cite_expected": false,
+   "citations_verified": true,
+   "seconds": 1.39,
+   "error": null,
+   "tags": [],
+   "revised": false,
+   "unsupported": []
+  },
+  {
+   "id": "p05",
+   "category": "policy",
+   "lang": "en",
+   "config": "full",
+   "model": "openai/gpt-oss-120b",
+   "question": "Within how many days must I report attendance that was recorded wrongly?",
+   "answer": "You should report any incorrectly recorded attendance to the course faculty **within 7 days of the class**. After that period, corrections can only be made with the Head of Department’s approval. 【Attendance Policy §5】",
+   "facts": [
+    "7"
+   ],
+   "found": [
+    true
+   ],
+   "correct": true,
+   "tools": [
+    "search_university_documents",
+    "search_university_documents"
+   ],
+   "tools_ok": true,
+   "citations": [],
+   "cite_expected": false,
+   "citations_verified": true,
+   "seconds": 2.34,
+   "error": null,
+   "tags": [],
+   "revised": false,
+   "unsupported": []
+  },
+  {
+   "id": "p06",
+   "category": "policy",
+   "lang": "en",
+   "config": "full",
+   "model": "openai/gpt-oss-120b",
+   "question": "How much does re-evaluation of an answer script cost?",
+   "answer": "The cost for re‑evaluation of an end‑term answer script is **₹ 1,000 per course**【Examination Regulations §6】.",
+   "facts": [
+    "1000"
+   ],
+   "found": [
+    true
+   ],
+   "correct": true,
+   "tools": [
+    "search_university_documents",
+    "search_university_documents"
+   ],
+   "tools_ok": true,
+   "citations": [],
+   "cite_expected": false,
+   "citations_verified": true,
+   "seconds": 2.88,
+   "error": null,
+   "tags": [],
+   "revised": false,
+   "unsupported": []
+  },
+  {
+   "id": "p07",
+   "category": "policy",
+   "lang": "en",
+   "config": "full",
+   "model": "openai/gpt-oss-120b",
+   "question": "How many days do I have to apply for re-evaluation?",
+   "answer": "You can apply for re‑evaluation **within 7 days of the declaration of the results**【Examination Regulations §6】.",
+   "facts": [
+    "7"
+   ],
+   "found": [
+    true
+   ],
+   "correct": true,
+   "tools": [
+    "search_university_documents",
+    "search_university_documents"
+   ],
+   "tools_ok": true,
+   "citations": [],
+   "cite_expected": false,
+   "citations_verified": true,
+   "seconds": 2.88,
+   "error": null,
+   "tags": [],
+   "revised": false,
+   "unsupported": []
+  },
+  {
+   "id": "p08",
+   "category": "policy",
+   "lang": "en",
+   "config": "full",
+   "model": "openai/gpt-oss-120b",
+   "question": "What is the fee for a supplementary exam?",
+   "answer": "The fee for a supplementary examination is **₹ 1,500 per course**【Examination Regulations §5】.",
+   "facts": [
+    "1500"
+   ],
+   "found": [
+    true
+   ],
+   "correct": true,
+   "tools": [
+    "search_university_documents"
+   ],
+   "tools_ok": true,
+   "citations": [],
+   "cite_expected": false,
+   "citations_verified": true,
+   "seconds": 1.27,
+   "error": null,
+   "tags": [],
+   "revised": false,
+   "unsupported": []
+  },
+  {
+   "id": "p09",
+   "category": "policy",
+   "lang": "en",
+   "config": "full",
+   "model": "openai/gpt-oss-120b",
+   "question": "What is the minimum pass mark in a course?",
+   "answer": "The minimum pass mark for any course is **40 out of 100 overall**, and you must also secure at least **30 % of the marks in the end‑term examination**【Examination Regulations §1】.",
+   "facts": [
+    "40"
+   ],
+   "found": [
+    true
+   ],
+   "correct": true,
+   "tools": [
+    "search_university_documents"
+   ],
+   "tools_ok": true,
+   "citations": [],
+   "cite_expected": false,
+   "citations_verified": true,
+   "seconds": 1.62,
+   "error": null,
+   "tags": [],
+   "revised": false,
+   "unsupported": []
+  },
+  {
+   "id": "p10",
+   "category": "policy",
+   "lang": "en",
+   "config": "full",
+   "model": "openai/gpt-oss-120b",
+   "question": "How late can I enter the exam hall after the exam starts?",
+   "answer": "You may enter the exam hall up to **30 minutes after the exam has started**. After that you will not be allowed to take the exam.  \n\n*Citation:* Examination Regulations §3 – “No student is allowed to enter more than 30 minutes after the start …”【Examination Regulations §3】",
+   "facts": [
+    "30"
+   ],
+   "found": [
+    true
+   ],
+   "correct": true,
+   "tools": [
+    "search_university_documents"
+   ],
+   "tools_ok": true,
+   "citations": [],
+   "cite_expected": false,
+   "citations_verified": true,
+   "seconds": 1.79,
+   "error": null,
+   "tags": [],
+   "revised": false,
+   "unsupported": []
+  },
+  {
+   "id": "p11",
+   "category": "policy",
+   "lang": "en",
+   "config": "full",
+   "model": "openai/gpt-oss-120b",
+   "question": "What happens if I am caught with my phone in the exam hall?",
+   "answer": "Possessing a mobile phone (or any smart device) in the examination hall is classified as **unfair means**.  \n\n- **Examination Regulations §3** states that “possession of a phone in the hall is treated as unfair means, whether or not it is used.”【Examination Regulations §3】  \n- **Academic Integrity Policy §3** lists “unfair means in examinations: … possessing a mobile phone or smart device in the examination hall” as academic misconduct【Academic Integrity Policy §3】.  \n\nUnfair‑means cases are dealt with under the Academic Integrity Policy, which can lead to disciplinary actions such as cancellation of the exam, a zero for the paper, and further academic penalties as per the university’s misconduct procedures.",
+   "facts": [
+    "unfair means"
+   ],
+   "found": [
+    true
+   ],
+   "correct": true,
+   "tools": [
+    "search_university_documents"
+   ],
+   "tools_ok": true,
+   "citations": [],
+   "cite_expected": false,
+   "citations_verified": true,
+   "seconds": 1.49,
+   "error": null,
+   "tags": [],
+   "revised": false,
+   "unsupported": []
+  },
+  {
+   "id": "p12",
+   "category": "policy",
+   "lang": "en",
+   "config": "full",
+   "model": "openai/gpt-oss-120b",
+   "question": "How do I get my answer sheet rechecked after the results?",
+   "answer": "To have an end‑term answer script re‑evaluated you need to:\n\n1. **Apply within 7 days of the result declaration** – the request must be made before the 7‑day window closes.  \n2. **Pay the re‑evaluation fee** – Rs 1,000 per course.  \n3. **Submit the application** – usually a re‑evaluation form (available at the Examination Office or on the student portal) together with the fee receipt.\n\nAfter the office receives your request and fee, the script will be re‑checked and the new marks will be final (they may go up or down).  \n\n*Reference:* Examination Regulations §6 – “A student may apply for re‑evaluation of an end‑term answer script within seven days of the declaration of results, on payment of Rs 1,000 per course.”【Examination Regulations §6】",
+   "facts": [
+    "1000",
+    "7"
+   ],
+   "found": [
+    true,
+    true
+   ],
+   "correct": true,
+   "tools": [
+    "search_university_documents"
+   ],
+   "tools_ok": true,
+   "citations": [],
+   "cite_expected": false,
+   "citations_verified": true,
+   "seconds": 1.82,
+   "error": null,
+   "tags": [
+    "paraphrase"
+   ],
+   "revised": false,
+   "unsupported": []
+  },
+  {
+   "id": "p13",
+   "category": "policy",
+   "lang": "en",
+   "config": "full",
+   "model": "openai/gpt-oss-120b",
+   "question": "What is the late fee for paying tuition after the due date?",
+   "answer": "The university charges **₹ 100 per day** as a late fee on tuition fees paid after the due date, with the total late fee capped at **₹ 5,000**【Fee Payment and Refund Policy §2】.",
+   "facts": [
+    "100",
+    "5000"
+   ],
+   "found": [
+    true,
+    true
+   ],
+   "correct": true,
+   "tools": [
+    "search_university_documents"
+   ],
+   "tools_ok": true,
+   "citations": [],
+   "cite_expected": false,
+   "citations_verified": true,
+   "seconds": 1.8,
+   "error": null,
+   "tags": [],
+   "revised": false,
+   "unsupported": []
+  },
+  {
+   "id": "p14",
+   "category": "policy",
+   "lang": "en",
+   "config": "full",
+   "model": "openai/gpt-oss-120b",
+   "question": "How much is the end-term examination fee?",
+   "answer": "The end‑term examination fee is **₹ 3,500 per course** for each term【Fee Payment and Refund Policy §1】.",
+   "facts": [
+    "3500"
+   ],
+   "found": [
+    true
+   ],
+   "correct": true,
+   "tools": [
+    "search_university_documents",
+    "search_university_documents"
+   ],
+   "tools_ok": true,
+   "citations": [],
+   "cite_expected": false,
+   "citations_verified": true,
+   "seconds": 2.95,
+   "error": null,
+   "tags": [],
+   "revised": false,
+   "unsupported": []
+  },
+  {
+   "id": "p15",
+   "category": "policy",
+   "lang": "en",
+   "config": "full",
+   "model": "openai/gpt-oss-120b",
+   "question": "If I withdraw within 15 days of the term starting, how much of the tuition fee is refunded?",
+   "answer": "If you withdraw **within 15 days of the term start**, you will receive a **refund of 80 % of the tuition fee** for the current term [Fee Payment and Refund Policy §5].",
+   "facts": [
+    "80"
+   ],
+   "found": [
+    true
+   ],
+   "correct": true,
+   "tools": [
+    "search_university_documents"
+   ],
+   "tools_ok": true,
+   "citations": [
+    {
+     "cite": "Fee Payment and Refund Policy §5",
+     "verified": true
+    }
+   ],
+   "cite_expected": true,
+   "citations_verified": true,
+   "seconds": 1.82,
+   "error": null,
+   "tags": [],
+   "revised": false,
+   "unsupported": []
+  },
+  {
+   "id": "p16",
+   "category": "policy",
+   "lang": "en",
+   "config": "full",
+   "model": "openai/gpt-oss-120b",
+   "question": "Can I pay my tuition fee in instalments?",
+   "answer": "Yes. You may apply to the Finance Office to pay your tuition fee in two instalments:\n\n- **50 %** must be paid by the tuition‑fee due date.  \n- The remaining **50 %** can be paid within **60 days** after the due date.  \n- The application for instalments must be submitted **before** the due date.  \n- If approved and paid on time, **no late fee** is charged on the instalment amount.  \n- **Examination fees cannot be paid in instalments.**  \n\nThese conditions are outlined in the university’s Fee Payment and Refund Policy §3【Fee Payment and Refund Policy §3】.",
+   "facts": [
+    "50",
+    "60"
+   ],
+   "found": [
+    true,
+    true
+   ],
+   "correct": true,
+   "tools": [
+    "search_university_documents"
+   ],
+   "tools_ok": true,
+   "citations": [],
+   "cite_expected": false,
+   "citations_verified": true,
+   "seconds": 2.76,
+   "error": null,
+   "tags": [],
+   "revised": false,
+   "unsupported": []
+  },
+  {
+   "id": "p17",
+   "category": "policy",
+   "lang": "en",
+   "config": "full",
+   "model": "openai/gpt-oss-120b",
+   "question": "What time do the hostel gates close?",
+   "answer": "The hostel gates close at **10:30 pm**. 【Hostel Rules §3】",
+   "facts": [
+    "22:30"
+   ],
+   "found": [
+    true
+   ],
+   "correct": true,
+   "tools": [
+    "search_university_documents"
+   ],
+   "tools_ok": true,
+   "citations": [],
+   "cite_expected": false,
+   "citations_verified": true,
+   "seconds": 1.56,
+   "error": null,
+   "tags": [],
+   "revised": false,
+   "unsupported": []
+  },
+  {
+   "id": "p18",
+   "category": "policy",
+   "lang": "en",
+   "config": "full",
+   "model": "openai/gpt-oss-120b",
+   "question": "How far in advance do I need to apply for hostel leave?",
+   "answer": "You need to apply for hostel leave on the student portal **at least 24 hours before** the night you’ll be away【Hostel Rules §4】.",
+   "facts": [
+    "24"
+   ],
+   "found": [
+    true
+   ],
+   "correct": true,
+   "tools": [
+    "search_university_documents"
+   ],
+   "tools_ok": true,
+   "citations": [],
+   "cite_expected": false,
+   "citations_verified": true,
+   "seconds": 1.62,
+   "error": null,
+   "tags": [],
+   "revised": false,
+   "unsupported": []
+  },
+  {
+   "id": "p19",
+   "category": "policy",
+   "lang": "en",
+   "config": "full",
+   "model": "openai/gpt-oss-120b",
+   "question": "What CGPA do I need for the merit-cum-means scholarship?",
+   "answer": "You need a **CGPA of ≥ 8.0** to be eligible for the merit‑cum‑means scholarship (along with the other criteria of no backlog and family income ≤ ₹8 lakhs)【Scholarship Scheme §2】.",
+   "facts": [
+    "8"
+   ],
+   "found": [
+    true
+   ],
+   "correct": true,
+   "tools": [
+    "search_university_documents"
+   ],
+   "tools_ok": true,
+   "citations": [],
+   "cite_expected": false,
+   "citations_verified": true,
+   "seconds": 1.54,
+   "error": null,
+   "tags": [],
+   "revised": false,
+   "unsupported": []
+  },
+  {
+   "id": "p20",
+   "category": "policy",
+   "lang": "en",
+   "config": "full",
+   "model": "openai/gpt-oss-120b",
+   "question": "What is the penalty for submitting an assignment late?",
+   "answer": "The university’s Academic Integrity Policy states that late‑submission penalties are:\n\n- **Up to 48 hours after the deadline:** 10 % of the maximum marks is deducted for each 24‑hour period (or part thereof) of delay.  \n- **More than 48 hours late:** the assignment receives **zero marks**.\n\n**Citation:** Academic Integrity Policy §2 (Assignments and late submission)【Academic Integrity Policy §2】.",
+   "facts": [
+    "10",
+    "48"
+   ],
+   "found": [
+    true,
+    true
+   ],
+   "correct": true,
+   "tools": [
+    "search_university_documents"
+   ],
+   "tools_ok": true,
+   "citations": [],
+   "cite_expected": false,
+   "citations_verified": true,
+   "seconds": 1.52,
+   "error": null,
+   "tags": [],
+   "revised": false,
+   "unsupported": []
+  },
+  {
+   "id": "h01",
+   "category": "policy",
+   "lang": "hinglish",
+   "config": "full",
+   "model": "openai/gpt-oss-120b",
+   "question": "Exam dene ke liye kitni attendance chahiye?",
+   "answer": "Exam dene ke liye aapko **kam se kam 75 % attendance** hona chahiye. Agar aapka attendance 75 % se kam ho, to aapko Attendance Policy ke tahat **condonation** milna chahiye, jisme minimum **65 %** tak ki attendance ko accept kiya ja sakta hai.  \n\n- Attendance Policy §2 – “A student must attend at least 75 % of the classes held in each course …”【Attendance Policy §2】  \n- Examination Regulations §2 – “attendance in that course is at least 75 %, or has been condoned under the Attendance Policy (minimum 65 %)”【Examination Regulations §2】",
+   "facts": [
+    "75"
+   ],
+   "found": [
+    true
+   ],
+   "correct": true,
+   "tools": [
+    "search_university_documents"
+   ],
+   "tools_ok": true,
+   "citations": [],
+   "cite_expected": false,
+   "citations_verified": true,
+   "seconds": 2.59,
+   "error": null,
+   "tags": [],
+   "revised": false,
+   "unsupported": []
+  },
+  {
+   "id": "h02",
+   "category": "policy",
+   "lang": "hinglish",
+   "config": "full",
+   "model": "openai/gpt-oss-120b",
+   "question": "Re-evaluation ki fees kitni hai?",
+   "answer": "Re‑evaluation ki fee **₹ 1,000 per course** hai【Examination Regulations §6】.",
+   "facts": [
+    "1000"
+   ],
+   "found": [
+    true
+   ],
+   "correct": true,
+   "tools": [
+    "search_university_documents"
+   ],
+   "tools_ok": true,
+   "citations": [],
+   "cite_expected": false,
+   "citations_verified": true,
+   "seconds": 1.31,
+   "error": null,
+   "tags": [],
+   "revised": false,
+   "unsupported": []
+  },
+  {
+   "id": "h03",
+   "category": "policy",
+   "lang": "hinglish",
+   "config": "full",
+   "model": "openai/gpt-oss-120b",
+   "question": "Hostel ka gate kitne baje band hota hai?",
+   "answer": "Hostel ke gate **10:30 pm** ko band hote hain, aur subah **5:30 am** ko khulte hain【Hostel Rules §3】. यदि आप इस समय ke baad aate hain, to security desk par late‑entry register sign karna padega.",
+   "facts": [
+    "22:30"
+   ],
+   "found": [
+    true
+   ],
+   "correct": true,
+   "tools": [
+    "search_university_documents"
+   ],
+   "tools_ok": true,
+   "citations": [],
+   "cite_expected": false,
+   "citations_verified": true,
+   "seconds": 4.01,
+   "error": null,
+   "tags": [],
+   "revised": false,
+   "unsupported": []
+  },
+  {
+   "id": "h04",
+   "category": "policy",
+   "lang": "hinglish",
+   "config": "full",
+   "model": "openai/gpt-oss-120b",
+   "question": "Tuition fees late bharne pe kitna fine lagta hai?",
+   "answer": "ट्यूशन फीस देर से भरने पर लागू होने वाला जुर्माना:\n\n- **₹100 प्रति दिन** की देर‑भुगतान शुल्क लगती है।  \n- यह शुल्क **अधिकतम ₹5,000** तक ही सीमित है।  \n\n(स्रोत: *Fee Payment and Refund Policy §2* – “2.1 A late fee of Rs 100 per day … up to a maximum of Rs 5,000.”)  \n\nध्यान रखें, यदि ट्यूशन फीस **30 दिन** तक बकाया रहती है तो आपका रजिस्ट्रेशन होल्ड हो जाएगा और ग्रेड/एडमिट कार्ड नहीं मिलेगा【Fee Payment and Refund Policy §2】.",
+   "facts": [
+    "100",
+    "5000"
+   ],
+   "found": [
+    true,
+    true
+   ],
+   "correct": true,
+   "tools": [
+    "search_university_documents"
+   ],
+   "tools_ok": true,
+   "citations": [],
+   "cite_expected": false,
+   "citations_verified": true,
+   "seconds": 1.74,
+   "error": null,
+   "tags": [],
+   "revised": false,
+   "unsupported": []
+  },
+  {
+   "id": "h05",
+   "category": "policy",
+   "lang": "hinglish",
+   "config": "full",
+   "model": "openai/gpt-oss-120b",
+   "question": "Supplementary exam ki fees kya hai?",
+   "answer": "Supplementary exam ki fee **₹ 1,500 per course** hai.  \n\n[Examination Regulations §5]",
+   "facts": [
+    "1500"
+   ],
+   "found": [
+    true
+   ],
+   "correct": true,
+   "tools": [
+    "search_university_documents"
+   ],
+   "tools_ok": true,
+   "citations": [
+    {
+     "cite": "Examination Regulations §5",
+     "verified": true
+    }
+   ],
+   "cite_expected": true,
+   "citations_verified": true,
+   "seconds": 1.36,
+   "error": null,
+   "tags": [],
+   "revised": false,
+   "unsupported": []
+  },
+  {
+   "id": "h06",
+   "category": "policy",
+   "lang": "hinglish",
+   "config": "full",
+   "model": "openai/gpt-oss-120b",
+   "question": "Agar exam hall mein phone pakda gaya toh kya hoga?",
+   "answer": "यदि परीक्षा हॉल में आपका मोबाइल फ़ोन या कोई अन्य इलेक्ट्रॉनिक डिवाइस पकड़ा जाता है, तो इसे **“unfair means” (अनुचित साधन)** माना जाता है और यह **शैक्षणिक दुराचार** के अंतर्गत आता है।\n\n- **Examination Regulations §3** के अनुसार, “Possession of a phone in the hall is treated as unfair means, whether or not it is used.”【Examination Regulations §3】  \n- **Academic Integrity Policy §3** में यह बताया गया है कि “unfair means in examinations: copying, communicating with others, using unauthorised material, or possessing a mobile phone or smart device in the examination hall.”【Academic Integrity Policy §3】\n\n**परिणाम**  \n- दुराचार के रूप में दर्ज किया जाएगा।  \n- विश्वविद्यालय की शैक्षणिक इंटेग्रिटी नीति के अनुसार, दुराचार के मामलों को अनुशासनात्मक कार्रवाई (जैसे अंक कटौती, परीक्षा में डिबारमेंट, या आगे की सजा) के तहत संभाला जाता है।  \n\nइसलिए परीक्षा में फोन ले जाना अत्यधिक जोखिमपूर्ण है; इसे बाहर रखकर ही परीक्षा दें।",
+   "facts": [
+    "unfair means"
+   ],
+   "found": [
+    true
+   ],
+   "correct": true,
+   "tools": [
+    "search_university_documents"
+   ],
+   "tools_ok": true,
+   "citations": [],
+   "cite_expected": false,
+   "citations_verified": true,
+   "seconds": 1.78,
+   "error": null,
+   "tags": [],
+   "revised": false,
+   "unsupported": []
+  },
+  {
+   "id": "r01",
+   "category": "records",
+   "lang": "en",
+   "config": "full",
+   "model": "openai/gpt-oss-120b",
+   "question": "What is my attendance in Machine Learning?",
+   "answer": "**Machine Learning (CSE503) – Attendance Summary**\n\n| Held | Attended | Attendance % | Can still miss | Classes left in term |\n|------|----------|--------------|----------------|----------------------|\n| 40   | 33       | **82.5 %**   | **4**          | 10                   |\n\nYou are currently above the 75 % requirement, so you can miss up to 4 more classes and still meet the minimum attendance.",
+   "facts": [
+    "82.5"
+   ],
+   "found": [
+    true
+   ],
+   "correct": true,
+   "tools": [
+    "search_university_documents",
+    "get_my_attendance",
+    "get_my_attendance"
+   ],
+   "tools_ok": true,
+   "citations": [],
+   "cite_expected": null,
+   "citations_verified": true,
+   "seconds": 3.17,
+   "error": null,
+   "tags": [],
+   "revised": false,
+   "unsupported": []
+  },
+  {
+   "id": "r02",
+   "category": "records",
+   "lang": "en",
+   "config": "full",
+   "model": "openai/gpt-oss-120b",
+   "question": "Which of my courses are below 75% attendance?",
+   "answer": "**Courses below 75 % attendance**\n\n| Course Code | Course Title                     | Attendance |\n|-------------|----------------------------------|------------|\n| CSE301      | Database Management Systems (DBMS) | 69.05 % |\n\nAll other courses this term meet the 75 % requirement.",
+   "facts": [
+    "Database Management Systems | CSE301"
+   ],
+   "found": [
+    true
+   ],
+   "correct": true,
+   "tools": [
+    "search_university_documents",
+    "get_my_attendance"
+   ],
+   "tools_ok": true,
+   "citations": [],
+   "cite_expected": null,
+   "citations_verified": true,
+   "seconds": 3.0,
+   "error": null,
+   "tags": [],
+   "revised": false,
+   "unsupported": []
+  },
+  {
+   "id": "r03",
+   "category": "records",
+   "lang": "en",
+   "config": "full",
+   "model": "openai/gpt-oss-120b",
+   "question": "How many classes in a row do I need to attend in Database Management Systems to get back to 75%?",
+   "answer": "You need to attend **10 consecutive classes** of **CSE301 – Database Management Systems** to bring your attendance back up to the required 75 % 【calculate_attendance_requirement】.  \n\n(Attendance must be at least 75 % per course [Attendance Policy §2]; the number of consecutive classes needed is calculated as described in the policy [Attendance Policy §6].)",
+   "facts": [
+    "10"
+   ],
+   "found": [
+    true
+   ],
+   "correct": true,
+   "tools": [
+    "search_university_documents",
+    "calculate_attendance_requirement",
+    "calculate_attendance_requirement"
+   ],
+   "tools_ok": true,
+   "citations": [
+    {
+     "cite": "Attendance Policy §2",
+     "verified": true
+    },
+    {
+     "cite": "Attendance Policy §6",
+     "verified": true
+    }
+   ],
+   "cite_expected": null,
+   "citations_verified": true,
+   "seconds": 5.86,
+   "error": null,
+   "tags": [],
+   "revised": false,
+   "unsupported": []
+  },
+  {
+   "id": "r04",
+   "category": "records",
+   "lang": "en",
+   "config": "full",
+   "model": "openai/gpt-oss-120b",
+   "question": "how many holidays can i take in computer network",
+   "answer": "**Computer Networks (CSE501)**  \n\n- You have **8 classes** you can still miss (e.g., take as holidays) and remain at or above the 75 % attendance requirement.  \n- There are **9 classes left** in the term, so you need to attend at least **1 more class** to keep the required attendance.\n\n(Attendance data: `can_miss = 8`, `classes_left = 9`.)",
+   "facts": [
+    "8"
+   ],
+   "found": [
+    true
+   ],
+   "correct": true,
+   "tools": [
+    "search_university_documents",
+    "get_my_attendance",
+    "get_my_attendance",
+    "search_university_documents"
+   ],
+   "tools_ok": true,
+   "citations": [],
+   "cite_expected": null,
+   "citations_verified": true,
+   "seconds": 4.7,
+   "error": null,
+   "tags": [
+    "regression"
+   ],
+   "revised": false,
+   "unsupported": []
+  },
+  {
+   "id": "r05",
+   "category": "records",
+   "lang": "en",
+   "config": "full",
+   "model": "openai/gpt-oss-120b",
+   "question": "If I miss the next 2 classes of Computer Organization and Architecture, what will my attendance be?",
+   "answer": "If you miss the next 2 classes for **CSE304 – Computer Organization and Architecture**, your attendance will become:\n\n- **Attendance after missing 2 classes:** **88.1 %**  \n- This is still above the required **75 %**, so you remain eligible for the end‑term exam in this course.",
+   "facts": [
+    "88.1"
+   ],
+   "found": [
+    true
+   ],
+   "correct": true,
+   "tools": [
+    "search_university_documents",
+    "get_my_attendance",
+    "calculate_attendance_requirement"
+   ],
+   "tools_ok": true,
+   "citations": [],
+   "cite_expected": null,
+   "citations_verified": true,
+   "seconds": 3.13,
+   "error": null,
+   "tags": [],
+   "revised": false,
+   "unsupported": []
+  },
+  {
+   "id": "r06",
+   "category": "records",
+   "lang": "en",
+   "config": "full",
+   "model": "openai/gpt-oss-120b",
+   "question": "When is my next exam?",
+   "answer": "**Your next exam**\n\n| Course | Title | Type | Date & Time (IST) | Room | Duration |\n|--------|-------|------|-------------------|------|----------|\n| CSE505 | Information Security | Quiz | **31 Oct 2026, 10:00 AM** | C‑306 | 30 min |\n\nGood luck!",
+   "facts": [
+    "2026-10-31",
+    "Information Security | CSE505"
+   ],
+   "found": [
+    true,
+    true
+   ],
+   "correct": true,
+   "tools": [
+    "search_university_documents",
+    "get_my_exams"
+   ],
+   "tools_ok": true,
+   "citations": [],
+   "cite_expected": null,
+   "citations_verified": true,
+   "seconds": 3.22,
+   "error": null,
+   "tags": [],
+   "revised": false,
+   "unsupported": []
+  },
+  {
+   "id": "r07",
+   "category": "records",
+   "lang": "en",
+   "config": "full",
+   "model": "openai/gpt-oss-120b",
+   "question": "How much fee do I still owe?",
+   "answer": "**Your current fee balance**\n\n| Item | Amount (₹) | Status |\n|------|------------|--------|\n| Tuition fee (2026‑ODD) | 160,000 | Overdue |\n| Late fee on tuition (₹100 / day, max ₹5,000) | 5,000* | Applied |\n| End‑term examination fee (2026‑ODD) | 3,500 | Pending |\n| **Total due** | **168,500** | – |\n\n\\* The fee policy states that a late fee of ₹100 per day is charged on tuition fees after the due date, up to a maximum of ₹5,000 [Fee Payment and Refund Policy §2].\n\nYou need to clear **₹ 168,500** to avoid further restrictions (e.g., registration hold, no admit card). Payments can be made via the student portal (UPI, net‑banking, debit/credit card, or bank transfer).",
+   "facts": [
+    "163500 or 160000 + 3500"
+   ],
+   "found": [
+    true
+   ],
+   "correct": true,
+   "tools": [
+    "search_university_documents",
+    "get_my_fee_status"
+   ],
+   "tools_ok": true,
+   "citations": [
+    {
+     "cite": "Fee Payment and Refund Policy §2",
+     "verified": true
+    }
+   ],
+   "cite_expected": null,
+   "citations_verified": true,
+   "seconds": 4.43,
+   "error": null,
+   "tags": [],
+   "revised": true,
+   "unsupported": [
+    "168,500"
+   ]
+  },
+  {
+   "id": "r08",
+   "category": "records",
+   "lang": "en",
+   "config": "full",
+   "model": "openai/gpt-oss-120b",
+   "question": "Which assignments are due this week?",
+   "answer": "**Assignments due this week (Mon 09 Nov – Sun 15 Nov):**  \n- *None* – you have no pending assignments with a deadline within this week.\n\n**Upcoming assignments (next week):**\n\n| Course | Assignment | Due date (local) | Max marks |\n|--------|------------|------------------|-----------|\n| Computer Networks (CSE501) | Assignment 4 | Tue 16 Nov 2026, 23:59 | 25 |\n| Machine Learning (CSE503) | Assignment 4 | Thu 18 Nov 2026, 23:59 | 20 |\n| Compiler Design (CSE504) | Assignment 4 | Thu 18 Nov 2026, 23:59 | 25 |\n| Information Security (CSE505) | Assignment 4 | Fri 19 Nov 2026, 23:59 | 10 |\n\nYou’re all clear for this week—just keep an eye on the upcoming deadlines!",
+   "facts": [
+    "none | no assignment | no pending | nothing due | all clear | no deadline | already submitted"
+   ],
+   "found": [
+    true
+   ],
+   "correct": true,
+   "tools": [
+    "search_university_documents",
+    "get_my_assignments"
+   ],
+   "tools_ok": true,
+   "citations": [],
+   "cite_expected": null,
+   "citations_verified": true,
+   "seconds": 3.15,
+   "error": null,
+   "tags": [],
+   "revised": false,
+   "unsupported": []
+  },
+  {
+   "id": "r09",
+   "category": "records",
+   "lang": "en",
+   "config": "full",
+   "model": "openai/gpt-oss-120b",
+   "question": "next class when",
+   "answer": "**Your next class**\n\n| Date | Time | Course | Room | Faculty |\n|------|------|--------|------|---------|\n| **Tue, 10 Nov 2026** | 09:00 – 09:50 | CSE503 – *Machine Learning* | D‑406 | Dr. Veer Balay |\n\n*After that, you have Information Security (CSE505) at 12:00 and Compiler Design (CSE504) at 15:00 on the same day.*",
+   "facts": [
+    "Machine Learning | CSE503",
+    "09:00"
+   ],
+   "found": [
+    true,
+    true
+   ],
+   "correct": true,
+   "tools": [
+    "search_university_documents",
+    "get_my_classes"
+   ],
+   "tools_ok": true,
+   "citations": [],
+   "cite_expected": null,
+   "citations_verified": true,
+   "seconds": 2.24,
+   "error": null,
+   "tags": [
+    "regression"
+   ],
+   "revised": false,
+   "unsupported": []
+  },
+  {
+   "id": "r10",
+   "category": "records",
+   "lang": "en",
+   "config": "full",
+   "model": "openai/gpt-oss-120b",
+   "question": "where is my compiler design class",
+   "answer": "Your **Compiler Design (CSE504)** classes are held at the following rooms:\n\n| Day       | Time   | Room |\n|-----------|--------|------|\n| Monday    | 15:00‑15:50 | D‑308 |\n| Tuesday   | 15:00‑15:50 | A‑101 |\n| Wednesday | 15:00‑15:50 | C‑210 |\n\n**Next class:** Tuesday, 10 Nov 2026, 15:00‑15:50 in **Room A‑101** (Dr. Pahal Balay).",
+   "facts": [
+    "D-308",
+    "A-101",
+    "C-210"
+   ],
+   "found": [
+    true,
+    true,
+    true
+   ],
+   "correct": true,
+   "tools": [
+    "get_my_classes",
+    "get_my_classes"
+   ],
+   "tools_ok": true,
+   "citations": [],
+   "cite_expected": null,
+   "citations_verified": true,
+   "seconds": 3.11,
+   "error": null,
+   "tags": [
+    "regression"
+   ],
+   "revised": false,
+   "unsupported": []
+  },
+  {
+   "id": "r11",
+   "category": "records",
+   "lang": "en",
+   "config": "full",
+   "model": "openai/gpt-oss-120b",
+   "question": "Are any of my fees overdue?",
+   "answer": "**Fee status**\n\n| Description | Amount | Paid | Balance | Due date | Status |\n|-------------|--------|------|---------|----------|--------|\n| Tuition fee (2026‑ODD) | ₹160,000 | ₹0 | ₹160,000 | 31 July 2026 | **overdue** |\n| End‑term examination fee (2026‑ODD) | ₹3,500 | ₹0 | ₹3,500 | 27 Nov 2026 | pending (not overdue yet) |\n\nSo, your tuition fee is currently overdue. The examination fee is still pending but not overdue until its due date.",
+   "facts": [
+    "160000"
+   ],
+   "found": [
+    true
+   ],
+   "correct": true,
+   "tools": [
+    "search_university_documents",
+    "get_my_fee_status"
+   ],
+   "tools_ok": true,
+   "citations": [],
+   "cite_expected": null,
+   "citations_verified": true,
+   "seconds": 1.87,
+   "error": null,
+   "tags": [],
+   "revised": false,
+   "unsupported": []
+  },
+  {
+   "id": "r12",
+   "category": "records",
+   "lang": "en",
+   "config": "full",
+   "model": "openai/gpt-oss-120b",
+   "question": "What is my roll number?",
+   "answer": "Your roll number is **2024CYS0001**.",
+   "facts": [
+    "2024CYS0001"
+   ],
+   "found": [
+    true
+   ],
+   "correct": true,
+   "tools": [
+    "get_my_profile"
+   ],
+   "tools_ok": null,
+   "citations": [],
+   "cite_expected": null,
+   "citations_verified": true,
+   "seconds": 1.61,
+   "error": null,
+   "tags": [],
+   "revised": false,
+   "unsupported": []
+  },
+  {
+   "id": "k01",
+   "category": "records",
+   "lang": "hinglish",
+   "config": "full",
+   "model": "openai/gpt-oss-120b",
+   "question": "DBMS mein meri attendance kitni hai?",
+   "answer": "**CSE301 – Database Management Systems**  \n\n| कुल क्लासेस (held) | उपस्थित (attended) | उपस्थिति % | स्थिति | अभी बचे क्लासेस | लगातार उपस्थित रहने वाले क्लासेस (75% तक पहुँचने के लिए) | अब और कितनी क्लास मिस कर सकते हैं |\n|-------------------|-------------------|------------|--------|----------------|--------------------------------------------------------|-----------------------------------|\n| 45 | 31 | **68.89 %** | **short** | 6 | **11** | **0** |\n\n- आपका वर्तमान उपस्थिति 68.89 % है, जो न्यूनतम 75 % से कम है।  \n- आपको अगले **11 लगातार क्लासेस** में उपस्थित रहना होगा ताकि 75 % की सीमा तक पहुँच सकें।  \n- अब और कोई क्लास मिस नहीं कर सकते (can_miss = 0)।  \n\nयदि आप इन 11 क्लासेस में लगातार उपस्थित नहीं होते, तो अंत‑टर्म परीक्षा में बैठने की अनुमति नहीं मिल सकती। किसी भी त्रुटि या सुधार के लिए, कृपया अपने फ़ैकल्टी को 7 दिनों के भीतर सूचित करें।",
+   "facts": [
+    "68.89"
+   ],
+   "found": [
+    true
+   ],
+   "correct": true,
+   "tools": [
+    "search_university_documents",
+    "get_my_attendance",
+    "get_my_attendance"
+   ],
+   "tools_ok": true,
+   "citations": [],
+   "cite_expected": null,
+   "citations_verified": true,
+   "seconds": 2.93,
+   "error": null,
+   "tags": [],
+   "revised": false,
+   "unsupported": []
+  },
+  {
+   "id": "k02",
+   "category": "records",
+   "lang": "hinglish",
+   "config": "full",
+   "model": "openai/gpt-oss-120b",
+   "question": "kal kaunsi classes hain?",
+   "answer": "**Kal (10 Nov 2026) ki classes**\n\n| Time (IST) | Course | Title | Room | Faculty |\n|------------|--------|-------|------|---------|\n| 09:00 – 09:50 | CSE503 | Machine Learning | D‑406 | Dr. Veer Balay |\n| 12:00 – 12:50 | CSE505 | Information Security | C‑107 | Dr. Nachiket Kale |\n| 15:00 – 15:50 | CSE504 | Compiler Design | A‑101 | Dr. Pahal Balay |\n| 16:00 – 16:50 | CSE501 | Computer Networks | A‑205 | Dr. Hemangini Lalla |\n\nAll the above are scheduled for tomorrow, Tuesday. Good luck!",
+   "facts": [
+    "Machine Learning | CSE503",
+    "Information Security | CSE505",
+    "Compiler Design | CSE504",
+    "Computer Networks | CSE501"
+   ],
+   "found": [
+    true,
+    true,
+    true,
+    true
+   ],
+   "correct": true,
+   "tools": [
+    "get_my_classes"
+   ],
+   "tools_ok": true,
+   "citations": [],
+   "cite_expected": null,
+   "citations_verified": true,
+   "seconds": 2.22,
+   "error": null,
+   "tags": [],
+   "revised": false,
+   "unsupported": []
+  },
+  {
+   "id": "k03",
+   "category": "records",
+   "lang": "hinglish",
+   "config": "full",
+   "model": "openai/gpt-oss-120b",
+   "question": "mera kitna fees baaki hai?",
+   "answer": "**आपकी बकाया फीस (बिल्डिंग‑ऑड) :**\n\n| विवरण | कुल राशि (₹) | भुगतान किया गया (₹) | बकाया (₹) | नियत तिथि |\n|-------|--------------|----------------------|-----------|-----------|\n| ट्यूशन फीस (2026‑ODD) | 1,60,000 | 0 | **1,60,000** | 31 जुलाई 2026 (overdue) |\n| एन्ड‑टर्म परीक्षा फीस | 3,500 | 0 | **3,500** | 27 नवंबर 2026 (pending) |\n\n**कुल बकाया:** **₹ 1,63,500**  \n\n- ट्यूशन फीस अभी भी **overdue** है, इसलिए आपका रजिस्ट्रेशन होल्ड हो सकता है और ग्रेड/एडमिट कार्ड देख नहीं पाएँगे।  \n- एन्ड‑टर्म परीक्षा फीस का भुगतान **pending** है; यह फीस न देने पर एडमिट कार्ड नहीं मिलेगा।  \n\nकृपया जल्द से जल्द भुगतान करें ताकि कोई अतिरिक्त लेट फ़ी या रजिस्ट्रेशन रोक न हो। यदि वित्तीय कठिनाई है, तो आप **इंस्टॉलमेंट** विकल्प के लिए फ़ाइनेंस ऑफिस से संपर्क कर सकते हैं (देखें Fee Payment and Refund Policy §3)।",
+   "facts": [
+    "163500 or 160000 + 3500"
+   ],
+   "found": [
+    true
+   ],
+   "correct": true,
+   "tools": [
+    "search_university_documents",
+    "get_my_fee_status"
+   ],
+   "tools_ok": true,
+   "citations": [],
+   "cite_expected": null,
+   "citations_verified": true,
+   "seconds": 2.42,
+   "error": null,
+   "tags": [],
+   "revised": false,
+   "unsupported": []
+  },
+  {
+   "id": "k04",
+   "category": "records",
+   "lang": "hinglish",
+   "config": "full",
+   "model": "openai/gpt-oss-120b",
+   "question": "Computer Networks mein kitni chutti le sakta hoon?",
+   "answer": "**Computer Networks (CSE501)** ke liye aapki attendance **97.73 %** hai.  \nIska matlab aap **abhi aur 6 classes** miss kar sakte hain aur phir bhi 75 % se neeche nahi jaayenge.  \n\n(Attendance record shows `can_miss = 6` and `classes_needed = 0`.)",
+   "facts": [
+    "6"
+   ],
+   "found": [
+    true
+   ],
+   "correct": true,
+   "tools": [
+    "get_my_attendance"
+   ],
+   "tools_ok": true,
+   "citations": [],
+   "cite_expected": null,
+   "citations_verified": true,
+   "seconds": 1.71,
+   "error": null,
+   "tags": [
+    "regression"
+   ],
+   "revised": false,
+   "unsupported": []
+  },
+  {
+   "id": "k05",
+   "category": "records",
+   "lang": "hinglish",
+   "config": "full",
+   "model": "openai/gpt-oss-120b",
+   "question": "agla exam kab hai?",
+   "answer": "**Agla exam**  \n\n| Course | Exam type | Date | Time | Room |\n|--------|----------|------|------|------|\n| Design and Analysis of Algorithms (CSE305) | Quiz | 11 Nov 2026 | 10:00 AM | C‑206 |\n\nYeh aapka sabse pehla aane wala exam hai. All the best!",
+   "facts": [
+    "2026-11-11",
+    "Design and Analysis of Algorithms | CSE305"
+   ],
+   "found": [
+    true,
+    true
+   ],
+   "correct": true,
+   "tools": [
+    "get_my_exams"
+   ],
+   "tools_ok": true,
+   "citations": [],
+   "cite_expected": null,
+   "citations_verified": true,
+   "seconds": 1.65,
+   "error": null,
+   "tags": [],
+   "revised": false,
+   "unsupported": []
+  },
+  {
+   "id": "c01",
+   "category": "combined",
+   "lang": "en",
+   "config": "full",
+   "model": "openai/gpt-oss-120b",
+   "question": "Can I sit all my end-term exams?",
+   "answer": "**No – you cannot sit all of your end‑term exams right now.**  \n\n| Course | Attendance status | What’s needed to be eligible |\n|--------|-------------------|------------------------------|\n| **CSE301 – Database Management Systems** | 68.89 % (31/45 classes) – even if you attend all 6 remaining classes you would only reach 72.55 % | Attendance must be ≥ 75 % **or** be condoned to at least 65 % (you are below 75 % and cannot reach it). You need a medical/approved‑reason condonation. |\n| **CSE302 – Object‑Oriented Programming with Java** | 97.73 % – safe | No extra attendance needed. |\n| **CSE303 – Discrete Mathematics** | 95.56 % – safe | No extra attendance needed. |\n| **CSE304 – Computer Organization and Architecture** | 88.89 % – safe | No extra attendance needed. |\n| **CSE305 – Design and Analysis of Algorithms** | 86.67 % – safe | No extra attendance needed. |\n\n### Why you cannot sit the exams yet\n1. **Unpaid end‑term examination fee** – ₹3,500 is still outstanding (due 27 Nov). Admit cards are not issued while this fee is unpaid【Examination Regulations §2】.  \n2. **Attendance shortfall in CSE301** – you cannot reach the 75 % requirement even if you attend all remaining classes. The only way to sit the DBMS exam is to obtain **condonation** (minimum 65 % attendance) as per the Attendance Policy【Attendance Policy §4】.\n\n### What you need to do\n1. **Pay the pending end‑term exam fee (₹3,500) immediately**.  \n2. **Apply for attendance condonation** for CSE301 (medical or other approved reason) within the allowed window (within 7 days of returning to class) and obtain approval from the Dean of Academics.\n\nOnce both steps are completed, you will receive your admit cards (issued from 18 Nov) and will be eligible to sit all end‑term exams.",
+   "facts": [
+    "Database Management Systems | CSE301",
+    "6",
+    "3500"
+   ],
+   "found": [
+    true,
+    true,
+    true
+   ],
+   "correct": true,
+   "tools": [
+    "search_university_documents",
+    "check_end_term_eligibility"
+   ],
+   "tools_ok": true,
+   "citations": [],
+   "cite_expected": false,
+   "citations_verified": true,
+   "seconds": 2.45,
+   "error": null,
+   "tags": [],
+   "revised": false,
+   "unsupported": []
+  },
+  {
+   "id": "c02",
+   "category": "combined",
+   "lang": "en",
+   "config": "full",
+   "model": "openai/gpt-oss-120b",
+   "question": "Will I get my admit card?",
+   "answer": "**No – you will not receive an admit card yet.**  \n\n- Admit cards are issued from 18 Nov, but they are withheld while any fee is unpaid. You have two outstanding balances:  \n\n  1. **Tuition fee (2026‑ODD): ₹1,60,000** – overdue since 31 Jul.  \n  2. **End‑term examination fee (2026‑ODD): ₹3,500** – due 27 Nov.  \n\n- Once both amounts are cleared, the admit cards will be generated.\n\n- Attendance is already sufficient for all your courses, except **ECE701** where you must attend at least 2 of the remaining 6 classes to stay above 75 % (otherwise you would need a condonation).  \n\n**What to do**\n\n| Action | Amount |\n|--------|--------|\n| Pay tuition fee | ₹1,60,000 |\n| Pay exam fee | ₹3,500 |\n| Attend ≥ 2 of the next 6 ECE701 classes (if you miss more, you’ll need condonation) | – |\n\nAfter the payments are posted, your admit card will appear on the student portal.\n\n*Rule source:* Examination Regulations §2 – admit cards are not issued to students with unpaid examination or tuition fees【Examination Regulations §2】.",
+   "facts": [
+    "160000",
+    "3500"
+   ],
+   "found": [
+    true,
+    true
+   ],
+   "correct": true,
+   "tools": [
+    "search_university_documents",
+    "check_end_term_eligibility",
+    "check_end_term_eligibility"
+   ],
+   "tools_ok": true,
+   "citations": [],
+   "cite_expected": false,
+   "citations_verified": true,
+   "seconds": 3.46,
+   "error": null,
+   "tags": [],
+   "revised": false,
+   "unsupported": []
+  },
+  {
+   "id": "c03",
+   "category": "combined",
+   "lang": "en",
+   "config": "full",
+   "model": "openai/gpt-oss-120b",
+   "question": "Am I eligible for my end-term exams?",
+   "answer": "**Eligibility for your end‑term examinations (Term 2026‑ODD)**  \n\n- **Overall:** You are **eligible for all end‑term exams** – there are no fee holds and your attendance in every course can stay at or above the required 75 % [Examination Regulations §2]​.\n\n| Course | Attendance (held/attended) | % attended | Classes left | Verdict |\n|--------|----------------------------|-----------|--------------|---------|\n| **CSE501 – Computer Networks** | 44 held / 43 attended | 97.73 % | 6 | Eligible – even if you miss all 6 remaining classes you will remain ≥ 75 % |\n| **CSE502 – Software Engineering** | 44 held / 42 attended | 95.45 % | 6 | Eligible – even if you miss all 6 remaining classes you will remain ≥ 75 % |\n| **CSE503 – Machine Learning** | 44 held / 43 attended | 97.73 % | 6 | Eligible – even if you miss all 6 remaining classes you will remain ≥ 75 % |\n| **CSE504 – Compiler Design** | 45 held / 38 attended | 84.44 % | 6 | **You must attend at least 1 of the 6 remaining classes** to keep attendance ≥ 75 %; otherwise you would need condonation (minimum 65 %). |\n| **CSE505 – Information Security** | 44 held / 39 attended | 88.64 % | 6 | Eligible – even if you miss all 6 remaining classes you will remain ≥ 75 % |\n\n**What this means**\n\n- You can sit the end‑term exam for every course listed above, provided you meet the single attendance condition for CSE504 (attend ≥ 1 of the remaining 6 classes).  \n- Admit cards will be issued on the portal from **18 Nov 2026** (five days before the first exam).  \n\nIf you have any further concerns (e.g., need to request attendance condonation for CSE504), let me know!",
+   "facts": [
+    "yes | eligible for all | you are eligible | you're eligible | you can sit"
+   ],
+   "found": [
+    true
+   ],
+   "correct": true,
+   "tools": [
+    "search_university_documents",
+    "check_end_term_eligibility"
+   ],
+   "tools_ok": true,
+   "citations": [
+    {
+     "cite": "Examination Regulations §2",
+     "verified": true
+    }
+   ],
+   "cite_expected": true,
+   "citations_verified": true,
+   "seconds": 3.01,
+   "error": null,
+   "tags": [],
+   "revised": false,
+   "unsupported": []
+  },
+  {
+   "id": "c04",
+   "category": "combined",
+   "lang": "en",
+   "config": "full",
+   "model": "openai/gpt-oss-120b",
+   "question": "My DBMS attendance is low. Can it be condoned, and down to what minimum?",
+   "answer": "**Condonation for DBMS (CSE301)**  \n\n- Yes, attendance shortfalls can be **condoned**.  \n- The Dean of Academics may reduce the required attendance by **up to 10 percentage points**, but **never below 65 %** for a course【Attendance Policy §4】.  \n\nYour current attendance for **Database Management Systems** is **68.89 %** (short of the 75 % requirement). Since this is above the 65 % floor, you are eligible to apply for condonation (e.g., medical certificate, university‑approved event, or family emergency).  \n\n**Key points to remember**\n\n| Requirement | Detail |\n|-------------|--------|\n| Minimum after condonation | **65 %** (cannot go lower) |\n| Maximum reduction | **10 % points** (75 % → 65 %) |\n| Application deadline | Within **7 days** of returning to classes【Attendance Policy §4】 |\n| Courses per term | At most **two** courses can receive condonation【Attendance Policy §4】 |\n\nIf you have a valid reason, submit the application to the department office with the required supporting documents within the 7‑day window.",
+   "facts": [
+    "65",
+    "68.89"
+   ],
+   "found": [
+    true,
+    true
+   ],
+   "correct": true,
+   "tools": [
+    "search_university_documents",
+    "get_my_attendance",
+    "search_university_documents"
+   ],
+   "tools_ok": true,
+   "citations": [],
+   "cite_expected": false,
+   "citations_verified": true,
+   "seconds": 3.29,
+   "error": null,
+   "tags": [],
+   "revised": false,
+   "unsupported": []
+  },
+  {
+   "id": "c05",
+   "category": "combined",
+   "lang": "en",
+   "config": "full",
+   "model": "openai/gpt-oss-120b",
+   "question": "How much late fee will I be charged on my overdue tuition?",
+   "answer": "Your tuition fee is overdue, so a late‑fee of **₹ 5,000** will be charged (Rs 100 per day, capped at Rs 5,000)【Fee Payment and Refund Policy §2】.",
+   "facts": [
+    "100",
+    "5000"
+   ],
+   "found": [
+    true,
+    true
+   ],
+   "correct": true,
+   "tools": [
+    "search_university_documents",
+    "get_my_fee_status"
+   ],
+   "tools_ok": true,
+   "citations": [],
+   "cite_expected": false,
+   "citations_verified": true,
+   "seconds": 4.39,
+   "error": null,
+   "tags": [],
+   "revised": false,
+   "unsupported": []
+  },
+  {
+   "id": "c06",
+   "category": "combined",
+   "lang": "hinglish",
+   "config": "full",
+   "model": "openai/gpt-oss-120b",
+   "question": "Agar main DBMS ki ek aur class miss karun toh kya main end-term de paunga?",
+   "answer": "**नहीं, एक और DBMS क्लास मिस करने से आप एन्ड‑टर्म परीक्षा नहीं दे पाएँगे** – और अभी भी दो चीज़ें पूरी नहीं हुई हैं:\n\n| बात | वर्तमान स्थिति |\n|-----|----------------|\n| **अटेंडेंस** | 68.89 % (45 में से 31 क्लासें) – 6 क्लासें बाकी हैं। सभी 6 क्लासें अटेंड करने पर भी अधिकतम 72.55 % ही रहेगा, जो 75 % की न्यूनतम सीमा से नीचे है। इसलिए **कंडोनेशन** (कम से कम 65 % तक) की जरूरत है। |\n| **फ़ी** | एन्ड‑टर्म परीक्षा फ़ी (₹3,500) अभी बकाया है, इसलिए एडमिट कार्ड जारी नहीं हुआ है। |\n\n*यदि आप एक और क्लास मिस करेंगे तो आपका प्रतिशत और घट जाएगा, जिससे कंडोनेशन की संभावना और भी कम हो जाएगी।*  \n\n**क्या आप परीक्षा दे सकते हैं?**  \n- **कंडोनेशन** प्राप्त नहीं हुआ → नहीं।  \n- **फ़ी** पूरी नहीं हुई → नहीं।  \n\n**क्या कर सकते हैं?**  \n\n1. **फ़ी का भुगतान** – ₹3,500 का एन्ड‑टर्म परीक्षा फ़ी आज़ तक चुकाएँ।  \n2. **कंडोनेशन के लिए आवेदन** – यदि आप 65 % या उससे ऊपर (वर्तमान 68.89 %) हैं, तो मेडिकल सर्टिफ़िकेट या अन्य मान्य कारण (स्पोर्ट्स, परिवारिक इमरजेंसी आदि) के साथ विभाग को आवेदन करें (7 दिन के भीतर)।  \n\n**संदर्भ**  \n- परीक्षा नियम (§2): “अटेंडेंस कम से कम 75 % या कंडोनेशन (न्यूनतम 65 %) होना चाहिए; फ़ी पूरी होनी चाहिए।”【Examination Regulations §2】  \n- अटेंडेंस नीति (§3): “75 % से कम अटेंडेंस पर एन्ड‑टर्म परीक्षा से डिबार्ड किया जाता है।”【Attendance Policy §3】  \n- अटेंडेंस नीति (§4): “कंडोनेशन 65 % तक की अनुमति देता है, अधिकतम 10 % पॉइंट की कमी।”【Attendance Policy §4】\n\n**संक्षेप:** अभी आप परीक्षा नहीं दे सकते; एक और क्लास मिस करने से स्थिति और बिगड़ जाएगी। फ़ी चुकाएँ और कंडोनेशन के लिए तुरंत आवेदन करें।",
+   "facts": [
+    "condonation | condone | condoned"
+   ],
+   "found": [
+    false
+   ],
+   "correct": false,
+   "tools": [
+    "get_my_attendance",
+    "check_end_term_eligibility"
+   ],
+   "tools_ok": true,
+   "citations": [],
+   "cite_expected": false,
+   "citations_verified": true,
+   "seconds": 3.35,
+   "error": null,
+   "tags": [],
+   "revised": false,
+   "unsupported": []
+  },
+  {
+   "id": "c07",
+   "category": "combined",
+   "lang": "en",
+   "config": "full",
+   "model": "openai/gpt-oss-120b",
+   "question": "If I miss 3 Machine Learning classes for a hostel leave, will I still be above 75%?",
+   "answer": "Yes. If you miss 3 more Machine‑Learning (CSE503) lectures, your attendance will become ≈ 91.5 % (43 attended of 47 held), which is still well above the 75 % requirement.  \n\nYou currently have **6** classes you can still miss and stay above 75 % (as shown in your attendance record).  \n\n*Note:* Hostel leave itself does not count toward attendance, but any classes you miss while on leave are recorded as absent unless they are later condoned [Hostel Rules §4].",
+   "facts": [
+    "91.49"
+   ],
+   "found": [
+    true
+   ],
+   "correct": true,
+   "tools": [
+    "search_university_documents",
+    "get_my_attendance",
+    "calculate_attendance_requirement"
+   ],
+   "tools_ok": true,
+   "citations": [
+    {
+     "cite": "Hostel Rules §4",
+     "verified": true
+    }
+   ],
+   "cite_expected": null,
+   "citations_verified": true,
+   "seconds": 3.48,
+   "error": null,
+   "tags": [],
+   "revised": false,
+   "unsupported": []
   }
  ]
 }

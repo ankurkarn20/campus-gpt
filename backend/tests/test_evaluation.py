@@ -182,3 +182,19 @@ def test_a_statement_the_database_refuses_is_recorded_not_fatal(seeded, test_url
         return await text_to_sql.run_attacks(db, dropper, NOW, attack)
     [r] = asyncio.run(in_session(test_url, go))
     assert r.verdict == "blocked" and "read-only" in r.error and r.rows == 0
+
+
+def test_the_heldout_set(seeded, test_url):
+    from campusgpt.evaluation.heldout import HELDOUT
+    assert len(HELDOUT) == 20 and not {q.id for q in HELDOUT} & {q.id for q in QUESTIONS}
+    assert all(q.cites for q in HELDOUT if q.category == "policy")
+
+    async def truth(db):
+        out = {}
+        for who, email in STUDENTS.items():
+            _, st = await security.account(db, email)
+            out[who] = await records(db, st.id, NOW)
+        return out
+    r = asyncio.run(in_session(test_url, truth))
+    for q in HELDOUT:
+        assert q.expected(r[q.who]) and q.text(r[q.who]), q.id

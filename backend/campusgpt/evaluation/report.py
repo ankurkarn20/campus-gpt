@@ -4,6 +4,7 @@ import json
 from pathlib import Path
 
 from campusgpt import retrieval
+from campusgpt.evaluation.heldout import HELDOUT
 from campusgpt.evaluation.questions import QUESTIONS
 from campusgpt.evaluation.run import (
     CONFIGS,
@@ -97,6 +98,11 @@ def write(results_dir: Path, out: Path) -> None:
                           + (f"; error: {r.error}" if r.error else "") + "  ",
                           f"  > {answer}", ""]
 
+    held = [ChatResult(**r) for p in sorted(results_dir.glob("heldout-*.json"))
+            if (d := _load(p)) for r in d["results"]]
+    if held:
+        lines += _heldout(held)
+
     security = [d for p in sorted(results_dir.glob("security-*.json")) if (d := _load(p))]
     if security:
         lines += ["## Security: text-to-SQL baseline vs CampusGPT", "",
@@ -132,6 +138,42 @@ def write(results_dir: Path, out: Path) -> None:
                 lines += [f"- **{r['id']}** ({r['verdict']}, {r['rows']} rows): "
                           f"`{' '.join((r['sql'] or '').split())[:300]}`" for r in shown] + [""]
     out.write_text("\n".join(lines).rstrip() + "\n")
+
+
+def _heldout(results: list[ChatResult]) -> list[str]:
+    lines = ["## Held-out questions", "",
+             ("20 questions written on 9 Nov 2026 (`heldout.py`), after the last fix, and run "
+              "once on the full system. Nothing was changed because of them, so unlike the "
+              "50-question set above they did not shape the system; they were written by the "
+              "developers, though, not by independent students. The local run had no GPU "
+              "(the NVIDIA driver was disabled) and shared the CPU with other runs, so its "
+              "latency is not comparable with the rows above."), ""]
+    rows = chat_summary(results)
+    lines += table(
+        ["Model", "n", "Correct", "Policy", "Records", "Combined", "English", "Hinglish",
+         "Tools", "Cited", "Revised", "Errors", "Median latency"],
+        [[r["model"], r["n"], pct(r["correct"]), pct(r["correct_policy"]),
+          pct(r["correct_records"]), pct(r["correct_combined"]), pct(r["correct_en"]),
+          pct(r["correct_hinglish"]), pct(r["tools_ok"]), pct(r["cites_expected"]),
+          r["revised"], r["errors"],
+          "–" if r["median_s"] is None else f"{r['median_s']:.1f} s"] for r in rows])
+    models = list(dict.fromkeys(r.model for r in results))
+    by = {(r.model, r.id): r for r in results}
+    lines += table(
+        ["Id", "Question", *(m.split("/")[-1].split(":")[0] for m in models)],
+        [[q.id, (q.ask if isinstance(q.ask, str) else _asked(results, q.id)).replace("|", "/"),
+          *("" if (k := by.get((m, q.id))) is None else "✓" if k.correct else "✗"
+            for m in models)] for q in HELDOUT])
+    for r in results:
+        if not r.correct:
+            missing = [f for f, ok in zip(r.facts, r.found, strict=True) if not ok]
+            answer = " ".join(r.answer.split())[:400] or "(no answer)"
+            lines += [f"- **{r.id}** ({r.model}) {r.question}  ",
+                      f"  tools: {', '.join(r.tools) or 'none'}; missing: "
+                      f"{', '.join(missing) or '-'}"
+                      + (f"; error: {r.error}" if r.error else "") + "  ",
+                      f"  > {answer}", ""]
+    return lines
 
 
 def _asked(results: list[ChatResult], qid: str) -> str:

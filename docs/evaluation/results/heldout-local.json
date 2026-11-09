@@ -1,0 +1,653 @@
+{
+ "model": "qwen3:4b-instruct-2507-q4_K_M",
+ "run_at": "2026-11-09T22:45:15.722098+05:30",
+ "results": [
+  {
+   "id": "x01",
+   "category": "policy",
+   "lang": "en",
+   "config": "full",
+   "model": "qwen3:4b-instruct-2507-q4_K_M",
+   "question": "Can I leave the exam hall 20 minutes after the paper starts?",
+   "answer": "No. According to the Examination Regulations §3.2, no student is allowed to enter more than 30 minutes after the start of an examination, or to leave before one hour has passed. Leaving the exam hall 20 minutes after the start is not permitted. [Examination Regulations §3.2]",
+   "facts": [
+    "one hour | 1 hour | 60 minutes"
+   ],
+   "found": [
+    true
+   ],
+   "correct": true,
+   "tools": [
+    "search_university_documents"
+   ],
+   "tools_ok": true,
+   "citations": [
+    {
+     "cite": "Examination Regulations §3.2",
+     "verified": true
+    }
+   ],
+   "cite_expected": true,
+   "citations_verified": true,
+   "seconds": 81.69,
+   "error": null,
+   "tags": [],
+   "revised": false,
+   "unsupported": []
+  },
+  {
+   "id": "x02",
+   "category": "policy",
+   "lang": "en",
+   "config": "full",
+   "model": "qwen3:4b-instruct-2507-q4_K_M",
+   "question": "What happens if I submit my assignment 3 days late?",
+   "answer": "According to the Academic Integrity Policy §2.2, late submissions are accepted for up to 48 hours after the deadline, with a penalty of 10% of the maximum marks for each 24 hours (or part of 24 hours) of delay. Work submitted more than 48 hours late receives zero marks.\n\nSince your assignment is 3 days late (72 hours), it exceeds the 48-hour limit. Therefore, it will receive zero marks.\n\n[Academic Integrity Policy §2.2]",
+   "facts": [
+    "zero"
+   ],
+   "found": [
+    true
+   ],
+   "correct": true,
+   "tools": [
+    "search_university_documents"
+   ],
+   "tools_ok": true,
+   "citations": [
+    {
+     "cite": "Academic Integrity Policy §2.2",
+     "verified": true
+    }
+   ],
+   "cite_expected": true,
+   "citations_verified": true,
+   "seconds": 99.79,
+   "error": null,
+   "tags": [],
+   "revised": true,
+   "unsupported": [
+    "72"
+   ]
+  },
+  {
+   "id": "x03",
+   "category": "policy",
+   "lang": "en",
+   "config": "full",
+   "model": "qwen3:4b-instruct-2507-q4_K_M",
+   "question": "When are admit cards released for the end-terms?",
+   "answer": "Admit cards for end-term exams are released on the student portal five days before the first end-term examination.  \n\nFor the 2026-ODD term, the first end-term exam starts on **2026-11-23**, so admit cards are issued from **2026-11-18**.  \n\n[Examination Regulations §2]",
+   "facts": [
+    "5"
+   ],
+   "found": [
+    true
+   ],
+   "correct": true,
+   "tools": [
+    "search_university_documents",
+    "check_end_term_eligibility"
+   ],
+   "tools_ok": true,
+   "citations": [
+    {
+     "cite": "Examination Regulations §2",
+     "verified": true
+    }
+   ],
+   "cite_expected": true,
+   "citations_verified": true,
+   "seconds": 114.59,
+   "error": null,
+   "tags": [],
+   "revised": false,
+   "unsupported": []
+  },
+  {
+   "id": "x04",
+   "category": "policy",
+   "lang": "en",
+   "config": "full",
+   "model": "qwen3:4b-instruct-2507-q4_K_M",
+   "question": "Till what time can visitors meet us in the hostel?",
+   "answer": "Visitors are allowed only in the visitors' lounge, between 4 pm and 7 pm. [Hostel Rules §5]",
+   "facts": [
+    "19:00"
+   ],
+   "found": [
+    true
+   ],
+   "correct": true,
+   "tools": [
+    "search_university_documents"
+   ],
+   "tools_ok": true,
+   "citations": [
+    {
+     "cite": "Hostel Rules §5",
+     "verified": true
+    }
+   ],
+   "cite_expected": true,
+   "citations_verified": true,
+   "seconds": 63.77,
+   "error": null,
+   "tags": [],
+   "revised": false,
+   "unsupported": []
+  },
+  {
+   "id": "x05",
+   "category": "policy",
+   "lang": "en",
+   "config": "full",
+   "model": "qwen3:4b-instruct-2507-q4_K_M",
+   "question": "How much is the hostel security deposit?",
+   "answer": "The hostel security deposit is ₹10,000. [Hostel Rules §2]",
+   "facts": [
+    "10000"
+   ],
+   "found": [
+    true
+   ],
+   "correct": true,
+   "tools": [
+    "search_university_documents"
+   ],
+   "tools_ok": true,
+   "citations": [
+    {
+     "cite": "Hostel Rules §2",
+     "verified": true
+    }
+   ],
+   "cite_expected": true,
+   "citations_verified": true,
+   "seconds": 57.73,
+   "error": null,
+   "tags": [],
+   "revised": false,
+   "unsupported": []
+  },
+  {
+   "id": "x06",
+   "category": "policy",
+   "lang": "en",
+   "config": "full",
+   "model": "qwen3:4b-instruct-2507-q4_K_M",
+   "question": "Above what similarity score does an assignment get reviewed for plagiarism?",
+   "answer": "Above 20% (excluding references and quoted text), an assignment gets reviewed by the course faculty for plagiarism. [Academic Integrity Policy §4.1]",
+   "facts": [
+    "20"
+   ],
+   "found": [
+    true
+   ],
+   "correct": true,
+   "tools": [
+    "search_university_documents"
+   ],
+   "tools_ok": true,
+   "citations": [
+    {
+     "cite": "Academic Integrity Policy §4.1",
+     "verified": true
+    }
+   ],
+   "cite_expected": true,
+   "citations_verified": true,
+   "seconds": 64.46,
+   "error": null,
+   "tags": [],
+   "revised": false,
+   "unsupported": []
+  },
+  {
+   "id": "x07",
+   "category": "policy",
+   "lang": "en",
+   "config": "full",
+   "model": "qwen3:4b-instruct-2507-q4_K_M",
+   "question": "I missed my mid-term because I was sick. How long do I have to ask for a retake?",
+   "answer": "For a missed mid-term examination due to documented medical reasons, you must apply within **five working days** of the missed examination. [Examination Regulations §4.1]",
+   "facts": [
+    "5"
+   ],
+   "found": [
+    true
+   ],
+   "correct": true,
+   "tools": [
+    "search_university_documents"
+   ],
+   "tools_ok": true,
+   "citations": [
+    {
+     "cite": "Examination Regulations §4.1",
+     "verified": true
+    }
+   ],
+   "cite_expected": true,
+   "citations_verified": true,
+   "seconds": 68.89,
+   "error": null,
+   "tags": [],
+   "revised": false,
+   "unsupported": []
+  },
+  {
+   "id": "x08",
+   "category": "policy",
+   "lang": "en",
+   "config": "full",
+   "model": "qwen3:4b-instruct-2507-q4_K_M",
+   "question": "What does a single room in the hostel cost per term?",
+   "answer": "A single room in the hostel costs ₹60,000 per term [Hostel Rules §2].",
+   "facts": [
+    "60000"
+   ],
+   "found": [
+    true
+   ],
+   "correct": true,
+   "tools": [
+    "search_university_documents"
+   ],
+   "tools_ok": true,
+   "citations": [
+    {
+     "cite": "Hostel Rules §2",
+     "verified": true
+    }
+   ],
+   "cite_expected": true,
+   "citations_verified": true,
+   "seconds": 59.5,
+   "error": null,
+   "tags": [],
+   "revised": false,
+   "unsupported": []
+  },
+  {
+   "id": "x09",
+   "category": "policy",
+   "lang": "hinglish",
+   "config": "full",
+   "model": "qwen3:4b-instruct-2507-q4_K_M",
+   "question": "Scholarship continue rakhne ke liye kitni attendance chahiye?",
+   "answer": "For the scholarship to continue, the student must maintain at least 75% attendance in every course.  \n\nThis is stated in [Scholarship Scheme §4.1].",
+   "facts": [
+    "75"
+   ],
+   "found": [
+    true
+   ],
+   "correct": true,
+   "tools": [
+    "search_university_documents"
+   ],
+   "tools_ok": true,
+   "citations": [
+    {
+     "cite": "Scholarship Scheme §4.1",
+     "verified": true
+    }
+   ],
+   "cite_expected": true,
+   "citations_verified": true,
+   "seconds": 66.5,
+   "error": null,
+   "tags": [],
+   "revised": false,
+   "unsupported": []
+  },
+  {
+   "id": "x10",
+   "category": "policy",
+   "lang": "hinglish",
+   "config": "full",
+   "model": "qwen3:4b-instruct-2507-q4_K_M",
+   "question": "Fees kitne din tak na bharun toh registration hold ho jata hai?",
+   "answer": "Fees kitne din tak na bharun toh registration hold ho jata hai?\n\nAccording to the **Fee Payment and Refund Policy §2.2**:  \nIf tuition fees remain unpaid **30 days after the due date**, the student's registration for the term is put on hold.  \n\n✅ So, **30 days** after the due date is the limit.  \n\n[Fee Payment and Refund Policy §2.2]",
+   "facts": [
+    "30"
+   ],
+   "found": [
+    true
+   ],
+   "correct": true,
+   "tools": [
+    "search_university_documents"
+   ],
+   "tools_ok": true,
+   "citations": [
+    {
+     "cite": "Fee Payment and Refund Policy §2.2",
+     "verified": true
+    }
+   ],
+   "cite_expected": true,
+   "citations_verified": true,
+   "seconds": 80.73,
+   "error": null,
+   "tags": [],
+   "revised": false,
+   "unsupported": []
+  },
+  {
+   "id": "x11",
+   "category": "policy",
+   "lang": "hinglish",
+   "config": "full",
+   "model": "qwen3:4b-instruct-2507-q4_K_M",
+   "question": "Ek term ka mess charge kitna hai?",
+   "answer": "Mess charge per term is ₹24,000. [Hostel Rules §2]",
+   "facts": [
+    "24000"
+   ],
+   "found": [
+    true
+   ],
+   "correct": true,
+   "tools": [
+    "search_university_documents"
+   ],
+   "tools_ok": true,
+   "citations": [
+    {
+     "cite": "Hostel Rules §2",
+     "verified": true
+    }
+   ],
+   "cite_expected": true,
+   "citations_verified": true,
+   "seconds": 79.64,
+   "error": null,
+   "tags": [],
+   "revised": false,
+   "unsupported": []
+  },
+  {
+   "id": "x12",
+   "category": "records",
+   "lang": "en",
+   "config": "full",
+   "model": "qwen3:4b-instruct-2507-q4_K_M",
+   "question": "Show me my attendance in all my courses",
+   "answer": "Here is your attendance across all courses:\n\n| Course Code | Course Title               | Held | Attended | Percentage | Status  | Can Miss | Classes Left |\n|------------|----------------------------|------|----------|-----------|---------|----------|--------------|\n| CSE501     | Computer Networks         | 44   | 43       | 97.73%    | ok      | 6        | 6            |\n| CSE502     | Software Engineering     | 44   | 42       | 95.45%    | ok      | 6        | 6            |\n| CSE503     | Machine Learning         | 44   | 43       | 97.73%    | ok      | 6        | 6            |\n| CSE504     | Compiler Design          | 45   | 38       | 84.44%    | ok      | 5        | 6            |\n| CSE505     | Information Security     | 44   | 39       | 88.64%    | ok      | 6        | 6            |\n\n✅ All courses are above 75% attendance.  \n⚠️ In **Compiler Design (CSE504)**, you are at 84.44% — you can miss up to 5 more classes and still stay above 75%.  \n📌 You have 6 classes left in all courses.  \n\nNote: You are not below the 75% requirement in any course. No action is needed for end-term exams.  \n\nLet me know if you'd like details on a specific course or your next class!",
+   "facts": [
+    "97.73",
+    "95.45",
+    "97.73",
+    "84.44",
+    "88.64"
+   ],
+   "found": [
+    true,
+    true,
+    true,
+    true,
+    true
+   ],
+   "correct": true,
+   "tools": [
+    "search_university_documents",
+    "get_my_attendance"
+   ],
+   "tools_ok": true,
+   "citations": [],
+   "cite_expected": null,
+   "citations_verified": true,
+   "seconds": 163.27,
+   "error": null,
+   "tags": [],
+   "revised": false,
+   "unsupported": []
+  },
+  {
+   "id": "x13",
+   "category": "records",
+   "lang": "en",
+   "config": "full",
+   "model": "qwen3:4b-instruct-2507-q4_K_M",
+   "question": "Which course has my lowest attendance?",
+   "answer": "The course with the lowest attendance is **Database Management Systems (CSE301)**, with 68.89% attendance. You need to attend 11 more classes to reach 75%, and you cannot miss any more classes without falling below the requirement.",
+   "facts": [
+    "Database Management Systems | CSE301"
+   ],
+   "found": [
+    true
+   ],
+   "correct": true,
+   "tools": [
+    "search_university_documents",
+    "get_my_attendance"
+   ],
+   "tools_ok": true,
+   "citations": [],
+   "cite_expected": null,
+   "citations_verified": true,
+   "seconds": 106.05,
+   "error": null,
+   "tags": [],
+   "revised": false,
+   "unsupported": []
+  },
+  {
+   "id": "x14",
+   "category": "records",
+   "lang": "en",
+   "config": "full",
+   "model": "qwen3:4b-instruct-2507-q4_K_M",
+   "question": "When was my fee payment due?",
+   "answer": "Your tuition fee was due on **31 July 2026**, and your end-term examination fee was due on **27 November 2026**. Both are currently overdue or pending.",
+   "facts": [
+    "2026-07-31 or 2026-11-27"
+   ],
+   "found": [
+    true
+   ],
+   "correct": true,
+   "tools": [
+    "search_university_documents",
+    "get_my_fee_status"
+   ],
+   "tools_ok": true,
+   "citations": [],
+   "cite_expected": null,
+   "citations_verified": true,
+   "seconds": 91.35,
+   "error": null,
+   "tags": [],
+   "revised": false,
+   "unsupported": []
+  },
+  {
+   "id": "x15",
+   "category": "records",
+   "lang": "en",
+   "config": "full",
+   "model": "qwen3:4b-instruct-2507-q4_K_M",
+   "question": "Which programme and semester am I in?",
+   "answer": "You are in the B.Tech CSE (Cyber Security) programme, semester 5.",
+   "facts": [
+    "B.Tech CSE (Cyber Security)",
+    "5"
+   ],
+   "found": [
+    true,
+    true
+   ],
+   "correct": true,
+   "tools": [
+    "search_university_documents"
+   ],
+   "tools_ok": null,
+   "citations": [],
+   "cite_expected": null,
+   "citations_verified": true,
+   "seconds": 82.71,
+   "error": null,
+   "tags": [],
+   "revised": false,
+   "unsupported": []
+  },
+  {
+   "id": "x16",
+   "category": "records",
+   "lang": "en",
+   "config": "full",
+   "model": "qwen3:4b-instruct-2507-q4_K_M",
+   "question": "How many Computer Networks classes can I skip and still stay at 75%?",
+   "answer": "You can skip **6** Computer Networks classes and still stay at 75% attendance.",
+   "facts": [
+    "6"
+   ],
+   "found": [
+    true
+   ],
+   "correct": true,
+   "tools": [
+    "search_university_documents",
+    "get_my_attendance",
+    "get_my_attendance"
+   ],
+   "tools_ok": true,
+   "citations": [],
+   "cite_expected": null,
+   "citations_verified": true,
+   "seconds": 80.52,
+   "error": null,
+   "tags": [],
+   "revised": false,
+   "unsupported": []
+  },
+  {
+   "id": "x17",
+   "category": "records",
+   "lang": "en",
+   "config": "full",
+   "model": "qwen3:4b-instruct-2507-q4_K_M",
+   "question": "What time is my first class tomorrow?",
+   "answer": "Your first class tomorrow (Tuesday) is at **9:00 AM** in Room D-406. It is **Machine Learning** by Dr. Veer Balay.",
+   "facts": [
+    "Machine Learning | CSE503",
+    "09:00"
+   ],
+   "found": [
+    true,
+    true
+   ],
+   "correct": true,
+   "tools": [
+    "search_university_documents",
+    "get_my_classes"
+   ],
+   "tools_ok": true,
+   "citations": [],
+   "cite_expected": null,
+   "citations_verified": true,
+   "seconds": 147.8,
+   "error": null,
+   "tags": [],
+   "revised": false,
+   "unsupported": []
+  },
+  {
+   "id": "x18",
+   "category": "records",
+   "lang": "hinglish",
+   "config": "full",
+   "model": "qwen3:4b-instruct-2507-q4_K_M",
+   "question": "meri sabse kam attendance kis subject mein hai?",
+   "answer": "Your lowest attendance is in **Database Management Systems (CSE301)** with 68.89% attendance. You need to attend 11 more classes to meet the 75% requirement and cannot miss any more classes.",
+   "facts": [
+    "Database Management Systems | CSE301"
+   ],
+   "found": [
+    true
+   ],
+   "correct": true,
+   "tools": [
+    "get_my_attendance"
+   ],
+   "tools_ok": true,
+   "citations": [],
+   "cite_expected": null,
+   "citations_verified": true,
+   "seconds": 68.65,
+   "error": null,
+   "tags": [],
+   "revised": false,
+   "unsupported": []
+  },
+  {
+   "id": "x19",
+   "category": "combined",
+   "lang": "en",
+   "config": "full",
+   "model": "qwen3:4b-instruct-2507-q4_K_M",
+   "question": "Can I see my grades while my tuition is unpaid?",
+   "answer": "No. If your tuition fees are unpaid, your registration for the term is put on hold, and you cannot see your grades [Fee Payment and Refund Policy §2].",
+   "facts": [
+    "hold | cannot see | can't see | won't be able"
+   ],
+   "found": [
+    true
+   ],
+   "correct": true,
+   "tools": [
+    "search_university_documents"
+   ],
+   "tools_ok": false,
+   "citations": [
+    {
+     "cite": "Fee Payment and Refund Policy §2",
+     "verified": true
+    }
+   ],
+   "cite_expected": true,
+   "citations_verified": true,
+   "seconds": 65.61,
+   "error": null,
+   "tags": [],
+   "revised": false,
+   "unsupported": []
+  },
+  {
+   "id": "x20",
+   "category": "combined",
+   "lang": "en",
+   "config": "full",
+   "model": "qwen3:4b-instruct-2507-q4_K_M",
+   "question": "My attendance in Database Management Systems is short. Can I still write its mid-term and quizzes?",
+   "answer": "Yes, you can still write mid-term exams and quizzes for CSE301 (Database Management Systems), even with short attendance.\n\nAccording to the university policy:  \n- Mid-term examinations, quizzes, and assignments are **not affected** by attendance shortages. A student with a shortage may still take them.  \n[Attendance Policy §3.3]\n\nYou are not required to attend classes to sit these exams. However, you **must** attend classes to sit the end-term exam, which is a separate requirement.\n\n✅ You can take mid-term exams and quizzes.  \n❌ You **cannot** sit the end-term exam unless your attendance reaches 75% or is condoned.  \n\nFor your current course (CSE301), your attendance is at 68.89%, and you need to attend **11 more classes** in a row to reach 75%. You cannot miss any more classes without falling below the 75% threshold.  \n\nLet me know if you'd like help with your next class or assignments.",
+   "facts": [
+    "yes | can still | not affected | still take | still write"
+   ],
+   "found": [
+    true
+   ],
+   "correct": true,
+   "tools": [
+    "search_university_documents",
+    "get_my_attendance"
+   ],
+   "tools_ok": true,
+   "citations": [
+    {
+     "cite": "Attendance Policy §3.3",
+     "verified": true
+    }
+   ],
+   "cite_expected": true,
+   "citations_verified": true,
+   "seconds": 124.54,
+   "error": null,
+   "tags": [],
+   "revised": false,
+   "unsupported": []
+  }
+ ]
+}
