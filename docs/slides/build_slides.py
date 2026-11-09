@@ -8,6 +8,7 @@ TEMPLATE.pptx is the sample deck supplied by the department (UPES layouts, theme
 logos). Its slides are discarded; only its masters, layouts, theme and cover images
 are reused. Output: docs/slides/CampusGPT_Major_Project.pptx
 """
+import json
 import re
 import sys
 from io import BytesIO
@@ -34,6 +35,24 @@ STEP_COLOURS = [MSO_THEME_COLOR.ACCENT_2, MSO_THEME_COLOR.ACCENT_3, MSO_THEME_CO
 
 LEFT = 0.42          # content left edge (inches), as in the template
 WIDTH = 12.5         # content width (inches)
+
+
+def _correct(name: str, counts: bool = False) -> str:
+    """Correct answers of the full system in a saved evaluation run (docs/evaluation/results),
+    as a share or as "correct / answered"."""
+    path = HERE.parent / "evaluation" / "results" / f"{name}.json"
+    if not path.exists():
+        return "–"
+    rs = [r for r in json.loads(path.read_text())["results"] if r["config"] == "full"]
+    ok = sum(r["correct"] for r in rs)
+    if not rs:
+        return "–"
+    return f"{ok} / {len(rs)}" if counts else f"{100 * ok / len(rs):.0f}%"
+
+
+GROQ_FULL = _correct("chat-groq")
+HELDOUT_LOCAL, HELDOUT_GROQ = (_correct("heldout-local", counts=True),
+                               _correct("heldout-groq", counts=True))
 
 
 # ---------------------------------------------------------------------------
@@ -189,7 +208,7 @@ def cover(prs, logos):
         _runs(tf.add_paragraph(), name, 18)
     tf = textbox(slide, 8.20, 5.15, 4.9, 2.0, "Institution:", size=18, bold=True)
     for line in ["School of Computer Science, UPES Dehradun", "B.Tech CSE (Cyber Security), Batch 11",
-                 "Mentor: Mr. Yogesh Rathia", "October 2026"]:
+                 "Mentor: Mr. Yogesh Rathia", "November 2026"]:
         _runs(tf.add_paragraph(), line, 18)
 
 
@@ -226,7 +245,7 @@ SECTIONS = [
     "Abstract", "Introduction & Problem Statement", "Objectives", "Literature Review",
     "Dataset Description", "Methodology", "System Architecture", "Data Flow Diagram",
     "Inter-Process Communication", "Database Design", "Implementation: Concepts and Libraries",
-    "Security and Data Isolation", "SWOT Analysis", "Project Schedule",
+    "Security and Data Isolation", "Evaluation Results", "SWOT Analysis", "Project Schedule",
     "Limitations, Future Work & Conclusion", "References",
 ]
 
@@ -509,7 +528,40 @@ def build(template: Path):
         "Target: **0 leaked records** in every attack test.",
     ], size=18, bullets=True, space_after=10)
 
-    # 13. SWOT Analysis --------------------------------------------------------------
+    # 13. Evaluation Results ---------------------------------------------------------
+    s = content_slide(prs, title("Evaluation Results"))
+    heading(s, LEFT, 1.05, 6.4, "Correct Answers (50-question benchmark)")
+    table(s, LEFT, 1.55, [3.6, 1.35, 1.35], [
+        ["Configuration", "Qwen3 4B (local)", "gpt-oss-120b (Groq)"],
+        ["Plain LLM", "20%", "–"],
+        ["RAG only", "56%", "–"],
+        ["DB tools only", "42%", "–"],
+        ["Full, no verifier", "86%", "96%"],
+        ["**Full CampusGPT**", "**100%**", f"**{GROQ_FULL}**"],
+        ["**Held-out (20 new questions)**", f"**{HELDOUT_LOCAL}**", f"**{HELDOUT_GROQ}**"],
+    ], size=13, row_h=0.42)
+    textbox(s, LEFT, 4.70, 6.3, 2.3, [
+        "Scored by code: every expected number, date or phrase must appear; record "
+        "answers are checked against the database.",
+        "The 50 questions guided the fixes; the **held-out** questions were written after "
+        "and never used to change the system (Groq: stopped by its free daily quota).",
+    ], size=14, bullets=True, space_after=6)
+    heading(s, 6.90, 1.05, 6.0, "Leaks in 12 Attacks")
+    table(s, 6.90, 1.55, [3.6, 1.2, 1.2], [
+        ["Design", "Qwen3 4B", "gpt-oss"],
+        ["Text-to-SQL baseline", "2 / 12", "2 / 12"],
+        ["**CampusGPT**", "**0 / 12**", "**0 / 12**"],
+    ], size=13, row_h=0.42)
+    textbox(s, 6.90, 3.00, 6.0, 1.0, "The baseline leaked on innocent-sounding questions "
+            "(“compare me with my section”, “who is the topper”).", size=14)
+    heading(s, 6.90, 4.05, 6.0, "Retrieval (26 policy questions)")
+    textbox(s, 6.90, 4.55, 6.0, 2.4, [
+        "Hybrid search: **Hit@5 100%**, Hit@1 85%, p95 < 10 ms.",
+        "Hinglish Hit@1: semantic only 50% → **hybrid 83%**.",
+        "Answer verifier: **0 unverified citations**; every figure traced to a source.",
+    ], size=14, bullets=True, space_after=6)
+
+    # 14. SWOT Analysis --------------------------------------------------------------
     s = content_slide(prs, title("SWOT Analysis"))
     quads = [
         ("Strengths", ["Answers grounded in records and cited policy",
@@ -517,8 +569,8 @@ def build(template: Path):
                        "Deterministic calculations",
                        "Fully free stack; swappable LLM provider"]),
         ("Weaknesses", ["Synthetic data only; no live university link",
-                        "Free-tier LLM rate limits",
-                        "English only; no scanned PDFs",
+                        "Small local model needs safeguards",
+                        "English and Hinglish only; no scanned PDFs",
                         "Small models may pick the wrong tool"]),
         ("Opportunities", ["Integration with university ERP through APIs",
                            "Hindi and regional languages",
@@ -536,7 +588,7 @@ def build(template: Path):
         textbox(s, x + 0.15, y + 0.08, 5.9, 0.45, name, size=20, bold=True)
         textbox(s, x + 0.15, y + 0.58, 5.9, 2.3, items, size=18, bullets=True, space_after=4)
 
-    # 14. Project Schedule -----------------------------------------------------------
+    # 15. Project Schedule -----------------------------------------------------------
     s = content_slide(prs, title("Project Schedule"))
     picture(s, "gantt", LEFT, 1.15, 8.6, 5.95, align="left")
     textbox(s, 9.3, 1.25, 3.7, 5.8, [
@@ -548,30 +600,31 @@ def build(template: Path):
         "Full PERT table (ES, EF, LS, slack) in the SRS",
     ], size=16, bullets=True, space_after=10)
 
-    # 15. Limitations, Future Work & Conclusion -----------------------------------------
+    # 16. Limitations, Future Work & Conclusion -----------------------------------------
     s = content_slide(prs, title("Limitations, Future Work & Conclusion"))
     heading(s, LEFT, 1.10, 6.0, "Limitations")
     textbox(s, LEFT, 1.60, 6.2, 3.0, [
         "**Synthetic data only**: no authorised university access yet.",
-        "**Free-tier LLM**: rate limits and provider changes.",
-        "**English only**; scanned PDFs not supported.",
+        "**Small local model** (4B): needs the verifier and prefetch rules; slower on CPU.",
+        "**English and Hinglish only**; scanned PDFs not supported.",
         "**Read-only tools**: students cannot submit requests.",
     ], size=19, bullets=True, space_after=8)
     heading(s, 6.90, 1.10, 6.0, "Future Work")
     textbox(s, 6.90, 1.60, 6.0, 3.0, [
         "**University API adapter** for real records.",
-        "**Hindi and regional languages**.",
+        "**Hindi (Devanagari) and regional languages**.",
         "**Faculty role** and confirmation-gated actions (e.g. hostel leave).",
         "**Mobile and messaging** access.",
     ], size=19, bullets=True, space_after=8)
     panel(s, 4.75, 2.3, "Conclusion",
           "CampusGPT brings a student's own records and university policy into one "
           "conversational interface, with **answers grounded in verified sources** and "
-          "**privacy enforced by the backend, not by the prompt**. The design is complete; "
-          "implementation follows the 31-day plan, and evaluation will measure accuracy, "
-          "citations and leakage against simpler baselines.", size=18)
+          "**privacy enforced by the backend, not by the prompt**. It is built and runs fully "
+          "on a laptop with a free local model; on the benchmark it beats plain-LLM, RAG-only "
+          "and DB-only baselines, and it leaked nothing in attacks that broke a text-to-SQL "
+          "chatbot.", size=18)
 
-    # 16. References ------------------------------------------------------------------
+    # 17. References ------------------------------------------------------------------
     s = content_slide(prs, title("References"))
     textbox(s, LEFT, 1.15, WIDTH, 5.9, [
         "[1] Cormack, G. V., Clarke, C. L. A., & Buettcher, S. (2009). Reciprocal rank fusion "

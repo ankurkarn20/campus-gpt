@@ -28,6 +28,9 @@ SRS version 1.1.\\
 Fri, 30 Oct 2026 & Version 1.1. New chapter: evaluation results and answer safeguards. &
 Implementation and benchmark complete.\\
 \hline
+Mon, 9 Nov 2026 & Version 1.2. Hosted-model results on the final code, held-out question
+set, hosted-model security run. & Final results before the demonstration.\\
+\hline
 \end{tabularx}
 
 \chapter*{Document Conventions}
@@ -676,7 +679,8 @@ RAG only & 56\% & 92\% & 6\% & 43\% & 50\% & 72\%\\
 DB tools only & 42\% & 8\% & 88\% & 57\% & 42\% & 3\%\\
 Full, no verifier & 86\% & 96\% & 82\% & 57\% & 75\% & 81\%\\
 Full CampusGPT & 100\% & 100\% & 100\% & 100\% & 100\% & 94\%\\
-%GROQ_ROW%
+\midrule
+Full, gpt-oss-120b (Groq) & 98\% & 100\% & 100\% & 86\% & 92\% & 12\%\\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -690,9 +694,19 @@ Full CampusGPT & 100\% & 100\% & 100\% & 100\% & 100\% & 94\%\\
   \item The final row was measured after the safeguards of Section~\ref{sec:safeguards},
         which were added in response to failures on these same questions. Each safeguard
         is a general rule with its own tests, but the questions are no longer unseen; a
-        held-out set is needed for an unbiased figure. Median latency is 4.5~s on the
+        held-out set (below) gives the fairer figure. Median latency is 4.5~s on the
         laptop GPU.
+  \item The hosted 120B model gets 49 of 50. Its one miss (c06) is right in substance but
+        written in Devanagari for a question typed in Roman Hinglish. It rarely uses the
+        citation format (12\% cited), so its answers are harder to check.
 \end{itemize}
+
+\subsection*{Held-out questions}
+Twenty further questions (11 policy, 7 records, 2 combined; 5 in Hinglish) were written on
+9 November, after the last change to the system, and each was run once; nothing was changed
+because of them. The local model answered \textbf{20 of 20} correctly and the hosted model
+answered all 12 it reached before its free daily token quota ran out. These questions were written by the developers rather than by independent students,
+so they are a fairer but not a fully independent estimate.
 
 \section{Answer Safeguards}
 \label{sec:safeguards}
@@ -747,14 +761,14 @@ against a read-only connection and is instructed to restrict it to the logged-in
 
 \begin{table}[H]
 \centering
-\caption{Attacks that leaked another student's data (12 attacks, same local model)}
+\caption{Attacks that leaked another student's data (12 attacks, same model for both designs)}
 \label{tab:security}
-\begin{tabular}{@{}lc@{}}
+\begin{tabular}{@{}lcc@{}}
 \toprule
-\textbf{Design} & \textbf{Leaked}\\
+\textbf{Design} & \textbf{Qwen3 4B} & \textbf{gpt-oss-120b}\\
 \midrule
-Text-to-SQL with instructions to stay within the student's rows & 2 / 12\\
-CampusGPT (fixed tools, identity from the session) & 0 / 12\\
+Text-to-SQL with instructions to stay within the student's rows & 2 / 12 & 2 / 12\\
+CampusGPT (fixed tools, identity from the session) & 0 / 12 & 0 / 12\\
 \bottomrule
 \end{tabular}
 \end{table}

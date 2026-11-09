@@ -8,18 +8,36 @@ Living document. Update it when a decision changes.
 
 ## Progress log
 
-### ▶ START HERE NEXT SESSION (written 2026-10-30)
-1. `make db-start`, `make llm`, then `make test` -- expect 287 passing. Reseed (`make seed`)
-   before any demo: the data is generated relative to today. Never run the test suite while
-   the local model is answering (7.6 GB RAM: the kernel kills llama-server).
-2. **Hosted runs on the current code** (Groq free tier: 8k tokens/min, 200k/day):
-   `make bench-groq` (full, now with the verifier), then `make bench-security MODEL=groq`.
-3. **Held-out questions**: the 50 benchmark questions drove the 30 Oct fixes, so ask the
-   teammates for ~20 new questions (same format as `evaluation/questions.py`) and report
-   them separately.
-4. Design doc: evaluation chapter (tables from docs/evaluation/RESULTS.md), verifier and
-   routing safeguards, security demonstration, timetable. Results slide in the deck.
-5. Intent router: only if time remains; the rule-based prefetches now cover the failures.
+### ▶ START HERE NEXT SESSION (written 2026-11-09)
+The project is feature-complete and evaluated. What is left is demo preparation.
+1. **Turn the GPU back on (needs sudo):** `prime-select query` says `intel`, which blacklists
+   the (installed, built) NVIDIA 595 driver, so Ollama runs on the CPU: 60-180 s per answer
+   instead of ~4.5 s. Run `sudo prime-select on-demand`, reboot, check `nvidia-smi` and that
+   `ollama ps` shows GPU.
+2. `make db-start`, `make seed` (data is relative to the day it is seeded; valid until about
+   21 Nov), `make llm`, `make api`, `make worker`, `make web`. Demo accounts in README.
+3. Rehearse the demo (dashboard, chat, what-if, .ics, admin upload, audit log, security run).
+4. Optional: teammates write ~20 more questions for a fully independent test set.
+
+### 2026-11-09 — final results; ready for testing
+- **Groq gpt-oss-120b, full system on the final code: 49/50 (98%)**. The one miss (c06) is
+  right in substance but answered in Devanagari to a Roman-Hinglish question. Cited only
+  12% (it ignores the citation format).
+- **Held-out set** (`evaluation/heldout.py`, 20 questions written today after the last fix,
+  never used to change anything; `--set heldout`, results in `heldout-<model>.json`, own
+  section of RESULTS.md): **local qwen3 4B 20/20**; **Groq 12/12** answered before the free
+  daily token quota ran out. To finish: `cd backend && ../.venv/bin/python -m
+  campusgpt.evaluation chat --model groq --configs full --set heldout --only
+  x13,x14,x15,x16,x17,x18,x19,x20`, then rebuild the deck (step below) and design PDF.
+- **Security on Groq:** text-to-SQL 2/12 leaked (same two innocent-sounding questions),
+  CampusGPT 0/12 -- same as the local model.
+- Scorer fix: "assignments due this week" when nothing unsubmitted is due expected an empty
+  list (always scored wrong); a correct answer must now say none/already submitted.
+- Deck: new "Evaluation Results" slide (figures read from docs/evaluation/results), cover
+  date, conclusion and limitations updated for what was built. Design doc v1.2.
+- Smoke test of the full stack through the Next.js proxy: login, dashboard, .ics (41
+  events), student → admin API 403, chat with 3 verified citations, admin upload indexed by
+  the worker 16 ms after commit. Frontend `next build` and eslint clean. 288 tests.
 
 ### 2026-10-30 — verifier committed; benchmark failures fixed at their causes
 - Verifier (`campusgpt/verify.py`) committed: local full system 86% → 90% before the fixes.
