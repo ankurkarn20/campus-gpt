@@ -111,6 +111,12 @@ EXAM_TYPES = re.compile(r"\b(quiz\w*|mid[\s-]?terms?|mid|end[\s-]?terms?|finals?
                         r"sessionals?|semester exams?)\b", re.IGNORECASE)
 
 
+ENROLLED = """
+
+The student's enrolled courses ("subjects", "papers") this term ({count}): {courses}. \
+Answer "how many subjects / which courses do I have" from this list."""
+
+
 COURSES_NAMED = """
 
 The question names this enrolled course: {courses}. Use exactly this code in tool calls."""
@@ -235,6 +241,9 @@ async def run(db: AsyncSession, provider: Provider, user: CurrentUser, question:
     # Courses the question names, resolved here: models guess codes from titles.
     courses = (await student.attendance(db, user.student_id, now.date())
                if pipeline.records else [])
+    if courses:
+        messages[0]["content"] += ENROLLED.format(count=len(courses), courses="; ".join(
+            f"{c.code} {c.title}" for c in courses))
     named = tools.mentioned_courses(question, [(c.code, c.title) for c in courses])
     if len(named) == 1:
         messages[0]["content"] += COURSES_NAMED.format(courses=", ".join(
